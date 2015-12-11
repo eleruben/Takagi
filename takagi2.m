@@ -1,4 +1,4 @@
-function [m]=takagi(MagIpre, AngIpre, MagTenPos, AngTenPos, MagIPos, AngIPos, Zreal, Zimag)
+function [m]=tak(MagIpre, AngIpre, MagTenPos, AngTenPos, MagIPos, AngIPos, Zreal, Zimag)
 
 
 Ipre_f = MagIpre*exp(i* AngIpre)
@@ -9,5 +9,5 @@ Is_d = Ipos-Ipre_f;
 
 z = Zreal+2*pi*60*Zimag*i;
 
-x = imag(Vs * conj(Is_d)) / imag(z*Ipos*conj(Is_d))
+m = imag(Vs * conj(Is_d)) / imag(z*Ipos*conj(Is_d));
 

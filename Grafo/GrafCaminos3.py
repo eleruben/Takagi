@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
+import os
+print os.getcwd()
 
 ##########################################################################
 #                CODIGO PARA IMPLEMENTACION VERTICAL DE LOS NODOS        #
@@ -17,7 +19,10 @@ def Grafos():
     Ext1=[]
     Ext2=[]
     Distancia=[]
-    libro = xlrd.open_workbook("C:\Users\NECSOFT\Desktop\deteccion de fallas\Modelo circuito.xlsX")
+    #Abre el archivo de excel en donde esta el modelo del circuito, este archivo debe estar
+    #en la misma carpeta que el archivo que se esta ejecutando
+    libro = xlrd.open_workbook(str(os.getcwd())+"\Modelo circuito.xlsX")
+    #libro = xlrd.open_workbook("C:\Users\NECSOFT\Desktop\deteccion de fallas\Modelo circuito.xlsX")
     for r in range(int(libro.nsheets)):
         if libro.sheet_by_index(r).name == "Consecutivo":
         #if libro.sheet_by_index(r).name == "Prueba":
@@ -53,64 +58,94 @@ def Grafos():
                 length=nx.get_edge_attributes(Grafo,'length')
                 #Acumulado es un atributo del nodo que se obtiene de sumar todos las longitudes
                 #del trayecto al nodo origen
-                #acumulado=nx.get_edge_attributes(Grafo,'acumulado')
                 acumulado=nx.get_node_attributes(Grafo,'acumulado')
                 pos=nx.get_node_attributes(Grafo,'pos')
                 desviacion=0
+                ##Se evaluan los dos caso para descartar que se agregue el nodo el diferente orden
                 if Ext1[i] in Grafo.nodes() and Ext2[i] not in Grafo.nodes():
-                    '''for n in Grafo.neighbors(Ext1[i]):
-                        #Se elige cual de las configuraciones de claves tiene
-                        #la conexion del nodo conectado al grafo
-                        ##########################REVISAR YA QUE LOS VECINOS SON SECUENCIALES####
-                        #if (n,Ext1[i]) in length.keys():
-                        if (n,Ext1[i]) in length.keys():
-                            temporal=length[n,Ext1[i]]
-                            ac=acumulado[n,Ext1[i]]
-                        else:
-                            temporal=length[Ext1[i],n]
-                            ac=acumulado[Ext1[i],n]
-                        #Se elige el nodo que tenga menor acumuladovalor de longitud
-                        if acumulado[Ext1[i]]temporal < longitud:
-                            longitud=temporal'''
-                    ##en el caso de las ramas se necesita conocer la posicion del
+                    ##En el caso de las ramas se necesita conocer la posicion del
                     ##nodo al que esta asociado
-                    print ("se va a agregar nodo EXT2 "+Ext2[i])
                     if len(Grafo.neighbors(Ext1[i]))==2:
-                        #se necesita pos['B4'][0]
-                        Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                        print("el nodo "+str(Ext1[i])+" tiene 2 vecinos")
+                        #Caso en que se agrega una rama estando dos en linea en la linea base #0
+                        if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
+                            Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la izquierda #1
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0):
+                            Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la derecha #2
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]>0):
+                            Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
                     if len(Grafo.neighbors(Ext1[i]))==3:
-                        Grafo.add_node(Ext2[i],pos=(-Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        print("los vecinos de "+str(Ext1[i])+" son "+str(Grafo.neighbors(Ext1[i])))
+                        #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 2 #0
+                        if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
+                            print("cas1")
+                            Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 2 y 3 #0
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
+                            print("cas2")
+                            Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 3 #0
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
+                            print("cas3")
+                            Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 2 #1
+                        elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1] == 0):
+                            print("cas4")
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 2 y 3 #1
+                        elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
+                            print("cas5")
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 3 #1
+                        elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
+                            print("cas6")
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        
+                        #Grafo.add_node(Ext2[i],pos=(-Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
                     if len(Grafo.neighbors(Ext1[i]))==1:
-
-                        #################
-                        print("el que esta conectado es: "+str(Ext1[i]))
-                        Grafo.add_node(Ext2[i],pos=(desviacion,Distancia[i]+acumulado[Ext1[i]]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                    #Grafo.add_edge(Ext1[i],Ext2[i],length=Distancia[i], acumulado=Distancia[i]+ac)
+                        #Caso en que el vecino este agregado por abajo, se agrega hacia arriba #0
+                        if(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]>0):
+                            print("caso1-1 "+str(Ext2[i]))
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que el vecino este agregado por arriba, se agrega por la izquierda #1
+                        elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]<0):
+                            print("caso1-2 "+str(Ext2[i]))
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0]+Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que el vecino este agregado por izquierda, se agrega hacia arriba #2
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
+                            print("caso1-3 "+str(Ext2[i]))
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
+                        #Caso en que el vecino este agregado por derecha, se agrega hacia arriba #3
+                        elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0):
+                            print("caso1-4 "+str(Ext2[i]))
+                            Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])                            
+                            
+                            
+                        
                     Grafo.add_edge(Ext1[i],Ext2[i],length=Distancia[i])
                     break
+
+                ####REVISARRRRR caso de 3 
                 if Ext2[i] in Grafo.nodes() and Ext1[i] not in Grafo.nodes():
-                    '''for n in Grafo.neighbors(Ext2[i]):
-                        if (n,Ext2[i]) in length.keys():
-                            temporal=length[n,Ext2[i]]
-                            ac=acumulado[n,Ext2[i]]
-                        else:
-                            temporal=length[Ext2[i],n]
-                            ac=acumulado[Ext2[i],n]
-                        if temporal < longitud:
-                            longitud=temporal'''
-                    print ("se va a agregar nodo EXT1 "+Ext1[i])
                     if len(Grafo.neighbors(Ext2[i]))==2:
-                        print("rama a distancia "+str(pos[Ext2[i]][0]))
-                        Grafo.add_node(Ext1[i],pos=(Distancia[i],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
-                        print("el nodo "+str(Ext2[i])+" tiene 2 vecinos")
+                        #Caso en que se agrega una rama estando dos en linea en la linea base #0
+                        if(pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[0]][0]==0) and (pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[1]][0] == 0):
+                            Grafo.add_node(Ext1[i],pos=(Distancia[i],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la izquierda #1
+                        elif(pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[0]][0]<0) or (pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[1]][0]<0):
+                            Grafo.add_node(Ext1[i],pos=(-Distancia[i]+pos[Ext2[i]][0],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
+                        #Caso en que se agrega una nueva rama a la derecha #2
+                        elif(pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[0]][0]>0) or (pos[Ext2[i]][0]-pos[Grafo.neighbors(Ext2[i])[1]][0]>0):
+                            Grafo.add_node(Ext1[i],pos=(Distancia[i],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
+                        
                     if len(Grafo.neighbors(Ext2[i]))==3:
+                        print("los vecinos de "+str(Ext1[i])+" son "+str(Grafo.neighbors(Ext2[i])))
                         Grafo.add_node(Ext1[i],pos=(-Distancia[i],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
-                    if len(Grafo.neighbors(Ext1[i]))==1:
-                        Grafo.add_node(Ext1[i],pos=(desviacion,Distancia[i]+acumulado[Ext2[i]]),acumulado=acumulado[Ext2[i]]+Distancia[i])
-                
-                    #Grafo.add_node(Ext1[i],pos=(Distancia[i]+ac,desviacion))
-                    Grafo.add_edge(Ext1[i],Ext2[i],length=Distancia[i], acumulado=Distancia[i]+ac)
+                    if len(Grafo.neighbors(Ext2[i]))==1:
+                        Grafo.add_node(Ext1[i],pos=(pos[Ext2[i]][0],Distancia[i]+acumulado[Ext2[i]]),acumulado=acumulado[Ext2[i]]+Distancia[i])
+
+                    Grafo.add_edge(Ext1[i],Ext2[i],length=Distancia[i])
                     break
 
 
@@ -124,23 +159,67 @@ def Grafos():
             #print(length.keys())
             length=nx.get_edge_attributes(Grafo,'length')
             pos=nx.get_node_attributes(Grafo,'pos')
-            print("longitudes "+str(length))
-            print("posiciones "+str(pos))
-            print("acumulados "+str(acumulado))
         
-   
-    #print("valor x de b4 "+str(pos['B4'][0]))
-    #print("valor y de b4 "+str(pos['B4'][1]))
-    #print("el acumulado de la distancia en la rama B4 es "+str(acumulado[('RamaB4','B4')]))
     pos=nx.get_node_attributes(Grafo,'pos')
+    return Grafo
 
+
+##Funcion en la cual se ubican los puntos de falla dependiendo de su distancia
+##al nodo origen
+def punto_falla(Grafo,distancia):
+    #####REVISAR CASO EN QUE LA FALLA CAE EN UN NODO
+    #Variable utilizada para verificar que la distancia ingresada se encuentra por dentro del circuito
+    #dentro=False
+    #lista_mayores=[]
+    #Se extrae la lista de acumulados de todos los nodos para comparar la posible distancia a la que puede
+    #localizarse la falla
+    afuera=True
+    acumulado=nx.get_node_attributes(Grafo,'acumulado')
+    pos=nx.get_node_attributes(Grafo,'pos')
+    for nodo in acumulado.keys():
+        #Se revisa cual de los nodos tiene mayor distancia a la falla
+        if acumulado[nodo]<distancia:
+            for n in Grafo.neighbors(nodo):
+                #Entra cuando la distancia se encuentre en esta arista
+                if acumulado[n]>distancia:
+                    print("el tramo esta entre "+str(nodo)+" y "+str(n))
+                    print("la distancia de el anterior x es "+str(pos[nodo][0]))
+                    print("la distancia de el anterior y es "+str(pos[nodo][1]))
+                    print("la distancia de el despues x es "+str(pos[n][0]))
+                    print("la distancia de el despues y es "+str(pos[n][1]))
+                    #la coordenada diferente se le suma el acumulado del menor mas la distancia
+                    if (pos[n][0]-pos[nodo][0]==0) and (pos[n][1]-pos[nodo][1]>0):
+                        #Se debe agregar en la coordenada Y hacia arriba
+                        Grafo.add_node('Falla'+str(nodo)+"-"+str(n),pos=(pos[n][0],pos[nodo][1]+(distancia-acumulado[nodo])),acumulado=distancia,color=1.0)
+                        afuera=False
+                    elif (pos[n][0]-pos[nodo][0]==0) and (pos[n][1]-pos[nodo][1]<0):
+                        #Se debe agregar en la coordenada Y hacia abajo
+                        Grafo.add_node('Falla'+str(nodo)+"-"+str(n),pos=(pos[n][0],pos[nodo][1]-(distancia-acumulado[nodo])),acumulado=distancia,color=2.0)
+                        afuera=False
+                    elif (pos[n][1]-pos[nodo][1]==0) and (pos[n][0]-pos[nodo][0]<0):
+                        #Se debe agregar en la coordenada X hacia derecha
+                        Grafo.add_node('Falla'+str(nodo)+"-"+str(n),pos=(pos[nodo][0]-(distancia-acumulado[nodo]),pos[n][1]),acumulado=distancia,color=3.0)
+                        afuera=False
+                    elif (pos[n][1]-pos[nodo][1]==0) and (pos[n][0]-pos[nodo][0]>0):
+                        #Se debe agregar en la coordenada X hacia izquierda
+                        Grafo.add_node('Falla'+str(nodo)+"-"+str(n),pos=(pos[nodo][0]+(distancia-acumulado[nodo]),pos[n][1]),acumulado=distancia,color=4.0)
+                        afuera=False
+    if afuera:
+        print("LA DISTANCIA DE FALLA NO ESTA EN EL CIRCUITO")
+    return Grafo      
+
+
+def imprimir_grafo(Grafo):
+    pos=nx.get_node_attributes(Grafo,'pos')
+    color=nx.get_node_attributes(Grafo,'color')
 
     ###PRUEBA DE COLOR EN LOS GRAFOS
     val_map = {'B4': 1.0,
                'B1': 0.5714285714285714,
                'RamaB5': 0.0}
 
-    values = [val_map.get(node, 0) for node in Grafo.nodes()]
+    #values = [val_map.get(node, 0) for node in Grafo.nodes()]
+    values = [color.get(node, 50) for node in Grafo.nodes()]
     # Color mapping
     jet = cm = plt.get_cmap('jet')
     cNorm  = colors.Normalize(vmin=0, vmax=max(values))
@@ -154,10 +233,10 @@ def Grafos():
         ax.plot([0],[0],color=scalarMap.to_rgba(val_map[label]),label=label)
         
 
-    values = [val_map.get(node, 30) for node in Grafo.nodes()]
+    #values = [val_map.get(node, 30) for node in Grafo.nodes()]
 
     f.set_facecolor('w')
-    plt.legend(loc='best')
+    #plt.legend(loc='best')
 
 
     f.tight_layout()
@@ -168,51 +247,23 @@ def Grafos():
     #nx.draw(Grafo,pos)
     
     ###se dibuja el grafo con etiquetas
-    #nx.draw_networkx(Grafo,pos=nx.spring_layout(Grafo), arrows=True, with_labels=True)
-    nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
+    #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=color)
+    #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=values)
+    wins=dict.fromkeys(Grafo.nodes(),0.0)
+    nodesize=[wins[v]*50 for v in Grafo]
+    
+    nx.draw_networkx_nodes(Grafo,pos,node_size=nodesize,node_color='r',alpha=0.4)
+
+    nx.draw_networkx_labels(Grafo,pos,fontsize=14)
+    #nx.draw_networkx_labels(Grafo,pos,labels)
+    #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
     plt.savefig("GrafoCaminos.png")
     plt.axis('off')
     plt.show()
-    return Grafo
-
-
-    #nx.write_graphml(Grafo,'GrafoCaminos.graphml')
-def punto_falla(Grafo,distancia):
-    #Variable utilizada para verificar que la distancia ingresada se encuentra por dentro del circuito
-    dentro=False
-    lista_mayores=[]
-    #Se extrae la lista de acumulados de todos los nodos para comparar la posible distancia a la que puede
-    #localizarse la falla
-    acumulado=nx.get_node_attributes(Grafo,'acumulado')
-    for nodo in acumulado.keys():
-        #Se revisa cual de los nodos tiene mayor distancia a la falla
-        if acumulado[nodo]>distancia:
-            dentro=True
-            print("los nodos mayores son: "+str(nodo))
-            lista_mayores.append(nodo)
-    for i in range(len(lista_mayores)):
-        for j in range(len(lista_mayores)):
-            if not (i==j):
-                lista1=nx.shortest_path (Grafo, 'B1', lista_mayores[i])
-                lista2=nx.shortest_path (Grafo, 'B1', lista_mayores[j])
-                print("la interseccion de "+str(lista_mayores[i])+" con "+str(lista_mayores[j]))
-                print((set(lista1).intersection(lista2)))
-            #Ciclo utilizado para recorrer los vecinos
-                ##menores longitudes y que esten contenidos en otros
-            ##tomar los menores y calcular comparar la distancia contra el acumulado del vecino????
-
-            #for n in Grafo.neighbors(nodo)
-        ####/////////////////////REVISAR CASO QUE LA DISTANCIA ESTE EN UN NODO    
-    if not (dentro):
-        print("la distancia ingresada en mayor que la mayor distancia del circuito")
-
-        
-    #Grafo.add_node(Ext1[i],pos=(Distancia[i],pos[Ext2[i]][1]),acumulado=acumulado[Ext2[i]]+Distancia[i])
-
-
 
 
     
 retorno=Grafos()
-distancia=21.5
-punto_falla(retorno,distancia)
+distancia=12
+imprimible=punto_falla(retorno,distancia)
+imprimir_grafo(imprimible)

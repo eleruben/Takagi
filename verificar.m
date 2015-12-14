@@ -33,7 +33,6 @@ for j=1:(length(Magn)-3)
                 if pre == 20
                     etapa=3;
                     pre=0;
-                    prueba=j
                 end
             end        
     elseif etapa == 3;

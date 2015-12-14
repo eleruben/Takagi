@@ -1,9 +1,9 @@
 function [m]=tak(MagIpre, AngIpre, MagTenPos, AngTenPos, MagIPos, AngIPos, Zreal, Zimag)
 
 
-Ipre_f = MagIpre*exp(i* AngIpre)
-Vs = MagTenPos*exp(i*AngTenPos)
-Ipos = MagIPos*exp(i* AngIPos)
+Ipre_f = MagIpre*exp(i* AngIpre);
+Vs = MagTenPos*exp(i*AngTenPos);
+Ipos = MagIPos*exp(i* AngIPos);
 
 Is_d = Ipos-Ipre_f;
 

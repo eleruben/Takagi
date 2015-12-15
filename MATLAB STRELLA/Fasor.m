@@ -1,0 +1,20 @@
+N=64;
+t=0:1/(60*N):(N-1)/(60*N);
+T1=0:2*pi/N:(N-1)*2*pi/N;
+V=sqrt(2)*cos(T1)/N;
+W=sqrt(2)*sin(T1)/N;
+u=2*sqrt(2)*cos(120*pi*t)+sqrt(2)*sin(120*pi*t)+0.2*sqrt(2)*cos(3*120*pi*t)+...
+    0.8*sqrt(2)*sin(3*120*pi*t)+0.25*cos(5*120*pi*t)+0.025*sin(5*120*pi*t);
+plot(t,u)
+C1=V*u';
+S1=W*u';
+U=C1+S1*j
+pause
+N=64;
+t=0:1/(60*N):(N-1)/(60*N);
+T1=0:2*pi/N:(N-1)*2*pi/N;
+V=sqrt(2)*exp(j*T1)/N;
+u=2*sqrt(2)*cos(120*pi*t)+sqrt(2)*sin(120*pi*t)+0.2*sqrt(2)*cos(3*120*pi*t)+...
+    0.8*sqrt(2)*sin(3*120*pi*t)+0.25*cos(5*120*pi*t)+0.025*sin(5*120*pi*t);
+plot(t,u)
+U=V*u'

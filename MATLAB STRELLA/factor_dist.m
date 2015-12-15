@@ -1,0 +1,62 @@
+clc
+clear
+%Localizador de fallas basado en componentes simetricas
+%Localizador de fallas usando el factor de distribucion
+%Calculos para un sistma balanceado trifasico, con falla linea-tierra en a
+
+%Valores de entrada:Son los valores medidos por los TC y TV en un el nodo a
+%Valores del voltaje en el nodo
+%Valores de las corriente de secuencia positiva, negativa y  cero
+
+%Valores de salida: el valor de salida es la distancia
+
+%Impedancia de secuencia negativa de la linea
+ZL2=0.655+1.468i;
+
+%Impedancia de secuencia negativa de la fuente
+Zs2=2+2i;
+
+%Equivalente en secuencia negativa de la impedancia de carga
+Zr2=(1.07+1.468i)*100;
+
+% Impedancia de secuencia cero y secuencia positiva de la linea
+ZL1=0.655+1.468i;
+ZLo=1.1900+4.0760i;
+
+
+%Constante que relaciona impedancias de sec positiva y  de sec 0
+k=(ZLo+ZL1)/ZL1;
+
+%Valores de las corriente de secuencia positiva, negativa y  cero
+Isa=1;
+Iso=1;
+Is2=1;
+
+%Valores del voltaje en el nodo
+Va=1;
+
+
+a=(Isa+k*Iso)*ZL2;
+b=(Isa+k*Iso)*ZL2*Zr2+(Va-(((Isa+k*Iso)*ZL1)*ZL2));
+c=Va-(((Isa+k*Iso)*ZL1)*Zr2);
+d=3*(Zs2+ZL2+Zr2);
+
+
+e=real(a);
+f=imag(a);
+
+g=real(b);
+h=imag(b);
+
+k=real(c);
+l=imag(c);
+
+m=real(d);
+n=imag(d);
+
+% (real - (real/im)*im) (real-(real/im)*m) (real-(real/im)*im)
+R=[(e-(m/n)*f) (g-(m/n)*h) (k-(m/n)*l)];
+
+%Valores de salida: el valor de salida es la distancia
+disp('Valores de d')
+roots(R)

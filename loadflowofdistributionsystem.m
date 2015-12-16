@@ -1,11 +1,12 @@
+% ALGORITMO PARA FLUJO DE POTENCIA EN PREFALLA
 clc;
 clear all;
 format short;
 tic
-m=[1 2 3 4; 0 67.5 67.5 67.5; 0 32.69 32.69 32.69; 0 0 0 0]';
+%Datos de potencias activa (columna 2) y reactiva (columna 3)
+m=[1 2 3 4; 0 67.5e3 67.5e3 67.5e3; 0 32.69e3 32.69e3 32.69e3; 0 0 0 0]';
+%Datos de resistencia (columna 4) y reactancia (columna 5)
 l=[1 2 3; 1 2 3; 2 3 4; 0.2746 0.1373 0.2059; 0.0040 0.0020 0.0030]';
-
-m,l
 
 br=length(l(:,1));   %ramas
 no=length(m(:,1));   %nodos
@@ -19,8 +20,8 @@ for i=1:br
     X(i,1)=(l(i,5))/Zb;
 end
 for i=1:no
-    P(i,1)=((m(i,2))/(1000*MVAb));
-    Q(i,1)=((m(i,3))/(1000*MVAb));
+    P(i,1)=((m(i,2))/(MVAb));
+    Q(i,1)=((m(i,3))/(MVAb));
 end
 R
 X
@@ -210,7 +211,6 @@ for i=1:no
 end
 va;
 
-
 Ibrp=[abs(Ibr) angle(Ibr)*180/pi];
 PL(1,1)=0;
 QL(1,1)=0;
@@ -223,12 +223,72 @@ for f=1:br
     QL(1,1)=QL(1,1)+Ql(f,1);
 end
 
-Plosskw=(Pl)*100000
-Qlosskw=(Ql)*100000
-PL=(PL)*100000
-QL=(QL)*100000
+Plosskw=(Pl)*100000000
+Qlosskw=(Ql)*100000000
+PL=(PL)*100000000
+QL=(QL)*100000000
 
 
-voltage = vbp(:,1)
-angle = vbp(:,2)%*(pi/180) % ángulos en grados
+voltage = vbp(:,1);
+angle = vbp(:,2)%*(pi/180) % ángulos en grados;
 
+%=====================================================================================
+%
+volt=voltage*KVb;
+
+tetha1=120*pi/180;
+tetha2=240*pi/180;
+
+ang1=[angle(1) angle(1)+(tetha1) angle(1)+(tetha2)];
+ang2=[angle(2) angle(2)+(tetha1) angle(2)+(tetha2)];
+ang3=[angle(3) angle(3)+(tetha1) angle(3)+(tetha2)];
+ang4=[angle(4) angle(4)+(tetha1) angle(4)+(tetha2)];
+
+ang=[ang1;ang2;ang3;ang4]';
+
+for i=1:br
+    for j=1:no
+        Vpre(i,j)=volt(i)*exp(sqrt(-1)*ang(i,j));
+    end
+end
+
+%Corrientes de carga en prefalla
+Pot=[m(:,2) m(:,3)];
+Pot(1,:)=[];
+
+for i=1:br
+    for j=1:br
+        Ilpre(i,j)=complex(Pot(j,1),Pot(j,2)) / (sqrt(3) * Vpre(i,j));
+    end
+end
+
+%Corriente Subestación prefalla
+for i=1:br
+    for j=1:br
+        Isubpre(i,1)=sum(Ilpre(i,:));
+    end
+end
+
+Vpre % Fasores de tensiones en la subestación y en los nodos
+%Ibrp(:,1)*(MVAb/(sqrt(3) * KVb))*sqrt(2)  %Corrientes por tramos, entre nodo p y nodo q
+
+%Falta cuadrar fasores de corrientes para cada fase
+
+Inode=Ibrp(:,1)*(MVAb/(sqrt(3) * KVb));
+anglenode=Ibrp(:,2)*pi/180;
+
+Inod=[Inode anglenode];
+
+ang1=[anglenode(1) anglenode(1)+(tetha1) anglenode(1)+(tetha2)];
+ang2=[anglenode(2) anglenode(2)+(tetha1) anglenode(2)+(tetha2)];
+ang3=[anglenode(3) anglenode(3)+(tetha1) anglenode(3)+(tetha2)];
+
+angul=[ang1;ang2;ang3]';
+
+for i=1:br
+    for j=1:br
+        Ipre(i,j)=Inode(i)*exp(sqrt(-1)*angul(i,j));
+    end
+end
+Ipref=Ipre.';
+abs(Ipre.')

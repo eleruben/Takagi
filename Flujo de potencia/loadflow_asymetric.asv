@@ -23,7 +23,7 @@ Iload=[Iload1; Iload2; Iload3].' % datos de cada nodo por columnas
 sqrt(2) * abs(Iload)
 sqrt(2) * abs(Ip)
 
-Ia=sum(Iload(1,:));
+Ia=;
 Iapre=Ipre(1,1)
 
 If=Ia-Iapre;

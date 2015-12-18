@@ -1,0 +1,173 @@
+<139>1970/01/01 00:38:08 SMP[445]: SMP[+]: HMI Panel [OK] 
+<139>1970/01/01 00:38:09 Panel[512]: ** ID_14 panel/panel_comms.c:715 <info> Request to open port 4 failed 
+<139>1970/01/01 00:38:09 HMI[511]: ** ID_2 server/server_resource.c:510 <info> Open resource '/noja_bin/res/LANG-01_ENG_DB11_2.1.28.0'. 
+<139>1970/01/01 00:38:11 SMP[445]: SMP[+]: FPGA Firmware [OK] 
+<139>1970/01/01 00:38:12 CAN[515]: ** ID_9 extloadCommon.c:171 <info> init external load library 
+<139>1970/01/01 00:38:12 CAN[515]: ** ID_265 canDb.c:794 <info> initSim 
+<139>1970/01/01 00:38:13 SMP[445]: SMP[+]: Can Bus Driver [OK] 
+<139>1970/01/01 00:38:13 SMP[445]: SMP[+]: Calibration [OK] 
+<139>1970/01/01 00:38:14 Panel[512]: ** ID_270 panel/panel_main.c:257 <info> panel connected 
+<139>1970/01/01 00:38:14 SMP[445]: SMP[+]: Protection [OK] 
+<139>1970/01/01 00:38:14 Meter[518]: ** ID_17 meter.c:1738 <info> Apply phase config 0 
+<139>1970/01/01 00:38:14 SMP[445]: SMP[+]: Meter [OK] 
+<139>1970/01/01 00:38:14 SMP[445]: SMP[+]: Protection Configurator [OK] 
+<139>1970/01/01 00:38:15 SimOpTest[520]: ** ID_13 simSwWear.c:643 <info> Unknown OSM Type 0x00000000 in serial #. 
+<139>1970/01/01 00:38:15 SMP[445]: SMP[+]: SIM Operation [OK] 
+<139>1970/01/01 00:38:15 SMP[445]: SMP[+]: Simulator [OK] 
+<139>1970/01/01 00:38:15 SMP[445]: SMP[+]: Oscillography [OK] 
+<139>1970/01/01 00:38:15 IO[525]: ** ID_4 logicChannel.c:676 <info> initLogicChannels 
+<139>1970/01/01 00:38:15 IO[525]: ** ID_260 gpio.c:602 <info> gpio dev 4 transition from -1 to 0 
+<139>1970/01/01 00:38:16 IO[525]: ** ID_516 gpio.c:602 <info> gpio dev 5 transition from -1 to 0 
+<139>1970/01/01 00:38:16 SMP[445]: SMP[+]: I/O [OK] 
+<139>1970/01/01 00:38:16 SMP[445]: SMP[+]: SIM Programmer [OK] 
+<11>1970/01/01 00:38:16 syslog: ** ID_0 main.c:121 <info> GPIO programmer start 
+<139>1970/01/01 00:38:16 ProgGPIO[527]: ** ID_295 main.c:132 <info> GPIO programmer init dps 
+<139>1970/01/01 00:38:16 ProgGPIO[527]: ** ID_551 main.c:134 <info> GPIO programmer init signals 
+<139>1970/01/01 00:38:16 ProgGPIO[527]: ** ID_807 main.c:142 <info> GPIO programmer ready 
+<139>1970/01/01 00:38:16 ProgGPIO[527]: ** ID_1063 main.c:159 <info> GPIO programmer loop 
+<139>1970/01/01 00:38:16 ProgGPIO[527]: ** ID_1319 main.c:100 <info> progGpio set status 0 
+<139>1970/01/01 00:38:16 IO[525]: ** ID_772 gpio.c:3247 <info> gpio program stat 0 
+<139>1970/01/01 00:38:16 SMP[445]: SMP[+]: GPIO Programmer [OK] 
+<139>1970/01/01 00:38:16 SMP[445]: SMP[+]: SCADA DNP3 [OK] 
+<139>1970/01/01 00:38:17 SMP[445]: SMP[+]: SCADA 60870 [OK] 
+<139>1970/01/01 00:38:17 UPS[530]: ** ID_25 extloadCommon.c:171 <info> init external load library 
+<139>1970/01/01 00:38:17 SMP[445]: SMP[+]: UPS [OK] 
+<139>1970/01/01 00:38:17 SMP[445]: SMP[+]: USB Copy [OK] 
+<139>1970/01/01 00:38:17 SMP[445]: SMP[+]: Update [OK] 
+<139>1970/01/01 00:38:18 SMP[445]: SMP[+]: Hotplug [OK] 
+<139>1970/01/01 00:38:18 SMP[445]: SMP[+]: Set Interrupt Priorities [OK] 
+<139>1970/01/01 00:38:18 SMP[445]: SMP[+]: USB Gadget [OK] 
+<139>1970/01/01 00:38:18 SMP[445]: SMP[+]: CMS Communications [OK] 
+<139>1970/01/01 00:38:18 SMP[445]: SMP[+]: p2pcomm [OK] 
+<139>1970/01/01 00:38:19 SMP[445]: SMP[+]: Install EHCI_HCD [OK] 
+<139>1970/01/01 00:38:19 Scada[528]: ** ID_3 scadaDnp.c:1364 <info> DNP max time: 134821us, time cnts: >0.5:0, >1.5:0, >2.5:0 
+<139>1970/01/01 00:38:23 Scada[528]: ** ID_259 scadaDnp.c:1364 <info> DNP max time: 164503us, time cnts: >0.5:0, >1.5:0, >2.5:0 
+<139>1970/01/01 00:38:23 SMP[445]: SMP[+]: Detect LAN [OK] 
+<139>1970/01/01 00:38:23 SMP[445]: Relay version : RLM-02_HW1_DB11_S2_1.8.0.0  
+<139>1970/01/01 00:38:23 SMP[445]: SMP source    : /tags/1.8.0.0 r25173M  
+<139>1970/01/01 00:38:24 SMP[445]: ** ID_19 main/smp_fsm.c:1864 <info> boot ok 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_26 cp_disc.c:564 <info> Installed RLM:1.8.0.0, UKERN:1.8.0.0, UBOOT:1.8.0.0, SIM:1.7.1, GPIO1:, GPIO2:, DBS:11.0.0.0, PANEL:1.23.0 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_282 cp_disc.c:638 <info> UBOOT-02_HW1_S2_1.8.0.0 is not an update 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_538 cp_disc.c:487 <info> RLM with DB version 13 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_794 cp_disc.c:630 <info> RLM-02_HW1_DB13_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_1050 cp_disc.c:630 <info> UKERN-02_HW1_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_1306 cp_disc.c:638 <info> LANG-01_POR_DB13_2.2.34.0 is not an update 
+<139>1970/01/01 00:38:31 UsbCopy[531]: ** ID_1562 cp_disc.c:638 <info> LANG-01_SPA_DB13_2.3.35.0 is not an update 
+<139>1970/01/01 00:38:44 UsbCopy[531]: ** ID_1818 cp_db_handlers.c:227 <info> USB disc cmd 2 
+<139>1970/01/01 00:38:44 UsbCopy[531]: ** ID_2074 cp_db_handlers.c:246 <info> Request to update from USB 
+<139>1970/01/01 00:38:44 UsbCopy[531]: ** ID_2330 cp_db_handlers.c:282 <info> Update from USB 
+<139>1970/01/01 00:38:44 UsbCopy[531]: ** ID_2586 cp_disc.c:802 <info> Copy '/var/usb/rc10/updates' to '/var/nand/staging/RLM-02_HW1_DB13_S2_1.10.0.0'. 
+<139>1970/01/01 00:38:51 UsbCopy[531]: ** ID_2842 cp_disc.c:802 <info> Copy '/var/usb/rc10/updates' to '/var/nand/staging/UKERN-02_HW1_S2_1.10.0.0'. 
+<139>1970/01/01 00:38:59 Update[532]: ** ID_27 up_install.c:941 <info> File system type [current/new]: microkernel [2/2]; relay [2/2] 
+<139>1970/01/01 00:38:59 Update[532]: ** ID_283 up_install.c:267 <info> Validate ok (0) for UKERN-02 firmware 'UKERN-02_HW1_S2_1.10.0.0' 
+<139>1970/01/01 00:38:59 Update[532]: ** ID_539 up_install.c:941 <info> File system type [current/new]: microkernel [2/2]; relay [2/2] 
+<139>1970/01/01 00:38:59 Update[532]: ** ID_795 up_install.c:267 <info> Validate ok (0) for RLM-02 firmware 'RLM-02_HW1_DB13_S2_1.10.0.0' 
+<139>1970/01/01 00:38:59 Update[532]: ** ID_1051 up_install.c:1250 <info> Install microkernel 
+<139>1970/01/01 00:39:13 IO[525]: ** ID_1028 gpio.c:2289 <info> GPIO dev 4 disconnected 
+<139>1970/01/01 00:39:13 IO[525]: ** ID_1284 gpio.c:602 <info> gpio dev 4 transition from 0 to 0 
+<139>1970/01/01 00:39:13 IO[525]: ** ID_1540 gpio.c:2289 <info> GPIO dev 5 disconnected 
+<139>1970/01/01 00:39:13 IO[525]: ** ID_1796 gpio.c:602 <info> gpio dev 5 transition from 0 to 0 
+<139>1970/01/01 00:39:49 Update[532]: ** ID_1307 up_install.c:1264 <info> installed microkernel 
+<139>1970/01/01 00:39:49 Update[532]: ** ID_1563 up_install.c:309 <info> Install ok (0) for UKERN-02 firmware 'UKERN-02_HW1_S2_1.10.0.0' 
+<139>1970/01/01 00:39:54 Update[532]: ** ID_1819 up_install.c:309 <info> Install ok (0) for RLM-02 firmware 'RLM-02_HW1_DB13_S2_1.10.0.0' 
+<139>1970/01/01 00:39:54 Update[532]: ** ID_2075 up_install.c:345 <info> Commit ok (0) for UKERN-02 firmware 'UKERN-02_HW1_S2_1.10.0.0' 
+<139>1970/01/01 00:39:54 Update[532]: ** ID_2331 up_install.c:345 <info> Commit ok (0) for RLM-02 firmware 'RLM-02_HW1_DB13_S2_1.10.0.0' 
+<139>1970/01/01 00:39:54 SMP[445]: ** ID_275 main/smp_fsm.c:285 <info> smp_shutdown update_req=0x40 
+<139>1970/01/01 00:39:55 Update[532]: ** ID_2587 up_main.c:256 <info> Evaluate USB update files 
+<139>1970/01/01 00:39:55 Update[532]: ** ID_2843 up_main.c:256 <info> Evaluate USB update files 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_3098 cp_disc.c:564 <info> Installed RLM:1.8.0.0, UKERN:1.8.0.0, UBOOT:1.8.0.0, SIM:1.7.1, GPIO1:none/unknown, GPIO2:none/unknown, DBS:11.0.0.0, PANEL:1.23.0 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_3354 cp_disc.c:638 <info> UBOOT-02_HW1_S2_1.8.0.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_3610 cp_disc.c:487 <info> RLM with DB version 13 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_3866 cp_disc.c:630 <info> RLM-02_HW1_DB13_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_4122 cp_disc.c:630 <info> UKERN-02_HW1_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_4378 cp_disc.c:638 <info> LANG-01_POR_DB13_2.2.34.0 is not an update 
+<139>1970/01/01 00:39:55 Update[532]: ** ID_3099 up_main.c:256 <info> Evaluate USB update files 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_4634 cp_disc.c:638 <info> LANG-01_SPA_DB13_2.3.35.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_4890 cp_disc.c:564 <info> Installed RLM:1.8.0.0, UKERN:1.8.0.0, UBOOT:1.8.0.0, SIM:1.7.1, GPIO1:none/unknown, GPIO2:none/unknown, DBS:11.0.0.0, PANEL:1.23.0 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_5146 cp_disc.c:638 <info> UBOOT-02_HW1_S2_1.8.0.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_5402 cp_disc.c:487 <info> RLM with DB version 13 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_5658 cp_disc.c:630 <info> RLM-02_HW1_DB13_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_5914 cp_disc.c:630 <info> UKERN-02_HW1_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_6170 cp_disc.c:638 <info> LANG-01_POR_DB13_2.2.34.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_6426 cp_disc.c:638 <info> LANG-01_SPA_DB13_2.3.35.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_6682 cp_disc.c:564 <info> Installed RLM:1.8.0.0, UKERN:1.8.0.0, UBOOT:1.8.0.0, SIM:1.7.1, GPIO1:none/unknown, GPIO2:none/unknown, DBS:11.0.0.0, PANEL:1.23.0 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_6938 cp_disc.c:638 <info> UBOOT-02_HW1_S2_1.8.0.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_7194 cp_disc.c:487 <info> RLM with DB version 13 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_7450 cp_disc.c:630 <info> RLM-02_HW1_DB13_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_7706 cp_disc.c:630 <info> UKERN-02_HW1_S2_1.10.0.0 is an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_7962 cp_disc.c:638 <info> LANG-01_POR_DB13_2.2.34.0 is not an update 
+<139>1970/01/01 00:39:55 UsbCopy[531]: ** ID_8218 cp_disc.c:638 <info> LANG-01_SPA_DB13_2.3.35.0 is not an update 
+<11>1970/01/01 00:39:55 syslog: ** ID_786 dbServer.c:968 <info> Dismiss malfunction of loading saved db files  
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: Detect LAN [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: Install EHCI_HCD [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: p2pcomm [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: CMS Communications [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: USB Gadget [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: Set Interrupt Priorities [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: Hotplug [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: Update [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: USB Copy [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: UPS [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: SCADA 60870 [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: SCADA DNP3 [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: GPIO Programmer [OK] 
+<139>1970/01/01 00:39:57 SMP[445]: SMP[-]: SIM Programmer [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: I/O [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: Oscillography [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: Simulator [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: SIM Operation [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: Protection Configurator [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: Meter [OK] 
+<139>1970/01/01 00:39:58 SMP[445]: SMP[-]: Protection [OK] 
+<139>1970/01/01 00:39:59 SMP[445]: SMP[-]: Calibration [OK] 
+<139>1970/01/01 00:39:59 SMP[445]: SMP[-]: Can Bus Driver [OK] 
+<139>1970/01/01 00:39:59 SMP[445]: SMP[-]: FPGA Firmware [OK] 
+<139>1970/01/01 00:39:59 SMP[445]: SMP[-]: HMI Panel [OK] 
+<139>1970/01/01 00:40:00 SMP[445]: SMP[-]: HMI Server [OK] 
+<139>1970/01/01 00:40:00 SMP[445]: SMP[-]: Communications [OK] 
+<139>1970/01/01 00:40:01 SMP[445]: SMP[-]: Logger [OK] 
+<139>1970/01/01 00:40:06 SMP[445]: SMP[-]: DB Server [OK] 
+<46>1970/01/01 00:40:35 syslogd: started, BusyBox v1.10.2-uc0 
+<46>1970/01/01 00:41:27 syslogd: started, BusyBox v1.10.2-uc0 
+<139>1970/01/01 00:41:28 smp: SMP Version: RLM-02_HW1_DB13_S2_1.10.0.0 (/tags/1.10.0.0 r28405M) [18:09:52 Jun 19 2014]  
+<139>1970/01/01 00:41:28 smp: SMP[ ]: Last shutdown: Monitored process has performed system update. 
+<139>1970/01/01 00:41:28 smp: SMP[+]: Top Profile [OK] 
+<11>1970/01/01 00:41:31 syslog: ** ID_0 dbServer.c:2119 <info> readFromFile(/noja_bin/dbs/default_dbvalues.db) succeeded. 
+<11>1970/01/01 00:41:31 syslog: ** ID_256 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2435 not found, ignoring 
+<11>1970/01/01 00:41:31 syslog: ** ID_512 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2436 not found, ignoring 
+<11>1970/01/01 00:41:31 syslog: ** ID_768 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2437 not found, ignoring 
+<11>1970/01/01 00:41:31 syslog: ** ID_1024 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2435 not found, ignoring 
+<11>1970/01/01 00:41:31 syslog: ** ID_1280 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2436 not found, ignoring 
+<11>1970/01/01 00:41:31 syslog: ** ID_1536 dbFiles.c:501 <syserr> [1:9:Bad file descriptor] DpId 2437 not found, ignoring 
+<11>1970/01/01 00:41:32 syslog: ** ID_1792 dbServer.c:2132 <info> readFromFile(/var/nand/db/dbvalues.db) succeeded. 
+<11>1970/01/01 00:41:32 syslog: ** ID_2048 dbServer.c:2161 <info> No crash file (/var/nand/db/crash.dbbin). 
+<11>1970/01/01 00:41:32 syslog: ** ID_2322 dbServer.c:2559 <info> size of DbEventNotice is 48 
+<139>1970/01/01 00:41:32 SMP[479]: SMP[+]: DB Server [OK] 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_10 logFile.c:1338 <info> type 0 log file count: 1; delete 0 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_266 logFile.c:1369 <info> logFilesInit update type 0 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_522 logFile.c:1338 <info> type 1 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_778 logFile.c:1342 <info> file /var/nand/co/000_001_00000001.copL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_1034 logFile.c:1369 <info> logFilesInit update type 1 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_1290 logFile.c:1338 <info> type 2 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_1546 logFile.c:1342 <info> file /var/nand/fault/000_001_00000001.fauL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_1802 logFile.c:1369 <info> logFilesInit update type 2 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_2058 logFile.c:1338 <info> type 3 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_2314 logFile.c:1342 <info> file /var/nand/load/000_001_00000001.loaL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_2570 logFile.c:1369 <info> logFilesInit update type 3 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_2826 logFile.c:1338 <info> type 4 log file count: 1; delete 0 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_3082 logFile.c:1369 <info> logFilesInit update type 4 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_3338 logFile.c:1338 <info> type 5 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_3594 logFile.c:1342 <info> file /var/nand/interruption/000_001_00000001.intL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_3850 logFile.c:1369 <info> logFilesInit update type 5 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_4106 logFile.c:1338 <info> type 6 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_4362 logFile.c:1342 <info> file /var/nand/sagswell/000_001_00000001.sagL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_4618 logFile.c:1369 <info> logFilesInit update type 6 rollover id to 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_4874 logFile.c:1338 <info> type 7 log file count: 0; delete 1 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_5130 logFile.c:1342 <info> file /var/nand/hrm/000_001_00000001.hrmL is incomplete, now it is deleted 
+<139>1970/01/01 00:41:32 LOG[506]: ** ID_5386 logFile.c:1369 <info> logFilesInit update type 7 rollover id to 1 
+<139>1970/01/01 00:41:33 SMP[479]: SMP[+]: Logger [OK] 
+<139>1970/01/01 00:41:35 SMP[479]: SMP[+]: Communications [OK] 
+<139>1970/01/01 00:41:35 SMP[479]: SMP[+]: HMI Server [OK] 
+<139>1970/01/01 00:41:35 SMP[479]: SMP[+]: HMI Panel [OK] 
+<139>1970/01/01 00:41:36 Panel[527]: ** ID_14 panel/panel_comms.c:715 <info> Request to open port 4 failed 
+<139>1970/01/01 00:41:36 HMI[526]: ** ID_2 server/server_resource.c:510 <info> Open resource '/noja_bin/res/LANG-01_ENG_DB13_2.1.33.RC'. 

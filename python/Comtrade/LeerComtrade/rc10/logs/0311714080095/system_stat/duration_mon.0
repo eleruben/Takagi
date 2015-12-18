@@ -1,0 +1,198 @@
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:41:41
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      2859us      1008us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      736ms       639ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        226ms       7ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       217ms       7ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:46
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      6618us      1098us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      767ms       638ms       >750ms:1            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        299ms       5ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       215ms       4ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:45
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      0           0           0                   0                   0                   0                   
+Meter tick      0           0           0                   0                   0                   0                   
+DNP tick        0           0           0                   0                   0                   0                   
+T10B tick       0           0           0                   0                   0                   0                   
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:03:15
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      7920us      964us       >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      734ms       639ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        764ms       0ms         >500ms:1            >1500ms:0           >2500ms:0           >500ms:1            
+T10B tick       335ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:47:09
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      0           0           0                   0                   0                   0                   
+Meter tick      0           0           0                   0                   0                   0                   
+DNP tick        0           0           0                   0                   0                   0                   
+T10B tick       0           0           0                   0                   0                   0                   
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:48:34
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      11132us     975us       >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      765ms       639ms       >750ms:1            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        246ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       246ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 01:09:50
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      11118us     983us       >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      760ms       638ms       >750ms:1            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        376ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       392ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        543ms       14ms        >500ms:1            >1000ms:0           >2500ms:0           >500ms:1            
+CMS RX          192ms       3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     293ms       5ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          57ms        3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS CMD         60ms        0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 01:47:49
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      54427us     1401us      >50000us:1          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      647ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        371ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       357ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        2724901ms   1123ms      >500ms:2            >1000ms:0           >2500ms:3           >500ms:5            
+CMS RX          204ms       3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     411ms       7ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          19999ms     13ms        >500ms:0            >1000ms:0           >2500ms:1           >500ms:1            
+CMS CMD         135ms       0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+****************************************************************************************************************
+System Bootup Time : 1970-01-07 08:28:43
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      12572us     1042us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      846ms       639ms       >750ms:2            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        225ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       225ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        35413ms     21ms        >500ms:2            >1000ms:0           >2500ms:2           >500ms:4            
+CMS RX          82ms        3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     228ms       7ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          596ms       4ms         >500ms:2            >1000ms:0           >2500ms:0           >500ms:2            
+CMS CMD         154ms       0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:50
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      47956us     1398us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      604ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        427ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       384ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:52
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      196306us    1393us      >50000us:1          >250000us:0         >500000us:0         >100000us:1         
+Meter tick      728ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        341ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       290ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        328289ms    273ms       >500ms:2            >1000ms:0           >2500ms:3           >500ms:5            
+CMS RX          183ms       3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     340ms       7ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          96ms        4ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS CMD         328ms       0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:52
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      33800us     1483us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      692ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        1368ms      3ms         >500ms:1            >1500ms:0           >2500ms:0           >500ms:1            
+T10B tick       409ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        558ms       19ms        >500ms:1            >1000ms:0           >2500ms:0           >500ms:1            
+CMS RX          175ms       4ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     318ms       10ms        >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          64ms        3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS CMD         186ms       0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:52
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      39667us     1439us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      815ms       537ms       >750ms:1            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        245ms       2ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       240ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:52
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      29802us     1348us      >50000us:0          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      697ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        689ms       2ms         >500ms:1            >1500ms:0           >2500ms:0           >500ms:1            
+T10B tick       280ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 1970-01-01 00:00:52
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      50182us     1453us      >50000us:1          >250000us:0         >500000us:0         >100000us:0         
+Meter tick      713ms       532ms       >750ms:0            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        476ms       2ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+T10B tick       430ms       0ms         >500ms:0            >1500ms:0           >2500ms:0           >500ms:0            
+CMS Tick        0           0           0                   0                   0                   0                   
+CMS RX          0           0           0                   0                   0                   0                   
+CMS process     0           0           0                   0                   0                   0                   
+CMS TX          0           0           0                   0                   0                   0                   
+****************************************************************************************************************
+System Bootup Time : 2015-05-26 12:25:44
+
+Name            Max         Avg         T1                  T2                  T3                  Error Trigger
+Meter proc      206566us    1445us      >50000us:3          >250000us:0         >500000us:0         >100000us:1         
+Meter tick      768ms       532ms       >750ms:2            >1500ms:0           >3000ms:0           >1200ms:0           
+DNP tick        903ms       2ms         >500ms:4            >1500ms:0           >2500ms:0           >500ms:4            
+T10B tick       538ms       0ms         >500ms:1            >1500ms:0           >2500ms:0           >500ms:1            
+CMS Tick        3099181ms   1129ms      >500ms:3            >1000ms:0           >2500ms:3           >500ms:6            
+CMS RX          215ms       3ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS process     499ms       8ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS TX          102ms       4ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            
+CMS CMD         498ms       0ms         >500ms:0            >1000ms:0           >2500ms:0           >500ms:0            

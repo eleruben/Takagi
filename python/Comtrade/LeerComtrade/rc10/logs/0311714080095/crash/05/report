@@ -1,0 +1,9 @@
+Version              : RLM-02_HW1_DB11_S2_1.8.0.0
+Created              : 1970/01/01 00:00:27
+Shutdown time        : 1970/01/01 00:00:00
+Shutdown reason      : CPU reset, CAN message fail, or SMP crash.
+Crash flags          : [0x00]
+Last SMP state       : MONITOR [3], step 0
+Startup fail         : 0 (0 consecutive)
+Shutdown fail        : 0 (0 consecutive)
+Exceptions           : 0

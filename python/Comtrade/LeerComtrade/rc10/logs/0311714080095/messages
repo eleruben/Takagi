@@ -1,0 +1,27 @@
+<139>1970/01/01 00:00:56 SMP[484]: SMP[+]: SCADA 60870 [OK] 
+<139>1970/01/01 00:00:56 UPS[550]: ** ID_25 extloadCommon.c:165 <info> init external load library 
+<139>1970/01/01 00:00:56 SMP[484]: SMP[+]: UPS [OK] 
+<139>1970/01/01 00:00:57 SMP[484]: SMP[+]: USB Copy [OK] 
+<139>1970/01/01 00:00:57 Update[552]: ** ID_27 up_main.c:85 <info> Set update step 0 
+<139>1970/01/01 00:00:57 SMP[484]: SMP[+]: Update [OK] 
+<139>1970/01/01 00:00:57 SMP[484]: SMP[+]: Hotplug [OK] 
+<139>1970/01/01 00:00:57 Update[552]: ** ID_283 up_main.c:85 <info> Set update step 0 
+<139>1970/01/01 00:00:57 SMP[484]: SMP[+]: Set Interrupt Priorities [OK] 
+<139>1970/01/01 00:00:57 SMP[484]: SMP[+]: USB Gadget [OK] 
+<139>1970/01/01 00:00:58 SMP[484]: SMP[+]: CMS Communications [OK] 
+<139>1970/01/01 00:00:58 SMP[484]: SMP[+]: p2pcomm [OK] 
+<139>1970/01/01 00:00:59 SMP[484]: SMP[+]: Detect LAN [OK] 
+<139>1970/01/01 00:01:01 SMP[484]: SMP[+]: Install EHCI_HCD [OK] 
+<139>1970/01/01 00:01:01 SMP[484]: Relay version : RLM-02_HW1_DB14_S2_1.11.0.0  
+<139>1970/01/01 00:01:01 SMP[484]: SMP source    : /tags/1.11.0.0 r30116M  
+<139>1970/01/01 00:01:02 SMP[484]: ** ID_19 main/smp_fsm.c:1851 <info> boot ok 
+<139>1970/01/01 00:01:06 UPS[550]: ** ID_281 extloadCtrl.c:135 <info> Init external load on 
+<139>2015/07/01 22:00:00 LOG[511]: ** ID_5898 logFile.c:1438 <info> New load profile (27 fields) record size 133 
+<11>2015/07/01 22:00:09 syslog: ** ID_1042 dbServer.c:911 <info> Dismiss malfunction of loading saved db files  
+<139>2015/07/01 22:00:13 Update[552]: ** ID_539 up_main.c:274 <info> Evaluate USB update files 
+<139>2015/07/01 22:00:13 IO[545]: ** ID_2564 gpio.c:2284 <info> GPIO dev 5 disconnected 
+<139>2015/07/01 22:00:13 IO[545]: ** ID_2820 gpio.c:607 <info> gpio dev 5 transition from 0 to 0 
+<139>2015/07/09 11:59:24 HMI[531]: ** ID_258 server/server_resource.c:510 <info> Open resource '/noja_bin/res/LANG-01_ENG_DB14_2.1.40.RC'. 
+<139>2015/07/12 07:30:00 LOG[511]: ** ID_6154 logFile.c:1438 <info> New load profile (27 fields) record size 133 
+<139>2015/07/22 17:30:00 LOG[511]: ** ID_6410 logFile.c:1438 <info> New load profile (27 fields) record size 133 
+<139>2015/07/28 20:43:22 UsbCopy[551]: ** ID_26 cp_db_handlers.c:227 <info> USB disc cmd 1 

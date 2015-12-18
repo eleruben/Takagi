@@ -1,0 +1,10 @@
+Version              : RLM-02_HW1_DB13_S2_1.10.0.0
+Created              : 1970/01/01 00:46:57
+Shutdown time        : 1970/01/01 00:46:00
+Shutdown reason      : Run-time exception.
+Crash flags          : POWER [0x01]
+Last SMP state       : SHUTDOWN_DO [5], step 0
+Startup fail         : 1 (0 consecutive)
+Shutdown fail        : 0 (0 consecutive)
+Exceptions           : 1
+- [0]: Process stalled [3] (17:Meter)

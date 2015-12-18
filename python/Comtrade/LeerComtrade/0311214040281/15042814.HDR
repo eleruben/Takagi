@@ -1,0 +1,15 @@
+Vendor: NOJA Power Switchgear Pty Ltd
+Product: RC10
+Event-Type: 1
+Event-Name: Pickup
+Start-Time: 2015-04-28T15:55:23.558694Z
+Trigger-Time: 2015-04-28T15:55:23.658480Z
+Duration: 0.5s
+Relay-Serial-Number: 0311214040281
+Relay-Software-Version: 1.11.0.0
+Relay-Hardware-Version: 1.0
+Relay-Database-Version: 14.0.1.0
+Relay-FPGA-Version: 0.0.21549
+SIM-Serial-Number: 0171214040205
+SIM-Software-Version: 1.8.1
+SIM-Hardware-Version: 3.7

@@ -1,0 +1,134 @@
+<46>1970/01/01 00:00:26 syslogd: started, BusyBox v1.10.2-uc0 
+<139>1970/01/01 00:00:27 smp: SMP Version: RLM-02_HW1_DB11_S2_1.8.0.0 (/tags/1.8.0.0 r25173M) [14:44:43 Nov 12 2013]  
+<139>1970/01/01 00:00:27 smp: ** ID_0 main/smp_fsm.c:676 <info> Failed to read FORMAT_FS univar 
+<139>1970/01/01 00:00:27 smp: ** ID_256 main/smp_serialise.c:254 <info> SMP state file missing or failed open 
+<139>1970/01/01 00:00:27 smp: SMP[ ]: Last shutdown: No previous shutdown recorded. 
+<11>1970/01/01 00:00:30 syslog: ** ID_0 dbServer.c:2038 <info> readFromFile(/noja_bin/dbs/default_dbvalues.db) succeeded. 
+<11>1970/01/01 00:00:30 syslog: ** ID_256 dbServer.c:2080 <info> No crash file (/var/nand/db/crash.dbbin). 
+<139>1970/01/01 00:00:31 SMP[445]: SMP[+]: DB Server [OK] 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_10 logFile.c:1303 <info> type 0 log file count: 0; delete 0 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_266 logFile.c:1323 <info> change type 0 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_522 logFile.c:1336 <info> logFilesInit update type 0 rollover id to 1 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_778 logFile.c:1303 <info> type 1 log file count: 0; delete 0 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_1034 logFile.c:1323 <info> change type 1 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_1290 logFile.c:1336 <info> logFilesInit update type 1 rollover id to 1 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_1546 logFile.c:1303 <info> type 2 log file count: 0; delete 0 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_1802 logFile.c:1323 <info> change type 2 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_2058 logFile.c:1336 <info> logFilesInit update type 2 rollover id to 1 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_2314 logFile.c:1303 <info> type 3 log file count: 0; delete 0 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_2570 logFile.c:1323 <info> change type 3 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_2826 logFile.c:1336 <info> logFilesInit update type 3 rollover id to 1 
+<139>1970/01/01 00:00:31 LOG[471]: ** ID_3082 logFile.c:1303 <info> type 4 log file count: 0; delete 0 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_3338 logFile.c:1323 <info> change type 4 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_3594 logFile.c:1336 <info> logFilesInit update type 4 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_3850 logFile.c:1303 <info> type 5 log file count: 0; delete 0 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_4106 logFile.c:1323 <info> change type 5 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_4362 logFile.c:1336 <info> logFilesInit update type 5 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_4618 logFile.c:1303 <info> type 6 log file count: 0; delete 0 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_4874 logFile.c:1323 <info> change type 6 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_5130 logFile.c:1336 <info> logFilesInit update type 6 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_5386 logFile.c:1303 <info> type 7 log file count: 0; delete 0 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_5642 logFile.c:1323 <info> change type 7 rollover id to 1 because no log file found 
+<139>1970/01/01 00:00:32 LOG[471]: ** ID_5898 logFile.c:1336 <info> logFilesInit update type 7 rollover id to 1 
+<139>1970/01/01 00:00:33 SMP[445]: SMP[+]: Logger [OK] 
+<139>1970/01/01 00:00:34 SMP[445]: SMP[+]: Communications [OK] 
+<139>1970/01/01 00:00:34 SMP[445]: SMP[+]: HMI Server [OK] 
+<139>1970/01/01 00:00:35 SMP[445]: SMP[+]: HMI Panel [OK] 
+<139>1970/01/01 00:00:36 Panel[492]: ** ID_14 panel/panel_comms.c:715 <info> Request to open port 4 failed 
+<139>1970/01/01 00:00:36 HMI[491]: ** ID_2 server/server_resource.c:510 <info> Open resource '/noja_bin/res/LANG-01_ENG_DB11_2.1.28.0'. 
+<139>1970/01/01 00:00:37 Panel[492]: ** ID_270 panel/panel_msg.c:252 <info> Panel link error:-262 [NAK 0, TIMEOUT 5, COLLISION 0]. 
+<139>1970/01/01 00:00:38 SMP[445]: SMP[+]: FPGA Firmware [OK] 
+<139>1970/01/01 00:00:38 CAN[495]: ** ID_9 extloadCommon.c:171 <info> init external load library 
+<139>1970/01/01 00:00:38 CAN[495]: ** ID_265 canDb.c:794 <info> initSim 
+<139>1970/01/01 00:00:38 SMP[445]: SMP[+]: Can Bus Driver [OK] 
+<139>1970/01/01 00:00:39 SMP[445]: SMP[+]: Calibration [OK] 
+<139>1970/01/01 00:00:39 SMP[445]: SMP[+]: Protection [OK] 
+<139>1970/01/01 00:00:39 Meter[498]: ** ID_17 meter.c:1738 <info> Apply phase config 0 
+<139>1970/01/01 00:00:39 SMP[445]: SMP[+]: Meter [OK] 
+<139>1970/01/01 00:00:40 SMP[445]: SMP[+]: Protection Configurator [OK] 
+<139>1970/01/01 00:00:40 SimOpTest[500]: ** ID_13 simSwWear.c:643 <info> Unknown OSM Type 0x00000000 in serial #. 
+<139>1970/01/01 00:00:40 SMP[445]: SMP[+]: SIM Operation [OK] 
+<139>1970/01/01 00:00:40 SMP[445]: SMP[+]: Simulator [OK] 
+<139>1970/01/01 00:00:40 SMP[445]: SMP[+]: Oscillography [OK] 
+<139>1970/01/01 00:00:41 IO[503]: ** ID_4 logicChannel.c:676 <info> initLogicChannels 
+<139>1970/01/01 00:00:41 IO[503]: ** ID_260 gpio.c:602 <info> gpio dev 4 transition from -1 to 0 
+<139>1970/01/01 00:00:41 IO[503]: ** ID_516 gpio.c:602 <info> gpio dev 5 transition from -1 to 0 
+<139>1970/01/01 00:00:41 Panel[492]: ** ID_526 panel/panel_main.c:257 <info> panel disconnected 
+<139>1970/01/01 00:00:41 SMP[445]: SMP[+]: I/O [OK] 
+<139>1970/01/01 00:00:41 SMP[445]: SMP[+]: SIM Programmer [OK] 
+<11>1970/01/01 00:00:41 syslog: ** ID_0 main.c:121 <info> GPIO programmer start 
+<139>1970/01/01 00:00:41 ProgGPIO[507]: ** ID_295 main.c:132 <info> GPIO programmer init dps 
+<139>1970/01/01 00:00:41 ProgGPIO[507]: ** ID_551 main.c:134 <info> GPIO programmer init signals 
+<139>1970/01/01 00:00:41 ProgGPIO[507]: ** ID_807 main.c:142 <info> GPIO programmer ready 
+<139>1970/01/01 00:00:41 ProgGPIO[507]: ** ID_1063 main.c:159 <info> GPIO programmer loop 
+<139>1970/01/01 00:00:41 ProgGPIO[507]: ** ID_1319 main.c:100 <info> progGpio set status 0 
+<139>1970/01/01 00:00:41 IO[503]: ** ID_772 gpio.c:3247 <info> gpio program stat 0 
+<139>1970/01/01 00:00:41 SMP[445]: SMP[+]: GPIO Programmer [OK] 
+<139>1970/01/01 00:00:42 SMP[445]: SMP[+]: SCADA DNP3 [OK] 
+<139>1970/01/01 00:00:42 SMP[445]: SMP[+]: SCADA 60870 [OK] 
+<139>1970/01/01 00:00:42 UPS[510]: ** ID_25 extloadCommon.c:171 <info> init external load library 
+<139>1970/01/01 00:00:42 SMP[445]: SMP[+]: UPS [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: USB Copy [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: Update [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: Hotplug [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: Set Interrupt Priorities [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: USB Gadget [OK] 
+<139>1970/01/01 00:00:43 SMP[445]: SMP[+]: CMS Communications [OK] 
+<139>1970/01/01 00:00:44 SMP[445]: SMP[+]: p2pcomm [OK] 
+<139>1970/01/01 00:00:44 SMP[445]: SMP[+]: Install EHCI_HCD [OK] 
+<139>1970/01/01 00:00:45 Scada[508]: ** ID_3 scadaDnp.c:1364 <info> DNP max time: 100026us, time cnts: >0.5:0, >1.5:0, >2.5:0 
+<139>1970/01/01 00:00:49 Scada[508]: ** ID_259 scadaDnp.c:1364 <info> DNP max time: 127945us, time cnts: >0.5:0, >1.5:0, >2.5:0 
+<139>1970/01/01 00:00:51 SMP[445]: SMP[+]: Detect LAN [OK] 
+<139>1970/01/01 00:00:51 SMP[445]: Relay version : RLM-02_HW1_DB11_S2_1.8.0.0  
+<139>1970/01/01 00:00:51 SMP[445]: SMP source    : /tags/1.8.0.0 r25173M  
+<139>1970/01/01 00:00:52 SMP[445]: ** ID_531 main/smp_fsm.c:1864 <info> boot ok 
+<139>1970/01/01 00:01:38 Update[512]: ** ID_27 up_main.c:256 <info> Evaluate USB update files 
+<139>1970/01/01 00:01:38 IO[503]: ** ID_1028 gpio.c:2289 <info> GPIO dev 4 disconnected 
+<139>1970/01/01 00:01:38 IO[503]: ** ID_1284 gpio.c:602 <info> gpio dev 4 transition from 0 to 0 
+<139>1970/01/01 00:01:39 Update[512]: ** ID_283 up_main.c:256 <info> Evaluate USB update files 
+<139>1970/01/01 00:01:39 IO[503]: ** ID_1540 gpio.c:2289 <info> GPIO dev 5 disconnected 
+<139>1970/01/01 00:01:39 IO[503]: ** ID_1796 gpio.c:602 <info> gpio dev 5 transition from 0 to 0 
+<46>1970/01/01 00:00:26 syslogd: started, BusyBox v1.10.2-uc0 
+<139>1970/01/01 00:00:27 smp: SMP Version: RLM-02_HW1_DB11_S2_1.8.0.0 (/tags/1.8.0.0 r25173M) [14:44:43 Nov 12 2013]  
+<139>1970/01/01 00:00:27 smp: SMP[ ]: Last shutdown: CPU reset, CAN message fail, or SMP crash. 
+<11>1970/01/01 00:00:30 syslog: ** ID_0 dbServer.c:2038 <info> readFromFile(/noja_bin/dbs/default_dbvalues.db) succeeded. 
+<11>1970/01/01 00:00:30 syslog: ** ID_256 dbServer.c:2051 <info> readFromFile(/var/nand/db/dbvalues.db) succeeded. 
+<11>1970/01/01 00:00:30 syslog: ** ID_512 dbServer.c:2080 <info> No crash file (/var/nand/db/crash.dbbin). 
+<139>1970/01/01 00:00:31 SMP[445]: SMP[+]: DB Server [OK] 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_10 logFile.c:1303 <info> type 0 log file count: 1; delete 0 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_266 logFile.c:605 <info> read end log id 6 for log type 0 in /var/nand/event/000_001_00000001.eveL 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_522 logFile.c:1336 <info> logFilesInit update type 0 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_778 logFile.c:1303 <info> type 1 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_1034 logFile.c:1307 <info> file /var/nand/co/000_001_00000001.copL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_1290 logFile.c:1336 <info> logFilesInit update type 1 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_1546 logFile.c:1303 <info> type 2 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_1802 logFile.c:1307 <info> file /var/nand/fault/000_001_00000001.fauL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_2058 logFile.c:1336 <info> logFilesInit update type 2 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_2314 logFile.c:1303 <info> type 3 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_2570 logFile.c:1307 <info> file /var/nand/load/000_001_00000001.loaL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_2826 logFile.c:1336 <info> logFilesInit update type 3 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_3082 logFile.c:1303 <info> type 4 log file count: 1; delete 0 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_3338 logFile.c:605 <info> read end log id 1 for log type 4 in /var/nand/setting/000_001_00000001.setL 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_3594 logFile.c:1336 <info> logFilesInit update type 4 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_3850 logFile.c:1303 <info> type 5 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_4106 logFile.c:1307 <info> file /var/nand/interruption/000_001_00000001.intL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_4362 logFile.c:1336 <info> logFilesInit update type 5 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_4618 logFile.c:1303 <info> type 6 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_4874 logFile.c:1307 <info> file /var/nand/sagswell/000_001_00000001.sagL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_5130 logFile.c:1336 <info> logFilesInit update type 6 rollover id to 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_5386 logFile.c:1303 <info> type 7 log file count: 0; delete 1 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_5642 logFile.c:1307 <info> file /var/nand/hrm/000_001_00000001.hrmL is incomplete, now it is deleted 
+<139>1970/01/01 00:00:32 LOG[491]: ** ID_5898 logFile.c:1336 <info> logFilesInit update type 7 rollover id to 1 
+<139>1970/01/01 00:00:33 SMP[445]: SMP[+]: Logger [OK] 
+<139>1970/01/01 00:00:34 SMP[445]: SMP[+]: Communications [OK] 
+<139>1970/01/01 00:00:35 SMP[445]: SMP[+]: HMI Server [OK] 
+<139>1970/01/01 00:00:35 SMP[445]: SMP[+]: HMI Panel [OK] 
+<139>1970/01/01 00:00:36 Panel[512]: ** ID_14 panel/panel_comms.c:715 <info> Request to open port 4 failed 
+<139>1970/01/01 00:00:36 HMI[511]: ** ID_2 server/server_resource.c:510 <info> Open resource '/noja_bin/res/LANG-01_ENG_DB11_2.1.28.0'. 
+<139>1970/01/01 00:00:37 Panel[512]: ** ID_270 panel/panel_main.c:457 <info> Panel handler error: -259 
+<139>1970/01/01 00:00:37 Panel[512]: ** ID_526 panel/panel_msg.c:252 <info> Panel link error:-262 [NAK 0, TIMEOUT 5, COLLISION 0]. 
+<139>1970/01/01 00:00:38 SMP[445]: SMP[+]: FPGA Firmware [OK] 
+<139>1970/01/01 00:00:39 CAN[515]: ** ID_9 extloadCommon.c:171 <info> init external load library 
+<139>1970/01/01 00:00:39 CAN[515]: ** ID_265 canDb.c:794 <info> initSim 
+<46>1970/01/01 00:37:59 syslogd: started, BusyBox v1.10.2-uc0 
+<139>1970/01/01 00:38:00 smp: SMP Version: RLM-02_HW1_DB11_S2_1.8.0.0 (/tags/1.8.0.0 r25173M) [14:44:43 Nov 12 2013]  

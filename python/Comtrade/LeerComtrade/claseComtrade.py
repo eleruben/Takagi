@@ -83,7 +83,7 @@ class comtrade(object):
 
     def config(self):
         self.parametrosConfig()
-        self.archivo = open(self.carpeta+self.nombre+".CFG", "r")
+        self.archivo = open(self.carpeta+"/"+self.nombre+".CFG", "r")
         self.byte = self.archivo.read(1)
         #Lectura del nombre del dispositivo
         while self.byte != ",":
@@ -95,23 +95,23 @@ class comtrade(object):
             self.cfg["id"]["rec_dev_id"]=self.cfg["id"]["rec_dev_id"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Lectura de año de revisión de protocolo comtrade IEEE
+        #Lectura de aÃ±o de revisiÃ³n de protocolo comtrade IEEE
         while self.byte != "\n":
             self.cfg["id"]["rev_year"]=self.cfg["id"]["rev_year"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de cantidad de canales leídos tanto análogos como digitales
+        #Inicio de lectura de cantidad de canales leÃ­dos tanto anÃ¡logos como digitales
         while self.byte != ",":
             self.cfg["ch"]["TT"]=self.cfg["ch"]["TT"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de cantidad de canales análogos
+        #Inicio de lectura de cantidad de canales anÃ¡logos
         while self.byte != ",":
             self.cfg["ch"]["NA"]=self.cfg["ch"]["NA"]+self.byte
             self.byte = self.archivo.read(1)
         self.cfg["ch"]["NA"]=self.cfg["ch"]["NA"].replace("A","")
         self.byte = self.archivo.read(1)
-        #Fin de lectura de cantidad de canales análogos
+        #Fin de lectura de cantidad de canales anÃ¡logos
         #Inicio de lectura de cantidad de canales digitales
         while self.byte != "\n":
             self.cfg["ch"]["ND"]=self.cfg["ch"]["ND"]+self.byte
@@ -120,7 +120,7 @@ class comtrade(object):
         self.byte = self.archivo.read(1)
         valor =""
         #Fin de lectura de cantidad de canales digitales
-        #Inicio de lectura de canales análogos
+        #Inicio de lectura de canales anÃ¡logos
         for i in range(int(self.cfg["ch"]["NA"])):
             fin=0
             self.cfg["AnCh"]["a"+str(i+1)]=[]
@@ -135,8 +135,8 @@ class comtrade(object):
                 self.cfg["AnCh"]["a"+str(i+1)].append(valor)
                 valor=""
                 self.byte=self.archivo.read(1)
-        #Fin de lectura de canáles análogos
-        #Lectura canáles digitales
+        #Fin de lectura de canÃ¡les anÃ¡logos
+        #Lectura canÃ¡les digitales
         for i in range(int(self.cfg["ch"]["ND"])):
             fin=0
             self.cfg["AnD"]["a"+str(i+1)]=[]
@@ -152,12 +152,12 @@ class comtrade(object):
                 valor=""
                 self.byte=self.archivo.read(1)
         #Fin de lectura de los canales digitales
-        #Inicio de lectura de frecuencia de la señal
+        #Inicio de lectura de frecuencia de la seÃ±al
         while self.byte != "\n":
             self.cfg["lf"]=self.cfg["lf"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de número de tasas de muestreo
+        #Inicio de lectura de nÃºmero de tasas de muestreo
         while self.byte != "\n":
             self.cfg["samp"]["nrates"]=self.cfg["samp"]["nrates"]+self.byte
             self.byte = self.archivo.read(1)
@@ -226,7 +226,7 @@ class comtrade(object):
 
     def extraerDatos(self):
 
-        comtrade=open(self.carpeta+self.nombre+".DAT", "rb")
+        comtrade=open(self.carpeta+"/"+self.nombre+".DAT", "rb")
 
         byte=comtrade.read(1)
         comtrade.seek(0)
@@ -300,7 +300,7 @@ class comtrade(object):
 
     def exportTXT(self):
         archivoEscritura="formato.txt"
-        formato=open(self.carpeta+archivoEscritura, "w+")
+        formato=open(self.carpeta+"/"+archivoEscritura, "w+")
         formato.close()
         for i in range(len(self.oscilografia[0:])):
             for j in range(len(self.oscilografia[i,0:])):
@@ -367,7 +367,7 @@ class comtrade(object):
                 if nom != "Vs" and nom != "Vr" and nom != "Vt":
                     ws.write(i+1,columna+1,self.oscilografia[i,j+3])
                     columna+=1
-        wb.save(self.carpeta+self.nombre+".xls")
+        wb.save(self.carpeta+"/"+self.nombre+".xls")
     def excelRudas2(self):
         wb=xlwt.Workbook()
         ws = wb.add_sheet("Comtrade",cell_overwrite_ok=True)
@@ -392,12 +392,12 @@ class comtrade(object):
                 nom=self.cfg["AnCh"]["a"+str(j+1)][1]
                 ws.write(i+1,columna+1,self.oscilografia[i,j+3])
                 columna+=1
-        wb.save(self.carpeta+self.nombre+".xls")
+        wb.save(self.carpeta+"/"+self.nombre+".xls")
     #def dividirDatos(self):
 
 
-carpeta="/home/alcaucil/Descargas/oscilografias/ultimas/"
-nombre="70010171"
+carpeta=r"C:\Users\NECSOFT\Documents\Labe\Takagi\Takagi\python\Comtrade\LeerComtrade\0311214040281"
+nombre=r"14082605"
 
 prueba=comtrade(carpeta, nombre)
 prueba.config()

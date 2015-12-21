@@ -4,13 +4,16 @@ import random as rn
 import matplotlib.pyplot as plt
 import xlwt
 import xlrd
+import os.path
 
 class comtrade(object):
-
+    #Constructor de clase comtrade
     def __init__(self, carpeta, nombre):
         self.carpeta=carpeta
         self.nombre=nombre
-
+        self.parametrosConfig()
+        self.arreglo=[]
+    #Funcion que retorna el inverso de un numero binario
     def invertir(self,binario):
         lista=[]
         cadena=""
@@ -25,9 +28,13 @@ class comtrade(object):
         for i in range(len(lista)):
             cadena = cadena + lista[i]
         return(cadena)
+
+    #Funcion que convierte ????
     def ConvBinUnsig2Dec(self, numero):
         valor = int(numero, 2)
         return(valor)
+
+    #Funcion que convierte ???
     def ConvBinSig2Dec(self, numero):
         if numero[0] == '1':
             valor = int(numero, 2)
@@ -39,6 +46,8 @@ class comtrade(object):
             valor = self.ConvBinUnsig2Dec(numero)
             return valor
 
+    #Funcion que inicializa los diccionarios de datos
+    #con valores por defecto
     def parametrosConfig(self):
         self.cfg={
             "id":{
@@ -81,38 +90,61 @@ class comtrade(object):
             "timemult":""
             }
 
+
+
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####//////////////////self.archivo va a contener el archivo .CFG////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+
+        
+    #Funcion que lee los valores de el archivo CFG generado por en el formato comtrade
     def config(self):
-        self.parametrosConfig()
-        self.archivo = open(self.carpeta+self.nombre+".CFG", "r")
+        #Invocacion de la funcion de inicializacion de los parametros
+        #self.parametrosConfig()
+        self.archivo = open(self.carpeta+u"/"+self.nombre+".CFG", "r")
+        #self.archivo = open(self.carpeta+"/"+self.nombre, "r")
+        #self.archivo = open('14082603.CFG', "r")
+
+        #comtrade=open(self.carpeta+self.nombre+".CFG", "rb")
         self.byte = self.archivo.read(1)
-        #Lectura del nombre del dispositivo
+        #Lectura del nombre del dispositivo caracter a caracter hasta que se encuentre el
+        #caracter ","
         while self.byte != ",":
             self.cfg["id"]["station_name"]=self.cfg["id"]["station_name"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Lectura de id del dispositivo
+        #Lectura de id del dispositivo caracter a caracter hasta que se encuentre el
+        #caracter ","
         while self.byte != ",":
             self.cfg["id"]["rec_dev_id"]=self.cfg["id"]["rec_dev_id"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Lectura de año de revisión de protocolo comtrade IEEE
+        #Lectura de año de revisión de protocolo comtrade IEEE caracter a caracter hasta
+        #que se encuentre el salto de linea
         while self.byte != "\n":
             self.cfg["id"]["rev_year"]=self.cfg["id"]["rev_year"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de cantidad de canales leídos tanto análogos como digitales
+        #Inicio de lectura de cantidad de canales leídos tanto análogos como digitales caracter
+        #a caracter hasta que se encuentre el caracter ","
         while self.byte != ",":
             self.cfg["ch"]["TT"]=self.cfg["ch"]["TT"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de cantidad de canales análogos
+        #Inicio de lectura de cantidad de canales análogos caracter a caracter hasta que se encuentre el
+        #caracter ","
         while self.byte != ",":
             self.cfg["ch"]["NA"]=self.cfg["ch"]["NA"]+self.byte
             self.byte = self.archivo.read(1)
         self.cfg["ch"]["NA"]=self.cfg["ch"]["NA"].replace("A","")
         self.byte = self.archivo.read(1)
         #Fin de lectura de cantidad de canales análogos
-        #Inicio de lectura de cantidad de canales digitales
+        
+        #Inicio de lectura de cantidad de canales digitales caracter a caracter hasta que se encuentre el
+        #salto de linea
         while self.byte != "\n":
             self.cfg["ch"]["ND"]=self.cfg["ch"]["ND"]+self.byte
             self.byte = self.archivo.read(1)
@@ -120,7 +152,9 @@ class comtrade(object):
         self.byte = self.archivo.read(1)
         valor =""
         #Fin de lectura de cantidad de canales digitales
-        #Inicio de lectura de canales análogos
+        
+        #Inicio de lectura de canales análogos caracter a caracter, separados por el caracter "," hasta que
+        #se encuentre el caracter salto de linea
         for i in range(int(self.cfg["ch"]["NA"])):
             fin=0
             self.cfg["AnCh"]["a"+str(i+1)]=[]
@@ -136,7 +170,9 @@ class comtrade(object):
                 valor=""
                 self.byte=self.archivo.read(1)
         #Fin de lectura de canáles análogos
-        #Lectura canáles digitales
+                
+        #Lectura canáles digitales caracter a caracter, separados por el caracter "," hasta que
+        #se encuentre el caracter salto de linea
         for i in range(int(self.cfg["ch"]["ND"])):
             fin=0
             self.cfg["AnD"]["a"+str(i+1)]=[]
@@ -152,17 +188,23 @@ class comtrade(object):
                 valor=""
                 self.byte=self.archivo.read(1)
         #Fin de lectura de los canales digitales
-        #Inicio de lectura de frecuencia de la señal
+                
+        #Inicio de lectura de frecuencia de la señal caracter a caracter hasta que se encuentre el
+        #salto de linea
         while self.byte != "\n":
             self.cfg["lf"]=self.cfg["lf"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de número de tasas de muestreo
+        
+        #Inicio de lectura de número de tasas de muestreo caracter a caracter hasta que se encuentre el
+        #salto de linea
         while self.byte != "\n":
             self.cfg["samp"]["nrates"]=self.cfg["samp"]["nrates"]+self.byte
             self.byte = self.archivo.read(1)
         self.byte = self.archivo.read(1)
-        #Inicio de lectura de las diferentes tasas de muestreo
+        
+        #Inicio de lectura de las diferentes tasas de muestreo la cantidad de veces de tasas
+        #de muestreo
         b=1
         for i in range(int(self.cfg["samp"]["nrates"])):
             nuevo = np.ones((1,2))
@@ -187,7 +229,7 @@ class comtrade(object):
         while self.byte != "/":
             valor = valor + self.byte
             self.byte = self.archivo.read(1)
-            print self.byte
+            #print self.byte
 
         self.cfg["date-time-init"]["dd"]=valor
         self.byte = self.archivo.read(1)
@@ -224,12 +266,24 @@ class comtrade(object):
         valor = ""
         self.archivo.close()
 
+
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####//////////////////comtrade va a contener el archivo .DAT////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+    ####////////////////////////////////////////////////////////////////////////////
+
+    #Funcion que lee los valores de el archivo DAT generado por en el formato comtrade
+    #y los guarda en self.oscilografia
     def extraerDatos(self):
 
-        comtrade=open(self.carpeta+self.nombre+".DAT", "rb")
+        comtrade=open(self.carpeta+u"/"+self.nombre+".DAT", "rb")
 
         byte=comtrade.read(1)
+        #Coloca el apuntador en la posicion inicial
         comtrade.seek(0)
+        #self.oscilografia es un arreglo que contiene los datos reportados en el comtrade
         if len(byte) > 0:
             fin=0
             b=1
@@ -298,22 +352,25 @@ class comtrade(object):
                 else:
                     self.oscilografia= np.vstack([self.oscilografia, nuevo])
 
+    #Funcion que exporta los datos de self.oscilografia a un archivo de texto plano txt
     def exportTXT(self):
         archivoEscritura="formato.txt"
-        formato=open(self.carpeta+archivoEscritura, "w+")
+        formato=open(self.carpeta+u"/"+archivoEscritura, "w+")
         formato.close()
         for i in range(len(self.oscilografia[0:])):
             for j in range(len(self.oscilografia[i,0:])):
-                formato=open(self.carpeta+archivoEscritura, "a")
+                formato=open(self.carpeta+u"/"+archivoEscritura, "a")
                 dato=str(self.oscilografia[i][j])
                 dato=dato.replace(".", ",")
                 formato.write(dato)
                 formato.write(" ")
                 formato.close()
-            formato=open(self.carpeta+archivoEscritura, "a")
+            formato=open(self.carpeta+u"/"+archivoEscritura, "a")
             formato.write("\n")
             formato.close()
-
+    
+    #Funcion que exporta los datos de self.oscilografia a un archivo excel, esto es util para la opcion de exportar
+    #los datos a un archivo excel
     def excel(self):
         wb=xlwt.Workbook()
         for i in range(int(self.cfg["ch"]["NA"])):
@@ -339,11 +396,13 @@ class comtrade(object):
                 ws.write(fila+1,0,"Tiempo")
                 ws.write(fila+2,0,self.cfg["AnCh"]["a"+str(i+1)][1])
                 fila+=4
-        wb.save(self.carpeta+'example.xls')
+        wb.save(self.carpeta+u"/"+self.nombre+'.xls')
 
+    #Funcion que exporta los datos de self.oscilografia a un archivo excel, esto es util para la opcion de exportar
+    #los datos a un archivo excel
     def excelRudas(self):
         wb=xlwt.Workbook()
-        ws = wb.add_sheet("Comtrade",cell_overwrite_ok=True)
+        ws = wb.add_sheet("Comtrade "+self.nombre,cell_overwrite_ok=True)
         ws.write(0,0,"Muestra")
         ws.write(0,1,"Tiempo(ms)")
         ws.write(0,2,"Hora")
@@ -353,8 +412,11 @@ class comtrade(object):
         for i in range(int(self.cfg["ch"]["NA"])):
             nom=self.cfg["AnCh"]["a"+str(i+1)][1]
             if nom != "Vs" and nom != "Vr" and nom != "Vt":
+                #Indica el nombre de las columnas de corriente y voltaje desde el archivo
+                #self.cfg
                 ws.write(0,columna,self.cfg["AnCh"]["a"+str(i+1)][1])
                 columna+=1
+
         for i in range(len(self.oscilografia[0:,1])):
             ws.write(i+1,0,self.oscilografia[i,1])
             ws.write(i+1,1,float(self.oscilografia[i,0])*1000)
@@ -365,9 +427,13 @@ class comtrade(object):
             for j in range(int(self.cfg["ch"]["NA"])):
                 nom=self.cfg["AnCh"]["a"+str(j+1)][1]
                 if nom != "Vs" and nom != "Vr" and nom != "Vt":
+                    #Proceso para llenar la tabla de excel en el siguiente orden:
+                    #Va, Vb, Vc, Ia, Ib, Ic e In
                     ws.write(i+1,columna+1,self.oscilografia[i,j+3])
                     columna+=1
-        wb.save(self.carpeta+self.nombre+".xls")
+        wb.save(self.carpeta+u"/"+self.nombre+".xls")
+
+        
     def excelRudas2(self):
         wb=xlwt.Workbook()
         ws = wb.add_sheet("Comtrade",cell_overwrite_ok=True)
@@ -395,16 +461,32 @@ class comtrade(object):
         wb.save(self.carpeta+self.nombre+".xls")
     #def dividirDatos(self):
 
+    def extraerListas(self):
+        for i in range(len(self.oscilografia[0:,1])):
+            self.temporal=[]
+            for j in range(int(self.cfg["ch"]["NA"])):
+                nom=self.cfg["AnCh"]["a"+str(j+1)][1]
+                if nom != "Vs" and nom != "Vr" and nom != "Vt":
+                    #Proceso para llenar un arreglo en el siguiente orden:
+                    #Va, Vb, Vc, Ia, Ib, Ic e In
+                    #ws.write(i+1,columna+1,self.oscilografia[i,j+3])
+                    self.temporal.append(self.oscilografia[i,j+3])
+                    #columna+=1
+            self.arreglo.append(self.temporal)
+        #return(arreglo)
 
-carpeta="/home/alcaucil/Descargas/oscilografias/ultimas/"
-nombre="70010171"
+
+#carpeta="/home/alcaucil/Descargas/oscilografias/ultimas/"
+carpeta="C:\Users\NECSOFT\Documents\GitHub\Prueba\Takagi\python\Comtrade\LeerComtrade\archivos"
+nombre="14082603"
 #OBJETO DE LA CLASE COMTRADE
-prueba=comtrade(carpeta, nombre)
-prueba.config()
-prueba.extraerDatos()
-prueba.exportTXT()
-prueba.excelRudas2()
-print prueba.cfg["date-time-init"]
+#prueba=comtrade(carpeta, nombre)
+#prueba.config()
+
+#prueba.extraerDatos()
+#prueba.exportTXT()
+#prueba.excelRudas2()
+#print prueba.cfg["date-time-init"]
 #prueba.dividirDatos()
 """
 print prueba.cfg["AnCh"]["a1"][1]

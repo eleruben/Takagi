@@ -19,7 +19,7 @@ import numpy as np
 
 import Circuito
 
-
+import claseComtrade
 
 Ia=[]
 Ib=[]
@@ -46,6 +46,8 @@ ipreb=[]
 iprec=[]
 Ifase=[]
 Ipre=[]
+
+total=[]
 
 
 N=32
@@ -327,6 +329,9 @@ class Aplicacion ( wx.Frame ):
 	Grafo=Circuito.punto_falla(retorno,distancia)
 	#Circuito.imprimir_grafo(imprimible)
 
+        color=nx.get_node_attributes(Grafo,'color')
+	values = [color.get(node, 50) for node in Grafo.nodes()]
+
 	#imprimible de circuito
 
 	pos=nx.get_node_attributes(Grafo,'pos')
@@ -338,24 +343,16 @@ class Aplicacion ( wx.Frame ):
                 #print("la posicion de las etiquetas son "+str(etiquetas))
                 color=nx.get_node_attributes(Grafo,'color')
 
-        '''###PRUEBA DE COLOR EN LOS GRAFOS
-        val_map = {'B4': 1.0,
-                  'B1': 0.5714285714285714,
-                  'RamaB5': 0.0}
 
-        #values = [val_map.get(node, 0) for node in Grafo.nodes()]
-        values = [color.get(node, 50) for node in Grafo.nodes()]
-        # Color mapping
-        jet = cm = plt.get_cmap('jet')
-        cNorm  = colors.Normalize(vmin=0, vmax=max(values))
-        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)'''
-
-
-        self.dpi = 100
+        
 
         #Figura que corresponde a la grafica de la ubicacion de la falla en el circuito
-        self.fig3 = Figure((10.0, 2.8), dpi=self.dpi)
-        self.canvas_ubicacion = FigCanvas(self.m_panelUbicacion , -1, self.fig3)
+        #self.fig3 = Figure((10.0, 2.8), dpi=self.dpi)
+        #self.canvas_ubicacion = FigCanvas(self.m_panelUbicacion , -1, self.fig3)
+
+        #self.fig3 = Figure((10.0, 2.8), dpi=self.dpi)
+        self.fig3 = plt.figure(figsize=(10.0,20.0))
+        self.canvas_ubicacion = FigCanvas(self.m_panel3, -1, self.fig3)
 
 
         #self.axes_ubicacion = self.fig3.add_subplot(111)
@@ -363,14 +360,15 @@ class Aplicacion ( wx.Frame ):
         #self.axes_ubicacion.set_xlabel('t')
         #self.axes_ubicacion.set_ylabel('I(t)')
 
+        nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=values,alpha=1.0)
         nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
-        #nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
+        nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
         #nx.draw_networkx_labels(Grafo,pos,labels)
         #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
         #plt.savefig("GrafoCaminos.png")
         plt.axis('off')
 
-        panelUbicacionSizer.Add(self.canvas_ubicacion, 1, wx.LEFT | wx.TOP | wx.GROW)
+        panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)
         #self.toolbar = NavigationToolbar(self.canvas)
         #self.vbox.Add(self.toolbar, 0, wx.EXPAND)
         #self.m_panel3.SetSizer(self.vbox)
@@ -419,7 +417,7 @@ class Aplicacion ( wx.Frame ):
 	
 	######AAAHHHHHHH
 
-	self.fig = plt.figure()
+	'''self.fig = plt.figure()
         self.canvas = FigCanvas(self.m_panel3, -1, self.fig)
         G=nx.house_graph()
         pos={0:(0,0),
@@ -437,7 +435,7 @@ class Aplicacion ( wx.Frame ):
         self.toolbar = NavigationToolbar(self.canvas)
         self.vbox.Add(self.toolbar, 0, wx.EXPAND)
         self.m_panel3.SetSizer(self.vbox)
-        self.vbox.Fit(self)
+        self.vbox.Fit(self)'''
 
 
 	
@@ -445,14 +443,50 @@ class Aplicacion ( wx.Frame ):
 		
 	self.m_button7 = wx.Button( self.m_panel3, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
 	bSizer22.Add( self.m_button7, 0, wx.ALL, 5 )'''
-		
+
+        bSizer22 = wx.BoxSizer( wx.VERTICAL )
+	self.m_button9 = wx.Button( self.m_panel3, wx.ID_ANY, u"Editar grafo", wx.DefaultPosition, wx.DefaultSize, 0 )
+	self.Bind(wx.EVT_BUTTON, self.editar_grafo, self.m_button9)
+
+	bSizer22.Add( self.m_button9, 0, wx.ALL, 5 )
+
+	panelUbicacionSizer.Add( bSizer22, 0, wx.EXPAND, 5 )
+
+	#panelUbicacionSizer.Add( self.m_button9, 0, wx.EXPAND |wx.ALL, 5)
+
+
+
 		
 	self.m_panel3.SetSizer( panelUbicacionSizer )
 	self.m_panel3.Layout()
 	panelUbicacionSizer.Fit( self.m_panel3 )
 	self.m_listbook1.AddPage( self.m_panel3, u"UBICACION DE LA FALLA", False )
-		
+
+
+
+	###########################################################################
+        ##              PANEL DE REPORTE DE LA FALLA                              #
+        ###########################################################################
+
+
+
+	####////////////////////////////////////////////////////////////
+	####////////////////////////////////////////////////////////////
+	####////////////////////////////////////////////////////////////
+	####///////////////VER COMO AGREGAR LAS IMAGENES A LA///////////
+	####/////////////////////LISTBOOK///////////////////////////////
+	####////////////////////////////////////////////////////////////
+	####////////////////////////////////////////////////////////////
 	bSizer23 = wx.BoxSizer( wx.VERTICAL )
+
+	png = wx.Image('labe.png', wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+	bitmap = wx.Bitmap('labe.png')
+	#bitmap = wx.Bitmap('labe.bpm')
+        self.algo = wx.StaticBitmap(self.m_panel4, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
+
+        bSizer23.Add( self.algo, 0, wx.ALL, 5 )
+
+	
 		
 	self.m_button8 = wx.Button( self.m_panel4, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
 	bSizer23.Add( self.m_button8, 0, wx.ALL, 5 )
@@ -461,7 +495,26 @@ class Aplicacion ( wx.Frame ):
 	self.m_panel4.SetSizer( bSizer23 )
 	self.m_panel4.Layout()
 	bSizer23.Fit( self.m_panel4 )
-	self.m_listbook1.AddPage( self.m_panel4, u"a page", False )
+
+	# Show how to put an image on one of the notebook tabs,
+	# first make the image list:
+	self.imlist = wx.ImageList(16, 16)
+
+	#source_pog_icon = self.imlist.Add\
+        #(wx.Bitmap('labe.png',wx.BITMAP_TYPE_PNG))
+
+	source_pog_icon = self.imlist.Add(bitmap)
+	
+	#idx1 = il.Add(images.Smiles.GetBitmap())
+	#self.AssignImageList(il)
+
+	# now put an image on the first tab we just created:
+	#self.SetPageImage(0, idx1)
+	self.m_listbook1.AssignImageList(self.imlist)
+	###ANADE EN EL PANEL 1 LA GRAFICA
+        self.m_listbook1.SetPageImage(0, source_pog_icon)
+	
+	self.m_listbook1.AddPage( self.m_panel4, u"a page", imageId=0 )
 		
 	principalSizer.Add( self.m_listbook1, 1, wx.EXPAND |wx.ALL, 5 )
 		
@@ -544,24 +597,61 @@ class Aplicacion ( wx.Frame ):
         """ Abrir un fichero"""
         #print self.actual
         self.dirname = self.actual
-        # Abrimos una ventana de dialogo de fichero para seleccionar algun fichero
+
+        
+
+        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.CFG", wx.OPEN)
+        # Si se selecciona alguno => OK
+        if dlg.ShowModal() == wx.ID_OK:
+
+            
+            self.dirname = dlg.GetDirectory()   # Y el directorio            
+            self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
+
+            self.filename= self.filename.split('.')[0]
+            self.objeto=claseComtrade.comtrade(self.dirname, self.filename)
+            #print(self.dirname)
+            #print(self.filename)
+            #print(self.objeto.cfg)
+            self.objeto.config()
+            self.objeto.extraerDatos()
+            #print(self.objeto.cfg)
+            #print(self.objeto.oscilografia[21])
+            #self.objeto.exportTXT()
+            #print(str(self.objeto.LALALA()))
+            self.objeto.extraerListas()
+            #print(self.objeto.arreglo)
+            #self.objeto.excel()
+            #self.objeto.excelRudas()
+            total=self.objeto.arreglo
+            self.cargar_datos(total)
+            #self.cargar_datos()
+
+
+        #####SIRVE PARA ARCHIVO DE EXCEL
+        '''# Abrimos una ventana de dialogo de fichero para seleccionar algun fichero
         dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.xls", wx.OPEN)
         # Si se selecciona alguno => OK
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
             self.dirname = dlg.GetDirectory()   # Y el directorio
+            print(self.dirname)
+            print(self.filename)
             # Abrimos el archivo de excel, se imprime la ruta, el nombre del archivo
             # y el numero de pesta?as en el archivo
             self.libro = xlrd.open_workbook(self.dirname+"/"+self.filename)
+            #self.libro = xlrd.open_workbook(self.dirname+self.filename)
             #print (self.dirname)
             #print (self.filename)
             self.actual=self.dirname
             #print(self.libro.nsheets)
-            self.cargar_datos()
+            self.cargar_datos()'''
         dlg.Destroy()   # Finalmente destruimos la ventana de di?logo
 
-    def cargar_datos(self):
-        r=0
+    #Funcion en donde se cargan los datos
+    def cargar_datos(self,arreglo):
+    #def cargar_datos(self):
+        '''r=0
         #Se extraen los datos de la pestanha de datos
         for r in range(int(self.libro.nsheets)):
             if self.libro.sheet_by_index(r).name == "origen":
@@ -590,7 +680,30 @@ class Aplicacion ( wx.Frame ):
                     Vb.append(pest.cell_value(rowx=j, colx=i))
                 if i==6:
                     temporal.append(pest.cell_value(rowx=j, colx=i))
-                    Vc.append(pest.cell_value(rowx=j, colx=i))
+                    Vc.append(pest.cell_value(rowx=j, colx=i))'''
+
+        #Se extraen los datos de la pestanha de datos
+        #For que se hace en el numero de columnas, 6
+        for i in range(len(arreglo[0])):
+            #For que se hace en el numero de filas, 832
+            for j in range(len(arreglo)):
+                temporal=[]
+                if i==5:
+                    Ia.append(arreglo[i][j])
+                if i==4:
+                    Ib.append(arreglo[i][j])
+                if i==3:
+                    Ic.append(arreglo[i][j])
+                if i==6:
+                    In.append(arreglo[i][j])
+                if i==2:
+                    Va.append(arreglo[i][j])
+                if i==1:
+                    Vb.append(arreglo[i][j])
+                if i==0:
+                    Vc.append(arreglo[i][j])
+
+                    
         dlg = wx.TextEntryDialog(None, "Ingrese el valor en el que ocurre la falla",
         "Ciclo de falla", "576")
         if dlg.ShowModal() == wx.ID_OK:
@@ -614,11 +727,11 @@ class Aplicacion ( wx.Frame ):
         self.m_checkBox4.SetValue(True)
         self.m_checkBox5.SetValue(True)
         self.m_checkBox6.SetValue(True)
-        self.asignarFalla()
+        '''self.asignarFalla()
         self.asignarPreFalla()
         self.dibujar_voltaje()
         self.dibujar_corriente()
-        self.m_textCtrl3.SetValue(self.takagi())
+        self.m_textCtrl3.SetValue(self.takagi())'''
 
     def asignarFalla(self):
         a=(-1+np.multiply(math.sqrt(3),1j))/2;
@@ -710,6 +823,13 @@ class Aplicacion ( wx.Frame ):
         dlg.Destroy()
 
 
+    def editar_grafo(self, event):
+        dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
+        salir = dlg.ShowModal()
+        dlg.Destroy()
+        if wx.ID_YES == salir :
+            self.Destroy()
+
     def salir(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()
@@ -718,15 +838,12 @@ class Aplicacion ( wx.Frame ):
             self.Destroy()
 
 
-        
-    def __del__( self ):
-            pass
 	
 
 
 		
 ###########################################################################
-## Class MyPanel3                                                         #
+## Invocacion del main                                                    #
 ###########################################################################
 
 

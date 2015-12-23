@@ -90,6 +90,7 @@ class Aplicacion ( wx.Frame ):
         #datos de la falla en un formato xls, tambien se le permite al usuario tener un acceso
         #rapido con el comando "Ctrl - S"
         self.m_menuItem2 = self.m_menu1.Append(-1, "&Exportar\tCtrl-S", "Exportar archivos")
+        self.Bind(wx.EVT_MENU, self.on_export_file, self.m_menuItem1)
         
         #ESPACIO PARA EL EVENTO EXPORTAR
         self.m_menu1.AppendSeparator()
@@ -396,7 +397,11 @@ class Aplicacion ( wx.Frame ):
         self.m_button9 = wx.Button( self.m_panel3, wx.ID_ANY, u"Editar grafo", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.Bind(wx.EVT_BUTTON, self.editar_grafo, self.m_button9)
         
+        self.m_button10 = wx.Button( self.m_panel3, wx.ID_ANY, u"Actualizar grafo", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.Bind(wx.EVT_BUTTON, self.actualizar_grafo, self.m_button10)
+        
         bSizer22.Add( self.m_button9, 0, wx.ALL, 5 )
+        bSizer22.Add( self.m_button10, 0, wx.ALL, 5 )
         
         panelUbicacionSizer.Add( bSizer22, 0, wx.EXPAND, 5 )
         
@@ -427,7 +432,7 @@ class Aplicacion ( wx.Frame ):
         
         bSizer23.Add( self.algo, 0, wx.ALL, 5 )
         
-        self.m_button8 = wx.Button( self.m_panel4, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_button8 = wx.Button( self.m_panel4, wx.ID_ANY, u"Generar reporte", wx.DefaultPosition, wx.DefaultSize, 0 )
         bSizer23.Add( self.m_button8, 0, wx.ALL, 5 )
         
         self.m_panel4.SetSizer( bSizer23 )
@@ -450,7 +455,7 @@ class Aplicacion ( wx.Frame ):
         self.m_listbook1.AssignImageList(self.imlist)
         ###ANADE EN EL PANEL 1 LA GRAFICA
         self.m_listbook1.SetPageImage(0, source_pog_icon)
-        self.m_listbook1.AddPage( self.m_panel4, u"a page", imageId=0 )
+        self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", imageId=0 )
 		
         principalSizer.Add( self.m_listbook1, 1, wx.EXPAND |wx.ALL, 5 )
         self.SetSizer( principalSizer )
@@ -555,6 +560,13 @@ class Aplicacion ( wx.Frame ):
             #self.objeto.excelRudas()
             self.cargar_datos(self.objeto.arreglo)
         dlg.Destroy()   # Finalmente destruimos la ventana de di?logo
+        
+    def on_export_file(self, event):
+        
+        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.xls", wx.SAVE)
+        if dlg.ShowModal() == wx.ID_OK:
+            self.objeto.excelRudas()
+        dlg.Destroy()
 
     #Funcion en donde se cargan los datos
     def cargar_datos(self,arreglo):
@@ -706,6 +718,13 @@ class Aplicacion ( wx.Frame ):
 
 
     def editar_grafo(self, event):
+        dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
+        salir = dlg.ShowModal()
+        dlg.Destroy()
+        if wx.ID_YES == salir :
+            self.Destroy()
+
+    def actualizar_grafo(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()
         dlg.Destroy()

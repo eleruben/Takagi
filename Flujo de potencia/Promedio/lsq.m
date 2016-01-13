@@ -1,4 +1,4 @@
-function [fasor,magnitud,fase] = lsq_quinto(p,t)
+function [fasor,magnitud,fase] = lsq(p,t)
 % Muestras
 %t=[0:1/(60*31):1/60];
 
@@ -13,16 +13,16 @@ m= length(p);
 
 % ===== MATRIZ DE COEFICIENTES CONOCIDOS =====
 
-A=zeros(m, 12);
+A=zeros(m, 7);
 
 for fila = 1:m % Columnas correspondientes a los 7 coeficientes
-    for columna = 1:12 % Filas correspondientes a 9 muestras
+    for columna = 1:7 % Filas correspondientes a 9 muestras
         if columna==1
             A(fila,1) = 1;
         end
         
         if columna==2
-            A(fila,2) = t(fila);
+            A(fila,2) = sin(w*t(fila));
         end
         
         if columna==3
@@ -30,7 +30,7 @@ for fila = 1:m % Columnas correspondientes a los 7 coeficientes
         end
         
         if columna==4
-            A(fila,4) = cos(2*w*t(fila));
+            A(fila,4) = sin(3*w*t(fila));
         end
         
         if columna==5
@@ -38,32 +38,12 @@ for fila = 1:m % Columnas correspondientes a los 7 coeficientes
         end
         
         if columna==6
-            A(fila,6) = cos(4*w*t(fila));
+            A(fila,6) = t(fila);
         end
         
         if columna==7
-            A(fila,7) = cos(5*w*t(fila));
-        end    
-        
-        if columna==8
-            A(fila,8) = sin(w*t(fila));
-        end    
-        
-        if columna==9
-            A(fila,9) = sin(2*w*t(fila));
-        end    
-        
-        if columna==10
-            A(fila,10) = sin(3*w*t(fila));
-        end    
-        
-        if columna==11
-            A(fila,11) = sin(4*w*t(fila));
-        end    
-        
-        if columna==12
-            A(fila,12) = sin(5*w*t(fila));
-        end    
+            A(fila,7) = (t(fila))^2;
+        end
         
     end 
 end
@@ -81,13 +61,13 @@ x=A_pinv*p; %Vector de valores desconocidos
 
 % ===== DETERMINACIÓN DE COEFICIENTES =====
 
-%k1=x(1); % Constante K1 de v(t)
+k1=x(1); % Constante K1 de v(t)
 
 
 
 % Revisar si se puede resolver así
 
-fasor=x(8)+j*x(3); %fasor
+fasor=x(2)+j*x(3); %fasor
 magnitud=abs(fasor);  %magnitud
 fase=angle(fasor); %fase
 

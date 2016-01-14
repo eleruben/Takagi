@@ -4,7 +4,7 @@ to move and click events
 """
 from __future__ import print_function
 import sys
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as alt
 import numpy as np
 
 import claseComtrade as cm
@@ -19,6 +19,7 @@ dos=False
 class graficas(object):
     #Constructor de clase comtrade
     def __init__(self, carpeta, nombre, oscilografia):
+    #def __init__(self, carpeta, nombre):
         self.carpeta=carpeta
         self.nombre=nombre
         self.iniFalla=0
@@ -28,8 +29,9 @@ class graficas(object):
         self.A=oscilografia[:,11]
         self.B=oscilografia[:,10]
         self.C=oscilografia[:,9]
-        self.fig = plt.figure()
-        self.ax = plt.subplot(111)
+        self.fig = alt.figure(2)
+        #self.ax = alt.subplot(111)
+        self.ax = self.fig.add_subplot(1,1,1)
 
 
 
@@ -45,14 +47,14 @@ class graficas(object):
         #C=prueba.oscilografia[:,9]
         
         
-        plt.plot(self.A,'g',label='A')
-        plt.plot(self.B,'r',label='B')
-        plt.plot(self.C,'y',label='C')
-        plt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
-        plt.legend()  # Creamos la caja con la leyenda
+        alt.plot(self.A,'g',label='A')
+        alt.plot(self.B,'r',label='B')
+        alt.plot(self.C,'y',label='C')
+        alt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
+        alt.legend()  # Creamos la caja con la leyenda
         
-        binding_id = plt.connect('motion_notify_event', on_move)
-        plt.connect('button_press_event', on_click)
+        binding_id = alt.connect('motion_notify_event', on_move)
+        alt.connect('button_press_event', on_click)
         
         '''if "test_disconnect" in sys.argv:
             print("disconnecting console coordinate printout...")
@@ -61,7 +63,7 @@ class graficas(object):
         
         #plt.ion()  # Ponemos el modo interactivo
         #plt.axvspan(-0.5,0.5, alpha = 0.25)
-        plt.show()
+        alt.show()
         
 ''''t = np.arange(0.0, 1.0, 0.01)
 s = np.sin(2*np.pi*t)
@@ -77,15 +79,15 @@ def on_move(event):
     if event.inaxes:
         ax = event.inaxes  # the axes instance
         #print('data coords %f %f' % (event.xdata, event.ydata))
-        plt.ion()
-        plt.clf()
-        plt.plot(obyeyo.A,'g',label='A')
-        plt.plot(obyeyo.B,'r',label='B')
-        plt.plot(obyeyo.C,'y',label='C')
-        plt.legend()  # Creamos la caja con la leyenda
+        alt.ion()
+        alt.clf()
+        alt.plot(obyeyo.A,'g',label='A')
+        alt.plot(obyeyo.B,'r',label='B')
+        alt.plot(obyeyo.C,'y',label='C')
+        alt.legend()  # Creamos la caja con la leyenda
         
         #plt.draw()
-        plt.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+        alt.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
 
 
 def on_click(event):
@@ -97,16 +99,16 @@ def on_click(event):
             
             if (obyeyo.iniPre==0):
                 obyeyo.iniPre=event.xdata
-                plt.suptitle(u'Seleccione el ciclo de falla')  # Ponemos un titulo superior
+                alt.suptitle(u'Seleccione el ciclo de falla')  # Ponemos un titulo superior
             else:
                 obyeyo.iniFalla=event.xdata
-                plt.close(obyeyo.fig)
+                alt.close(obyeyo.fig)
             #uno=False
             #print(uno)
 
 
 
-'''
+
 carpeta="C:\Users\NECSOFT\workspace\Prueba1\principal\CODIGO ENTREGA"
 nombre="15062257"
 
@@ -121,4 +123,4 @@ prueba.extraerDatos()
 obyeyo=graficas(carpeta, nombre,prueba.oscilografia)
 
 obyeyo.analisis_grafica()
-#analisis_grafica(carpeta,nombre)'''
+#analisis_grafica(carpeta,nombre)

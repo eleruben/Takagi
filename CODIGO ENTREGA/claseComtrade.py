@@ -13,7 +13,7 @@ class comtrade(object):
         self.nombre=nombre
         self.parametrosConfig()
         self.arreglo=[]
-        self.oscilografia=[]
+        #self.oscilografia=[]
     #Funcion que retorna el inverso de un numero binario
     def invertir(self,binario):
         lista=[]

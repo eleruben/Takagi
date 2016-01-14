@@ -20,12 +20,13 @@ import numpy as np
 import Circuito
 
 import claseComtrade
+#from claseComtrade import invertir
 
 import lecturaDeSenalesLUCHO as lect
+import sys
+#import ejemplo2
 
-import ejemplo2
-
-import claseGraficas
+#import claseGraficas
 
 
 
@@ -190,9 +191,10 @@ class Aplicacion ( wx.Frame ):
 
         self.axes_voltaje = self.fig1.add_subplot(111)
 
-
         self.axes_voltaje.set_xlabel('t')
         self.axes_voltaje.set_ylabel('V(t)')
+        
+        
         
         panelTensionGraficaSizer.Add( self.m_panelTension, 0, wx.EXPAND |wx.ALL, 5)
         #panelTensionSizer contiene el grafico y los checkboxs
@@ -592,6 +594,7 @@ class Aplicacion ( wx.Frame ):
         #Se extraen los datos del arreglo proveniente de la importacion
         #de los archivos en el formato comtrade
         #For que se hace en el numero de columnas, 6
+        #print(arreglo[0])
         for i in range(len(arreglo[0])):
             #For que se hace en el numero de filas, 832
             for j in range(len(arreglo)):
@@ -624,77 +627,198 @@ class Aplicacion ( wx.Frame ):
         #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
         #print ("Ic"+str(sirve))        
-        self.mono=False
-        if (sirve==1 and not self.mono):
+        self.manual=False
+        if (sirve==1 and not self.manual):
             self.canales_falla.append('C')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.mono=True
+            self.manual=True
         
         #Procedimiento para verificar si la señal de la FASE B se puede analizar de forma automatica
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,10])
-        if (sirve==1 and not self.mono):
+        if (sirve==1 and not self.manual):
             self.canales_falla.append('B')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.mono=True
+            self.manual=True
         
         #Procedimiento para verificar si la señal de la FASE A se puede analizar de forma automatica            
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,11])
-        print(sirve)
-        if (sirve==1 and not self.mono):
+        if (sirve==1 and not self.manual):
             self.canales_falla.append('A')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.mono=True
+            self.manual=True
+        #A=self.objetoComtrade.oscilografia[:,11]
+        #B=self.objetoComtrade.oscilografia[:,10]
+        #C=self.objetoComtrade.oscilografia[:,9]
+        
+        #self.objetoGrafico=claseGraficas.graficas(self.dirname, self.filename,self.objetoComtrade.oscilografia)
+        #self.objetoGrafico.analisis_grafica()
+        self.inicioPreFalla = 0
+        self.sale=False
+        #self.inicializar_grafica()
+        self.analisis_grafica()
+        
             
-        #Entra en el caso que no se haya podido analizar la señal de forma manual    
+        '''#Entra en el caso que no se haya podido analizar la señal de forma manual    
         if not self.mono:
             ############RETOMAR
-            self.objetoGrafico=claseGraficas(self.dirname, self.filename,self.objetoComtrade.oscilografia)
+            archivo=
+            self.objetoGrafico=claseGraficas(self.dirname, self.filename,archivo)
 
-            self.objetoGrafico.analisis_grafica()
+            #self.objetoGrafico.analisis_grafica()'''
             
 
-            '''ejemplo2.analisis_grafica(self.dirname,self.filename)
-            self.inicioFalla=ejemplo2.iniFalla
-            self.finFalla=self.inicioFalla+32'''
-            
-            dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor en el que ocurre la falla",
-            "Ciclo de falla", "576")
-            if dlg.ShowModal() == wx.ID_OK:
-                self.inicioFalla = int(dlg.GetValue())
-            self.finFalla=self.inicioFalla+32
-            #print(self.inicioFalla)
-            #print(self.finFalla)
-            dlg.Destroy()
+        '''ejemplo2.analisis_grafica(self.dirname,self.filename)
+        self.inicioFalla=ejemplo2.iniFalla
+        self.finFalla=self.inicioFalla+32'''
+        
+        
+        '''
+        self.inicioFalla=576    
+        self.finFalla=self.inicioFalla+32
+        self.inicioPreFalla = 1
+        self.finPreFalla=self.inicioPreFalla+32'''
+        
+        '''dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor en el que ocurre la falla",
+        "Ciclo de falla", "576")
+        if dlg.ShowModal() == wx.ID_OK:
+            self.inicioFalla = int(dlg.GetValue())
+        self.finFalla=self.inicioFalla+32
+        #print(self.inicioFalla)
+        #print(self.finFalla)
+        dlg.Destroy()
 
-            dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor prefalla",
-            "Ciclo pre-falla", "1")
-            if dlg.ShowModal() == wx.ID_OK:
-                self.inicioPreFalla = int(dlg.GetValue())
-            self.finPreFalla=self.inicioPreFalla+32
-            #print(inicioPreFalla)
-            dlg.Destroy()
+        dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor prefalla",
+        "Ciclo pre-falla", "1")
+        if dlg.ShowModal() == wx.ID_OK:
+            self.inicioPreFalla = int(dlg.GetValue())
+        self.finPreFalla=self.inicioPreFalla+32
+        #print(inicioPreFalla)
+        dlg.Destroy()'''
             
-        #codigo utilizado para habilitar las graficas de los canales de transmision
-        self.m_checkBox1.SetValue(True)
-        self.m_checkBox2.SetValue(True)
-        self.m_checkBox3.SetValue(True)
-        self.m_checkBox4.SetValue(True)
-        self.m_checkBox5.SetValue(True)
-        self.m_checkBox6.SetValue(True)
-        self.asignarFalla()
-        self.asignarPreFalla()
-        self.dibujar_voltaje()
-        self.dibujar_corriente()
-        self.m_textCtrl3.SetValue(self.takagi())
+        
+
+
+    #def inicializar_grafica(self):
+        #def __init__(self, carpeta, nombre, oscilografia):
+        #def __init__(self, carpeta, nombre):
+        #self.carpeta=carpeta
+        #self.nombre=nombre
+        #self.iniFalla=0
+        #self.iniPre=0
+        #self.uno=True
+        #self.dos=False
+        #self.A=oscilografia[:,11]
+        #self.B=oscilografia[:,10]
+        #self.C=oscilografia[:,9]
+        
+        #self.ax = plt.subplot(111)
+        #self.ax = self.figa.add_subplot(1,1,1)
+    
+    def analisis_grafica(self):
+        
+        
+        #prueba=cm.comtrade(carpeta, nombre)
+        #prueba.config()
+        #prueba.extraerDatos()
+        
+        #A=prueba.oscilografia[:,11]
+        #B=prueba.oscilografia[:,10]
+        #C=prueba.oscilografia[:,9]
+        
+        #Figura que contiene la grafica de las senhales
+        self.fig4 = plt.figure('Seleccion manual')
+        plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+        plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+        plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+        plt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
+        plt.legend()  # Creamos la caja con la leyenda
+        
+        #self.Bind(wx.EVT_MOVE, self.on_move, self.figa)
+        #self.Bind(wx.EVT_MOUSE_AUX1_DCLICK, self.on_click, self.figa)
+        binding_id = plt.connect('motion_notify_event', self.on_move)
+        plt.connect('button_press_event', self.on_click)
+        
+        if "test_disconnect" in sys.argv:
+            print("disconnecting console coordinate printout...")
+            plt.disconnect(binding_id)
+        
+        
+        #plt.ion()  # Ponemos el modo interactivo
+        #plt.axvspan(-0.5,0.5, alpha = 0.25)
+        plt.show(False)
+        plt.draw()
+        plt.close(self.fig3)
+        
+
+    def on_move(self,event):
+        # get the x and y pixel coords
+        x, y = event.x, event.y
+
+        if event.inaxes:
+            if not self.sale:
+                ax = event.inaxes  # the axes instance
+                #print('data coords %f %f' % (event.xdata, event.ydata))
+                plt.ion()
+                plt.clf()
+                if (self.inicioPreFalla==0):
+                    #Titulo para el caso de asignar el ciclo prefalla
+                    plt.suptitle(u'Seleccione el ciclo prefalla')  
+                else:
+                    #Titulo para el caso de asignar el ciclo de falla
+                    plt.suptitle(u'Seleccione el ciclo nmbnen que ocurre la falla')
+                plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+                plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+                plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+                #Creamos la caja con la leyenda
+                plt.legend()   
+                #plt.draw()
+                plt.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+            
+
+
+    def on_click(self,event):
+        # get the x and y coords, flip y from top to bottom
+        x, y = event.x, event.y
+        if event.button == 1:
+            if event.inaxes is not None:
+                #print('data coords %f %f' % (event.xdata, event.ydata))
+                #Se selecciona el ciclo de prefalla en el primer click
+                if (self.inicioPreFalla==0):
+                    self.inicioPreFalla=int(event.xdata)
+                    self.finPreFalla=self.inicioPreFalla+32
+                    #print('el inicio de prefalla es '+str(self.inicioPreFalla))
+                    #plt.suptitle(u'Seleccione el ciclo de prefalla')  # Ponemos un titulo superior
+                #Se selecciona el ciclo de falla en el segundo click
+                else:
+                    self.inicioFalla=int(event.xdata)
+                    #print('el inicio de falla es '+str(self.inicioFalla))
+                    self.finFalla=self.inicioFalla+32
+                    plt.close(self.fig4)
+                    #print('se cierra la ventana')
+                    #codigo utilizado para habilitar las graficas de los canales de transmision
+                    self.m_checkBox1.SetValue(True)
+                    self.m_checkBox2.SetValue(True)
+                    self.m_checkBox3.SetValue(True)
+                    self.m_checkBox4.SetValue(True)
+                    self.m_checkBox5.SetValue(True)
+                    self.m_checkBox6.SetValue(True)
+                    self.asignarFalla()
+                    self.asignarPreFalla()
+                    self.dibujar_voltaje()
+                    self.dibujar_corriente()
+                    self.m_textCtrl3.SetValue(self.takagi())
+                    self.sale=True
+ 
+    
 
     def asignarFalla(self):
         a=(-1+np.multiply(math.sqrt(3),1j))/2;
@@ -785,7 +909,7 @@ class Aplicacion ( wx.Frame ):
         dlg.ShowModal()
         dlg.Destroy()
 
-
+    #EVENTO SIN IMPLEMENTAR
     def editar_grafo(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()
@@ -793,6 +917,7 @@ class Aplicacion ( wx.Frame ):
         if wx.ID_YES == salir :
             self.Destroy()
 
+    #EVENTO SIN IMPLEMENTAR
     def actualizar_grafo(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()

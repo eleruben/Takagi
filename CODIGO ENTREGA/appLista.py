@@ -495,11 +495,18 @@ class Aplicacion ( wx.Frame ):
         self.dibujar_corriente()
     
     def inicializar(self):
-        self.dirname = self.actual
+        
+        self.axes_corriente.clear()
+        self.canvas_corriente.draw()
+        self.axes_voltaje.clear()
+        self.canvas_voltaje.draw()
         
         
         #Se deja en blanco la lista de los canales que se encuentran en falla
         self.canales_falla=[]
+        
+        self.inicioPreFalla =0
+        self.sale=False
         
         self.Ia=[]
         self.Ib=[]
@@ -543,23 +550,22 @@ class Aplicacion ( wx.Frame ):
         
         #Llamado a la funcion para inicializar los self.Valores, lo que permite
         #hacer self.Varios import durante la ejecucion de la aplicacion
-        self.inicializar()
+        self.dirname = self.actual
 
         dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.CFG", wx.OPEN)
         # Si se selecciona alguno => OK
         if dlg.ShowModal() == wx.ID_OK:
-
+            self.inicializar()     
             
+            print ('inicio desp ini esta en '+str(self.inicioPreFalla))
+                   
             self.dirname = dlg.GetDirectory()   # Y el directorio            
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
 
             self.filename= self.filename.split('.')[0]
             
-            #Objeto de tipo comtrade
+            #Objeto de tipo comtrade creado a partir del archivo contrade .CFG Y .DAT
             self.objetoComtrade=claseComtrade.comtrade(self.dirname, self.filename)
-            #print(self.dirname)
-            #print(self.filename)
-            #print(self.objeto.cfg)
             
             self.objetoComtrade.config()
             self.objetoComtrade.extraerDatos()
@@ -576,18 +582,22 @@ class Aplicacion ( wx.Frame ):
     def on_export_file(self, event):
         self.dirname = self.actual
         dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, self.filename, "*.xls", wx.SAVE)
+        guarda=False
         if dlg.ShowModal() == wx.ID_OK:
             self.dirname  = dlg.GetDirectory()
             self.filename = dlg.GetFilename()
             self.objetoComtrade.excelRudas(self.dirname,self.filename)
+            guarda=True
         dlg.Destroy()
         
+        #Caso en que se guarda con exito el archivo
         msg = """ 
         Se ha guardado con exito el archivo
         """       
-        dlg = wx.MessageDialog(self, msg, "Guardado exitoso", wx.OK)
-        dlg.ShowModal()
-        dlg.Destroy()
+        if guarda:
+            dlg1 = wx.MessageDialog(self, msg, "Guardado exitoso", wx.OK)
+            dlg1.ShowModal()
+            dlg1.Destroy()
 
     #Funcion en donde se cargan los datos
     def cargar_datos(self,arreglo):
@@ -661,14 +671,20 @@ class Aplicacion ( wx.Frame ):
         
         #self.objetoGrafico=claseGraficas.graficas(self.dirname, self.filename,self.objetoComtrade.oscilografia)
         #self.objetoGrafico.analisis_grafica()
-        self.inicioPreFalla = 0
-        self.sale=False
+        
         #self.inicializar_grafica()
-        self.analisis_grafica()
+        
+        
+        seleccion=wx.MessageDialog(None, 'Seleccione el ciclo prefalla y ciclo de falla en la grafica', 'Seleccion de ciclos',  style=wx.OK)
+        seleccion.ShowModal()
+        
+        self.grafica_dentro_panel()
+        
+        #self.analisis_grafica()
         
             
         '''#Entra en el caso que no se haya podido analizar la señal de forma manual    
-        if not self.mono:
+        if not self.manual:
             ############RETOMAR
             archivo=
             self.objetoGrafico=claseGraficas(self.dirname, self.filename,archivo)
@@ -723,6 +739,46 @@ class Aplicacion ( wx.Frame ):
         #self.ax = plt.subplot(111)
         #self.ax = self.figa.add_subplot(1,1,1)
     
+    def grafica_dentro_panel(self):
+        self.axes_corriente.clear()
+        
+        self.axes_corriente.set_xlabel('t')
+        self.axes_corriente.set_ylabel('I(t)')
+        
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+        self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+        #self.axes_corriente.title(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
+        self.axes_corriente.legend()  # Creamos la caja con la leyenda
+        
+        binding_id = self.canvas_corriente.mpl_connect('motion_notify_event', self.on_move)
+        self.canvas_corriente.mpl_connect('button_press_event', self.on_click)
+        
+        self.canvas_corriente.draw()
+    
+        
+        if "test_disconnect" in sys.argv:
+            print("disconnecting console coordinate printout...")
+            self.axes_corriente.disconnect(binding_id)
+        
+        
+        '''#plt.ion()  # Ponemos el modo interactivo
+        #plt.axvspan(-0.5,0.5, alpha = 0.25)
+        plt.show(False)
+        plt.draw()
+        plt.close(self.fig3)
+        
+        
+        if (self.m_checkBox4.IsChecked()):
+            self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+        if (self.m_checkBox5.IsChecked()):
+            self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+        if (self.m_checkBox6.IsChecked()):
+            self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))'''
+        #self.canvas_corriente.draw()
+    
+    
     def analisis_grafica(self):
         
         
@@ -741,6 +797,7 @@ class Aplicacion ( wx.Frame ):
         plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
         plt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
         plt.legend()  # Creamos la caja con la leyenda
+        
         
         #self.Bind(wx.EVT_MOVE, self.on_move, self.figa)
         #self.Bind(wx.EVT_MOUSE_AUX1_DCLICK, self.on_click, self.figa)
@@ -767,21 +824,33 @@ class Aplicacion ( wx.Frame ):
             if not self.sale:
                 ax = event.inaxes  # the axes instance
                 #print('data coords %f %f' % (event.xdata, event.ydata))
-                plt.ion()
-                plt.clf()
+                self.axes_corriente.clear()
+                #self.axes_corriente.cla()                
+                #plt.ion()
+                #plt.clf()
+                print ('inicio on move esta en '+str(self.inicioPreFalla))
+                
                 if (self.inicioPreFalla==0):
                     #Titulo para el caso de asignar el ciclo prefalla
-                    plt.suptitle(u'Seleccione el ciclo prefalla')  
+                    self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                 else:
                     #Titulo para el caso de asignar el ciclo de falla
-                    plt.suptitle(u'Seleccione el ciclo nmbnen que ocurre la falla')
-                plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
-                plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
-                plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+                    self.axes_corriente.set_title('Seleccione el ciclo en que ocurre la falla')
+                
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
                 #Creamos la caja con la leyenda
-                plt.legend()   
+                self.axes_corriente.legend()   
+                self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+                self.canvas_corriente.draw()
                 #plt.draw()
-                plt.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+                #self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+                
+                
+                
+                
+                
             
 
 
@@ -789,10 +858,14 @@ class Aplicacion ( wx.Frame ):
         # get the x and y coords, flip y from top to bottom
         x, y = event.x, event.y
         if event.button == 1:
-            if event.inaxes is not None:
+            if event.inaxes is not None and not self.sale:
+                #print ('inicio prefalla esta en '+str(self.inicioPreFalla))
                 #print('data coords %f %f' % (event.xdata, event.ydata))
                 #Se selecciona el ciclo de prefalla en el primer click
+                
+                print ('inicio en click esta en '+str(self.inicioPreFalla))
                 if (self.inicioPreFalla==0):
+                    print ('entra')
                     self.inicioPreFalla=int(event.xdata)
                     self.finPreFalla=self.inicioPreFalla+32
                     #print('el inicio de prefalla es '+str(self.inicioPreFalla))
@@ -802,7 +875,7 @@ class Aplicacion ( wx.Frame ):
                     self.inicioFalla=int(event.xdata)
                     #print('el inicio de falla es '+str(self.inicioFalla))
                     self.finFalla=self.inicioFalla+32
-                    plt.close(self.fig4)
+                    #plt.close(self.fig4)
                     #print('se cierra la ventana')
                     #codigo utilizado para habilitar las graficas de los canales de transmision
                     self.m_checkBox1.SetValue(True)

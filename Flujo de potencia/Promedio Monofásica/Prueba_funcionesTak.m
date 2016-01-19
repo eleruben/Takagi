@@ -1,5 +1,7 @@
-% [MagIpre, AngIpre]=flujo_carga_prefalla(mx, lx, Sb, Vbas);
-% 
+% Primera aproximación método de Lubkeman
+
+[MagIpre, AngIpre]=flujo_carga_prefalla1(mx, lx, Sb, Vbas);
+
 [Isfalla, Vsfalla]=fasores_posfalla1(Vsubes,Isubes,tout); % Cálcula los fasores de las tensiones y corrientes vistas en la S/E
                                                          % durante la falla
                                                          
@@ -9,7 +11,7 @@ tout(length(tout))=[];
 
 Subes=[tout Vsubes Isubes];
 
-xlswrite('simulacion.xlsx',Subes); % Genera un archivo en Excel con los datos de tiempo, tensiones y corrientes vistos en la S/E
+%xlswrite('simulacion.xlsx',Subes); % Genera un archivo en Excel con los datos de tiempo, tensiones y corrientes vistos en la S/E
 
 % [MagTenPos, AngTenPos, MagIPos, AngIPos]=flujo_carga_falla(Vsfalla,Isfalla, mx, lx, Sb, Vbas);
 
@@ -23,18 +25,17 @@ xlswrite('simulacion.xlsx',Subes); % Genera un archivo en Excel con los datos de
 
 %Itramo=Ipre(1,2)+Isup;
 
-MagTenPos=abs(Vsfalla(2));
-AngTenPos=angle(Vsfalla(2));
+MagTenPos=abs(Vsfalla(1));
+AngTenPos=angle(Vsfalla(1));
 
-MagIPos=abs(Isfalla(2));
-AngIPos=angle(Isfalla(2));
+MagIPos=abs(Isfalla(1));
+AngIPos=angle(Isfalla(1));
 
-MagIpre=abs(Ispref(2));
-AngIpre=angle(Ispref(2));
+MagIpre=abs(Ispref(1));
+AngIpre=angle(Ispref(1));
 
 [m]=takagi2(MagIpre, AngIpre, MagTenPos, AngTenPos, MagIPos, AngIPos, Zreal(1), Zimag(1));
 m
-
 
 %Vn=Vn-(Isup+Ipre(1,2))*Z(1);
 

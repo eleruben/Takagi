@@ -1,63 +1,54 @@
-% ALGORITMO PARA FLUJO DE POTENCIA EN FALLA
-clc;
-%clear all;
-format short;
-tic
-%Datos de potencias activa (columna 2) y reactiva (columna 3)
-m=[1 2 3 4; 0 67.5e3 67.5e3 67.5e3; 0 32.69e3 32.69e3 32.69e3; 0 0 0 0]';
-%Datos de resistencia (columna 4) y reactancia (columna 5)
-l=[1 2 3; 1 2 3; 2 3 4; 0.2746 0.1373 0.2059; 0.0040 0.0020 0.0030]';
+function [MagTenPos, AngTenPos, MagIPos, AngIPos]=flujo_carga_falla(Vsfalla,Isfalla, mx, lx, Sb, Vbas )
 
-Vsub=Vspos;
-Isub=Ispos;% falta cuadrar los fasores porque la corriente tiene componente exponencial
+% ALGORITMO PARA FLUJO DE POTENCIA EN FALLA
+
+format long;
+tic %Inicia conteo de tiempo de simulación
+%Datos de potencias activa (columna 2) y reactiva (columna 3)
+%m=[1 2 3 4; 0 67.5e3 67.5e3 67.5e3; 0 32.69e3 32.69e3 32.69e3; 0 0 0 0]';
+
+%m=[1 2 3 4 5 ; 0 Pact Pact Pact Pact; 0 Qreact Qreact Qreact Qreact; 0 0 0 0 0]';
+
+m=mx;
+
+%Datos de resistencia (columna 4) y reactancia (columna 5)
+%l=[1 2 3; 1 2 3; 2 3 4; 0.2746 0.1373 0.2059; 0.0040 0.0020 0.0030]';
+
+%l=[1 2 3 4; 1 2 2 4; 2 3 4 5; Rs Rs Rs Rs; Xs Xs Xs Xs]';
+
+l=lx;
+
+m,l
+
+Vsub=Vsfalla;
+Isub=Isfalla;
 
 br=length(l(:,1));   %ramas
 no=length(m(:,1));   %nodos
-MVAb=270000;  %potencia base
-KVb=115000;  %tensión base
-Zb=(KVb^2)/MVAb; %impedancia base
+Sbase=Sb;  %potencia base
+Vbase=Vbas;  %tensión base
+Zb=(Vbase^2)/Sbase; %impedancia base
 % Per unit Values  para resistencias, reactancias, potencias activa y
 % reactiva
-for i=1:br
+for i=1:br %Resistencia y reactancia de la línea
     R(i,1)=(l(i,4))/Zb;  
     X(i,1)=(l(i,5))/Zb;
 end
-for i=1:no
-    P(i,1)=((m(i,2))/(MVAb));
-    Q(i,1)=((m(i,3))/(MVAb));
+for i=1:no %Potencias consumidas de cada nodo
+    P(i,1)=((m(i,2))/(Sbase));
+    Q(i,1)=((m(i,3))/(Sbase));
 end
 for i=1:length(Vsub) %Tensiones y corrientes vistas en S/E para falla en pu
-    Vs(i)=Vsub(i)/KVb;
-    Is(i)=Isub(i)/KVb;
+    Vs(i)=Vsub(i)/Vbase;
+    Is(i)=Isub(i)/(Sbase/Vbase);
 end
 
-R
-X
-P
-Q
-Vs
-Is
-
-% 
-% for i=1:br
-%     for j=1:br
-%         Vj(i,j)=Vs(j);
-%     end
-% end
-% 
-% Vnode=Vj.'; % valor inicial para iniciar iteraciones
-% error=0.05; %Definición de error
-% 
-% %iteraciones
-% %for abs((deltav(k)-deltav(k-1))<error
-%     for i=1:br
-%         for j=1:br
-%             Inode(i,j)=conj(Snode(i)/Vnode(j,i));
-%         end
-%     end
-% 
-%     Inode
-    
+% R
+% X
+% P
+% Q
+% Vs
+% Is
 
 C=zeros(br,no); % matriz de tamaño tramos * nodos
 for i=1:br % Muestra conexiones entre nodos y tramos: donde -1 indica conexión entre nodo y tramo
@@ -73,7 +64,7 @@ for i=1:br % Muestra conexiones entre nodos y tramos: donde -1 indica conexión e
         end
     end
 end
-C
+% C
 e=1;
 for i=1:no    % Determina los nodos finales de la troncal y las ramas
     d=0;
@@ -87,7 +78,8 @@ for i=1:no    % Determina los nodos finales de la troncal y las ramas
         e=e+1;
     end
 end
-endnode
+% endnode
+
 h=length(endnode);
 for j=1:h   %Organiza en una matriz cada derivación por filas, desde el tramo final al inicial
     e=2;
@@ -116,15 +108,13 @@ for j=1:h   %Organiza en una matriz cada derivación por filas, desde el tramo fi
    end
 end
 
-g
-
 for i=1:h %Organiza en una matriz cada derivación por filas, desde cada nodo final al inicial
     g(i,1)=endnode(i,1);
 end
 g;
-g
-w=length(g(1,:)) %Número de nodos de la troncal más larga
-w
+
+w=length(g(1,:)); %Número de nodos de la troncal más larga
+
 for i=1:h %Organiza en una matriz cada derivación por filas, desde cada nodo inicial al final
     j=1;
     for k=1:no 
@@ -138,7 +128,6 @@ for i=1:h %Organiza en una matriz cada derivación por filas, desde cada nodo ini
     end
 end
 g;
-g
 
 for k=1:br  %Organiza en la columna 1 todos los nodos menos los conectados directos a la troncal
             %Columnas son las ramas del sistema o derivaciones 
@@ -158,7 +147,6 @@ for k=1:br  %Organiza en la columna 1 todos los nodos menos los conectados direc
     end
 end
 adjb;
-adjb
 
 for i=1:br-1  %La columna 1 no cambia
               %Columnas son las ramas del sistema o derivaciones 
@@ -174,7 +162,6 @@ for i=1:br-1  %La columna 1 no cambia
     end
 end
 adjb;
-adjb
 
 x=length(adjb(:,1)); %filas
 ab=length(adjb(1,:));%columnas
@@ -194,7 +181,6 @@ for i=1:x  %Organiza en la columna 1 todos los tramos menos los conectados direc
     end
 end
 adjb;
-adjb
 
 for i=1:x-1 %Elimina la fila 1 de la matriz
     for j=1:ab
@@ -202,7 +188,7 @@ for i=1:x-1 %Elimina la fila 1 de la matriz
     end
 end
 
-adjcb %Matriz que tiene las derivaciones sin tener en cuenta los tramos conectados directamente con troncal
+adjcb; %Matriz que tiene las derivaciones sin tener en cuenta los tramos conectados directamente con troncal
 %Muestra los tramos conectados a cada unos los tramos (filas)
 
 %Cálculos de tensión y corriente
@@ -216,8 +202,6 @@ for i=1:no %Inicializa el vector de tensión con "unos"
     end
 end
 
-vb
-
 %===============================================================================
 %===============================================================================
 %CÁLCULO ITERATIVO
@@ -227,7 +211,6 @@ for i=1:3 % Número de fases
 end
 
 Ssub;
-Ssub
 
 S=complex(P(:,1),Q(:,1));
 
@@ -236,7 +219,6 @@ for i=1:br
 end
 
 Ssum;
-Ssum
 
 for i=1:no
     for j=1:3
@@ -245,9 +227,8 @@ for i=1:no
 end
 
 Snode;
-Snode
 
-for s=1:10 %Definición del error ==> Define número de iteraciones
+for s=1:100 %Definición del error ==> Define número de iteraciones
     for i=1:no
         for j=1:3  %número de fases
             Iload(i,j)=conj(Snode(i,j))/(vb(i,j)); %Corrientes de carga
@@ -255,7 +236,7 @@ for s=1:10 %Definición del error ==> Define número de iteraciones
     end
     
     Iload;
-    
+        
     for i=1:br  % Asume corrientes de los tramos como las corrientes de carga de su nodo correspondiente
         for j=1:3
             Ibr(i,j)=Iload(i+1,j);
@@ -263,8 +244,7 @@ for s=1:10 %Definición del error ==> Define número de iteraciones
     end
     
     Ibr;
-    Ibr
-    
+        
     xy=length(adjcb(1,:)); %Asigna a "xy" la cantidad de ramales del circuito
     
     %Barrido de corriente de tramo desde último tramo hasta S/E
@@ -281,7 +261,7 @@ for s=1:10 %Definición del error ==> Define número de iteraciones
     end
     
     Ibr;
-    
+        
     %Asigna las tensiones en los nodos => recorrido de S/E hacia nodos terminales
         
     for j=1:3
@@ -304,103 +284,51 @@ for s=1:10 %Definición del error ==> Define número de iteraciones
             end
         end
     end
-    
+    vb;
     s=s+1; % Comparación entre delta new con delta old
     
 end
 
 Iload;
 Ibr;
-vb
-vbp=[abs(vb) angle(vb)*180/pi]; % Tensiones de fase de nodos
+vb;
 
 toc; % Tiempo en hacer iteración
-for i=1:no
-    va(i,2:3)=vbp(i,1:2);
-end
-for i=1:no
-    va(i,1)=i;
-end
-va;
+vj=vb*Vbase;
 
-Ibrp=[abs(Ibr) angle(Ibr)*180/pi]; % Corrientes de fase de tramos 
-% PL(1,1)=0;
-% QL(1,1)=0;
+Itramo=Ibr*(Sbase/Vbase);
+% vj,Itramo
 
-% losses
-% for f=1:br
-%     Pl(f,1)=(Ibrp(f,1)^2)*R(f,1);
-%     Ql(f,1)=X(f,1)*(Ibrp(f,1)^2);
-%     PL(1,1)=PL(1,1)+Pl(f,1);
-%     QL(1,1)=QL(1,1)+Ql(f,1);
-% end
+Vjpos=abs(vj)*sqrt(2);
+angVjpos=angle(vj);
+
+MagTenPos=Vjpos;
+AngTenPos=angVjpos;
+
+Itramopos=abs(Itramo)*sqrt(2);
+angItramopos=angle(Itramo);
+
+% Iposf=Itramopos(2,2);
+% angIposf=angItramopos(2,2);
+
+MagIPos=Itramopos;
+AngIPos=angItramopos;
+
+
+
+% MagIPos=abs(Itramo(2,2)+(Isfalla(2)-Iprefalla(1,2)));
+% AngIPos=angle(Itramo(2,2)+(Isfalla(2)-Iprefalla(1,2)));
 % 
-% Plosskw=(Pl)*100000000
-% Qlosskw=(Ql)*100000000
-% PL=(PL)*100000000
-% QL=(QL)*100000000
+% MagTenPos=Vjpos(2,2);
+% AngTenPos=angVjpos(2,2);
 
+% [f m p]=lsq(Vtramo5(145:177,2),tout(145:177)');
+% 
+% MagTenPos=m;
+% AngTenPos=p;
+% 
+% [f m p]=lsq(Itramo5(145:177,2),tout(145:177)');
+% 
+% MagIPos=m;
+% AngIPos=p;
 
-voltage = vbp(:,1);
-angle = vbp(:,2)%*(pi/180) % ángulos en grados;
-
-%=====================================================================================
-%
-volt=voltage*KVb;
-
-tetha1=120*pi/180;
-tetha2=240*pi/180;
-
-ang1=[angle(1) angle(1)+(tetha1) angle(1)+(tetha2)];
-ang2=[angle(2) angle(2)+(tetha1) angle(2)+(tetha2)];
-ang3=[angle(3) angle(3)+(tetha1) angle(3)+(tetha2)];
-ang4=[angle(4) angle(4)+(tetha1) angle(4)+(tetha2)];
-
-ang=[ang1;ang2;ang3;ang4]';
-
-for i=1:br
-    for j=1:no
-        Vpre(i,j)=volt(i)*exp(sqrt(-1)*ang(i,j));
-    end
-end
-
-%Corrientes de carga en prefalla
-Pot=[m(:,2) m(:,3)];
-Pot(1,:)=[];
-
-for i=1:br
-    for j=1:br
-        Ilpre(i,j)=complex(Pot(j,1),Pot(j,2)) / (sqrt(3) * Vpre(i,j));
-    end
-end
-
-%Corriente Subestación prefalla
-for i=1:br
-    for j=1:br
-        Isubpre(i,1)=sum(Ilpre(i,:));
-    end
-end
-
-Vpre % Fasores de tensiones en la subestación y en los nodos
-%Ibrp(:,1)*(MVAb/(sqrt(3) * KVb))*sqrt(2)  %Corrientes por tramos, entre nodo p y nodo q
-
-%Falta cuadrar fasores de corrientes para cada fase
-
-Inode=Ibrp(:,1)*(MVAb/(sqrt(3) * KVb));
-anglenode=Ibrp(:,2)*pi/180;
-
-Inod=[Inode anglenode];
-
-ang1=[anglenode(1) anglenode(1)+(tetha1) anglenode(1)+(tetha2)];
-ang2=[anglenode(2) anglenode(2)+(tetha1) anglenode(2)+(tetha2)];
-ang3=[anglenode(3) anglenode(3)+(tetha1) anglenode(3)+(tetha2)];
-
-angul=[ang1;ang2;ang3]';
-
-for i=1:br
-    for j=1:br
-        Ipre(i,j)=Inode(i)*exp(sqrt(-1)*angul(i,j));
-    end
-end
-Ipref=Ipre.';
-abs(Ipre.')

@@ -1,4 +1,5 @@
-function [Iprefalla, angIprefalla, Ipre]=flujo_carga_prefalla(mx, lx, Sb, Vbas)
+% function [Ipre]=flujo_carga_prefalla1(mx, lx, Sb, Vbas)
+function [Iprefalla, angIprefalla, Ipre]=flujo_carga_prefalla1(mx, lx, Sb, Vbas)
 
 % ALGORITMO PARA FLUJO DE POTENCIA EN PREFALLA
 

@@ -1,18 +1,22 @@
+function [Iprefalla, angIprefalla, Ipre]=flujo_carga_prefalla(mx, lx, Sb, Vbas)
+
 % ALGORITMO PARA FLUJO DE POTENCIA EN PREFALLA
-clc;
-clear all;
-format short;
+
+format long;
 tic
 %Datos de potencias activa (columna 2) y reactiva (columna 3)
-m=[1 2 3 4; 0 67.5e3 67.5e3 67.5e3; 0 32.69e3 32.69e3 32.69e3; 0 0 0 0]';
+
+m=mx;
+
 %Datos de resistencia (columna 4) y reactancia (columna 5)
-l=[1 2 3; 1 2 3; 2 3 4; 0.2746 0.1373 0.2059; 0.0040 0.0020 0.0030]';
+
+l=lx;
 
 br=length(l(:,1));   %ramas
 no=length(m(:,1));   %nodos
-MVAb=270000;  %potencia base
-KVb=115000;  %tensión base
-Zb=(KVb^2)/MVAb; %impedancia base
+Sbase=Sb;  %potencia base
+Vbase=Vbas;  %tensión base
+Zb=(Vbase^2)/Sbase; %impedancia base
 % Per unit Values  para resistencias, reactancias, potencias activa y
 % reactiva
 for i=1:br
@@ -20,13 +24,13 @@ for i=1:br
     X(i,1)=(l(i,5))/Zb;
 end
 for i=1:no
-    P(i,1)=((m(i,2))/(MVAb));
-    Q(i,1)=((m(i,3))/(MVAb));
+    P(i,1)=((m(i,2))/(Sbase));
+    Q(i,1)=((m(i,3))/(Sbase));
 end
-R
-X
-P
-Q
+% R
+% X
+% P
+% Q
 C=zeros(br,no); % matriz de tamaño tramos * nodos
 for i=1:br
     a=l(i,2);
@@ -40,7 +44,7 @@ for i=1:br
         end
     end
 end
-C
+% C
 e=1;
 for i=1:no    % Determina los nodos finales
     d=0;
@@ -54,7 +58,7 @@ for i=1:no    % Determina los nodos finales
         e=e+1;
     end
 end
-endnode
+% endnode
 h=length(endnode);
 for j=1:h   % Determina los nodos involucrados desde el nodo terminal al nodo 1
     e=2;
@@ -83,15 +87,15 @@ for j=1:h   % Determina los nodos involucrados desde el nodo terminal al nodo 1
    end
 end
 
-g
+% g
 
 for i=1:h
     g(i,1)=endnode(i,1);
 end
 g;
-g
+% g
 w=length(g(1,:))
-w
+% w
 for i=1:h %Organiza la matriz " g "
     j=1;
     for k=1:no 
@@ -105,7 +109,7 @@ for i=1:h %Organiza la matriz " g "
     end
 end
 g;
-g
+% g
 for k=1:br  %Matriz adjunta de " g "
     e=1;
     for i=1:h
@@ -122,7 +126,7 @@ for k=1:br  %Matriz adjunta de " g "
     end
 end
 adjb;
-adjb
+% adjb
 for i=1:br-1  %Matriz adjunta de la adjunta de " g "
     for j=h:-1:1
         for k=j:-1:2
@@ -160,142 +164,92 @@ b=length(adjcb);  %asocia cantidad de datos en columna - 1
 % voltage current program
 
 for i=1:no %Inicializa el vector de tensión con "unos"
-    vb(i,1)=1;
+    for j=1:3
+        vb(i,j)=1;
+    end
 end
 for s=1:10
-for i=1:no
-    nlc(i,1)=conj(complex(P(i,1),Q(i,1)))/(vb(i,1));
-end
-nlc;
-for i=1:br  %borra el primer dato porque es cero de nlc
-    Ibr(i,1)=nlc(i+1,1);
-end
-Ibr;
-xy=length(adjcb(1,:)); %columnas de la última matriz adjunta
-for i=br-1:-1:1
-    for k=1:xy
-        if adjcb(i,k)~=0
-            u=adjcb(i,k);
-            %Ibr(i,1)=nlc(i+1,1)+Ibr(k,1);
-            Ibr(i,1)=Ibr(i,1)+Ibr(u,1);
+    for i=1:no
+        for j=1:3
+            nlc(i,j)=conj(complex(P(i,1),Q(i,1)))/(vb(i,j));
         end
-    end      
-end
-Ibr;
-for i=2:no
-      g=0;
-      for a=1:b 
-          if xy>1
-            if adjcb(a,2)==i-1 
-                u=adjcb(a,1);
-                vb(i,1)=((vb(u,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
-                g=1;
+    end
+    nlc;
+    for i=1:br  %borra el primer dato porque es cero de nlc
+        for j=1:3
+        Ibr(i,j)=nlc(i+1,j);
+        end
+    end
+    Ibr;
+    xy=length(adjcb(1,:)); %columnas de la última matriz adjunta
+
+        for j=1:3
+            for i=br-1:-1:1
+                for k=1:xy
+                    if adjcb(i,k)~=0
+                        u=adjcb(i,k);
+                        %Ibr(i,1)=nlc(i+1,1)+Ibr(k,1);
+                        Ibr(i,j)=Ibr(i,j)+Ibr(u,j);
+                    end
+                end      
             end
-            if adjcb(a,3)==i-1 
-                u=adjcb(a,1);
-                vb(i,1)=((vb(u,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
-                g=1;
+        end
+Ibr;
+
+% for i=2:no
+%       g=0;
+%       for a=1:b 
+%           if xy>1
+%             if adjcb(a,2)==i-1 
+%                 u=adjcb(a,1);
+%                 vb(i,1)=((vb(u,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
+%                 g=1;
+%             end
+%             if adjcb(a,3)==i-1 
+%                 u=adjcb(a,1);
+%                 vb(i,1)=((vb(u,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
+%                 g=1;
+%             end
+%           end
+%         end
+%         if g==0
+%             vb(i,1)=((vb(i-1,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
+%         end
+% end
+
+for j=1:3
+        for i=2:no
+            g=0;
+            for a=1:b  %b: # tramos
+                if xy>1 %xy: ramales o derivaciones
+                    for k=1:xy % Ayuda a seleccionar los tramos conectados al tramo en cuestión
+                        if adjcb(a,k)==i-1 %Verifica los tramos conectados directamente a troncal
+                            u=adjcb(a,k);
+                            vb(i,j)=((vb(u,j))-((Ibr(i-1,j))*(complex((R(i-1,1)),X(i-1,1))))); %Asigna tensiones en los nodos
+                            g=1;
+                        end                   
+                    end
+                end
             end
-          end
+                
+            if g==0
+                vb(i,j)=((vb(i-1,j))-((Ibr(i-1,j))*(complex((R(i-1,1)),X(i-1,1)))));   %De aquí sacar el delta de tensión para comparar con el error
+            end
         end
-        if g==0
-            vb(i,1)=((vb(i-1,1))-((Ibr(i-1,1))*(complex((R(i-1,1)),X(i-1,1)))));
-        end
-end
+    end
+
 s=s+1;
 end
 nlc;
 Ibr;
-vb
-vbp=[abs(vb) angle(vb)*180/pi]
+% vb
 
-toc;
-for i=1:no
-    va(i,2:3)=vbp(i,1:2);
-end
-for i=1:no
-    va(i,1)=i;
-end
-va;
+toc; % Tiempo en hacer iteración
 
-Ibrp=[abs(Ibr) angle(Ibr)*180/pi];
-PL(1,1)=0;
-QL(1,1)=0;
+Itramopre=Ibr*(Sbase/Vbase);
 
-% losses
-for f=1:br
-    Pl(f,1)=(Ibrp(f,1)^2)*R(f,1);
-    Ql(f,1)=X(f,1)*(Ibrp(f,1)^2);
-    PL(1,1)=PL(1,1)+Pl(f,1);
-    QL(1,1)=QL(1,1)+Ql(f,1);
-end
-
-Plosskw=(Pl)*100000000
-Qlosskw=(Ql)*100000000
-PL=(PL)*100000000
-QL=(QL)*100000000
+Iprefalla=abs(Itramopre)*sqrt(2);
+angIprefalla=angle(Itramopre);
+Ipre=Ibr*(Sbase/Vbase)*sqrt(2);
 
 
-voltage = vbp(:,1);
-angle = vbp(:,2)%*(pi/180) % ángulos en grados;
-
-%=====================================================================================
-%
-volt=voltage*KVb;
-
-tetha1=120*pi/180;
-tetha2=240*pi/180;
-
-ang1=[angle(1) angle(1)+(tetha1) angle(1)+(tetha2)];
-ang2=[angle(2) angle(2)+(tetha1) angle(2)+(tetha2)];
-ang3=[angle(3) angle(3)+(tetha1) angle(3)+(tetha2)];
-ang4=[angle(4) angle(4)+(tetha1) angle(4)+(tetha2)];
-
-ang=[ang1;ang2;ang3;ang4]';
-
-for i=1:br
-    for j=1:no
-        Vpre(i,j)=volt(i)*exp(sqrt(-1)*ang(i,j));
-    end
-end
-
-%Corrientes de carga en prefalla
-Pot=[m(:,2) m(:,3)];
-Pot(1,:)=[];
-
-for i=1:br
-    for j=1:br
-        Ilpre(i,j)=complex(Pot(j,1),Pot(j,2)) / (sqrt(3) * Vpre(i,j));
-    end
-end
-
-%Corriente Subestación prefalla
-for i=1:br
-    for j=1:br
-        Isubpre(i,1)=sum(Ilpre(i,:));
-    end
-end
-
-Vpre % Fasores de tensiones en la subestación y en los nodos
-%Ibrp(:,1)*(MVAb/(sqrt(3) * KVb))*sqrt(2)  %Corrientes por tramos, entre nodo p y nodo q
-abs(Vpre)
-%Falta cuadrar fasores de corrientes para cada fase
-
-Inode=Ibrp(:,1)*(MVAb/(sqrt(3) * KVb));
-anglenode=Ibrp(:,2)*pi/180;
-
-Inod=[Inode anglenode];
-
-ang1=[anglenode(1) anglenode(1)+(tetha1) anglenode(1)+(tetha2)];
-ang2=[anglenode(2) anglenode(2)+(tetha1) anglenode(2)+(tetha2)];
-ang3=[anglenode(3) anglenode(3)+(tetha1) anglenode(3)+(tetha2)];
-
-angul=[ang1;ang2;ang3]';
-
-for i=1:br
-    for j=1:br
-        Ipre(i,j)=Inode(i)*exp(sqrt(-1)*angul(i,j));
-    end
-end
-Ipref=Ipre.';
-abs(Ipre.')

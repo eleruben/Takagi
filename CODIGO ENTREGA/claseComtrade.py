@@ -13,6 +13,7 @@ class comtrade(object):
         self.nombre=nombre
         self.parametrosConfig()
         self.arreglo=[]
+        #self.oscilografia=[]
     #Funcion que retorna el inverso de un numero binario
     def invertir(self,binario):
         lista=[]
@@ -400,7 +401,9 @@ class comtrade(object):
 
     #Funcion que exporta los datos de self.oscilografia a un archivo excel, esto es util para la opcion de exportar
     #los datos a un archivo excel
-    def excelRudas(self):
+    def excelRudas(self,carpeta,nombre):
+        self.carpeta=carpeta
+        self.nombre=nombre
         wb=xlwt.Workbook()
         ws = wb.add_sheet("Comtrade "+self.nombre,cell_overwrite_ok=True)
         ws.write(0,0,"Muestra")
@@ -431,10 +434,13 @@ class comtrade(object):
                     #Va, Vb, Vc, Ia, Ib, Ic e In
                     ws.write(i+1,columna+1,self.oscilografia[i,j+3])
                     columna+=1
-        wb.save(self.carpeta+u"/"+self.nombre+".xls")
+        #wb.save(self.carpeta+u"/"+self.nombre+".xls")
+        wb.save(self.carpeta+u"/"+self.nombre)
 
         
-    def excelRudas2(self):
+    def excelRudas2(self,carpeta,nombre):
+        self.carpeta=carpeta
+        self.nombre=nombre
         wb=xlwt.Workbook()
         ws = wb.add_sheet("Comtrade",cell_overwrite_ok=True)
         ws.write(0,0,"Muestra")
@@ -458,7 +464,8 @@ class comtrade(object):
                 nom=self.cfg["AnCh"]["a"+str(j+1)][1]
                 ws.write(i+1,columna+1,self.oscilografia[i,j+3])
                 columna+=1
-        wb.save(self.carpeta+self.nombre+".xls")
+        #wb.save(self.carpeta+u"/"+self.nombre+".xls")
+        wb.save(self.carpeta+u"/"+self.nombre)
     #def dividirDatos(self):
 
     def extraerListas(self):

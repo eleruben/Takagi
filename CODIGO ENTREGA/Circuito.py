@@ -264,9 +264,10 @@ def imprimir_grafo(Grafo):
     nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
     #nx.draw_networkx_labels(Grafo,pos,labels)
     #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
-    plt.savefig("GrafoCaminos.png")
-    plt.axis('off')
-    plt.show()
+    
+    #plt.savefig("GrafoCaminos.png")
+    #plt.axis('off')
+    #plt.show()
 
 
     

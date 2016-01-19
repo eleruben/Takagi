@@ -20,40 +20,15 @@ import numpy as np
 import Circuito
 
 import claseComtrade
+#from claseComtrade import invertir
 
-Ia=[]
-Ib=[]
-Ic=[]
-In=[]
-Va=[]
-Vb=[]
-Vc=[]
+import lecturaDeSenalesLUCHO as lect
+import sys
+#import ejemplo2
 
-IA=0
-IB=0
-VA=0
-VB=0
-
-ia=[]
-ib=[]
-ic=[]
-i1n=[]
-va=[]
-vb=[]
-vc=[]
-iprea=[]
-ipreb=[]
-iprec=[]
-Ifase=[]
-Ipre=[]
-
-total=[]
+#import claseGraficas
 
 
-N=32
-T1=np.arange(0,(N-1)*2*math.pi/N+0.001,2*math.pi/N)
-#T1=0:2*math.pi/N:(N-1)*2*math.pi/N;
-u=2*np.exp(np.multiply(1j,T1))/(math.sqrt(3)*N);
 
 
 ###########################################################################
@@ -73,6 +48,7 @@ class Aplicacion ( wx.Frame ):
         self.crear_panel_main()
         #Extrae el directorio actual en el que se ejecuta el archivo
         self.actual = str(os.getcwd())
+        
 
     def crear_menu(self):
         self.m_statusBar1 = self.CreateStatusBar( 1, wx.ST_SIZEGRIP, wx.ID_ANY )
@@ -90,7 +66,8 @@ class Aplicacion ( wx.Frame ):
         #datos de la falla en un formato xls, tambien se le permite al usuario tener un acceso
         #rapido con el comando "Ctrl - S"
         self.m_menuItem2 = self.m_menu1.Append(-1, "&Exportar\tCtrl-S", "Exportar archivos")
-        self.Bind(wx.EVT_MENU, self.on_export_file, self.m_menuItem1)
+        self.m_menuItem2.Enable( False )
+        self.Bind(wx.EVT_MENU, self.on_export_file, self.m_menuItem2)
         
         #ESPACIO PARA EL EVENTO EXPORTAR
         self.m_menu1.AppendSeparator()
@@ -142,7 +119,7 @@ class Aplicacion ( wx.Frame ):
         panelInicioSizer.Add( self.m_button5, 0, wx.ALL, 5 )'''
         
         #Objeto de tipo Static text que tiene por nombre Tipo de falla
-        self.m_staticText1 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Tipo de falla", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText1 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Tipo de falla", wx.DefaultPosition, wx.DefaultSize, 0)
         self.m_staticText1.Wrap( -1 )
         self.m_staticText1.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
         letrasInicioSizer.Add( self.m_staticText1, 0, wx.ALL, 5 )
@@ -214,9 +191,10 @@ class Aplicacion ( wx.Frame ):
 
         self.axes_voltaje = self.fig1.add_subplot(111)
 
-
         self.axes_voltaje.set_xlabel('t')
         self.axes_voltaje.set_ylabel('V(t)')
+        
+        
         
         panelTensionGraficaSizer.Add( self.m_panelTension, 0, wx.EXPAND |wx.ALL, 5)
         #panelTensionSizer contiene el grafico y los checkboxs
@@ -296,7 +274,7 @@ class Aplicacion ( wx.Frame ):
         Grafo=Circuito.punto_falla(retorno,distancia)
         #Circuito.imprimir_grafo(imprimible)
         color=nx.get_node_attributes(Grafo,'color')
-        values = [color.get(node, 50) for node in Grafo.nodes()]
+        self.Values = [color.get(node, 50) for node in Grafo.nodes()]
         #imprimible de circuito
         pos=nx.get_node_attributes(Grafo,'pos')
         #print("las posiciones son "+str(pos))
@@ -307,33 +285,22 @@ class Aplicacion ( wx.Frame ):
             #print("la posicion de las etiquetas son "+str(etiquetas))
             color=nx.get_node_attributes(Grafo,'color')
         
-        #Figura que corresponde a la grafica de la ubicacion de la falla en el circuito
-        #self.fig3 = Figure((10.0, 2.8), dpi=self.dpi)
-        #self.canvas_ubicacion = FigCanvas(self.m_panelUbicacion , -1, self.fig3)
 
-        #self.fig3 = Figure((10.0, 2.8), dpi=self.dpi)
         self.fig3 = plt.figure(figsize=(10.0,20.0))
         self.canvas_ubicacion = FigCanvas(self.m_panel3, -1, self.fig3)
         
         
-        #self.axes_ubicacion = self.fig3.add_subplot(111)
-        
-        #self.axes_ubicacion.set_xlabel('t')
-        #self.axes_ubicacion.set_ylabel('I(t)')
-        
-        nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=values,alpha=1.0)
+        nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
         nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
         nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
-        #nx.draw_networkx_labels(Grafo,pos,labels)
-        #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
-        #plt.savefig("GrafoCaminos.png")
+        
         plt.axis('off')
 
         panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)
-        #self.toolbar = NavigationToolbar(self.canvas)
-        #self.vbox.Add(self.toolbar, 0, wx.EXPAND)
-        #self.m_panel3.SetSizer(self.vbox)
-        #self.vbox.Fit(self)
+        #self.toolbar = NavigationToolbar(self.canself.Vas)
+        #self.self.Vbox.Add(self.toolbar, 0, wx.EXPAND)
+        #self.m_panel3.SetSizer(self.self.Vbox)
+        #self.self.Vbox.Fit(self)
         
         panelUbicacionSizer.Add( self.m_panelUbicacion, 0, wx.EXPAND |wx.ALL, 5)
         
@@ -342,9 +309,9 @@ class Aplicacion ( wx.Frame ):
         #f = plt.figure(1)
         #ax = f.add_subplot(1,1,1)
         
-        '''for label in val_map:
-                ax.plot([0],[0],color=scalarMap.to_rgba(val_map[label]),label=label)'''
-        #values = [val_map.get(node, 30) for node in Grafo.nodes()]
+        '''for label in self.Val_map:
+                ax.plot([0],[0],color=scalarMap.to_rgba(self.Val_map[label]),label=label)'''
+        #self.Values = [self.Val_map.get(node, 30) for node in Grafo.nodes()]
         
         #self.fig3.set_facecolor('w')
         #plt.legend(loc='best')
@@ -352,26 +319,26 @@ class Aplicacion ( wx.Frame ):
         
         #self.fig3.tight_layout()
         
-        #nx.draw(Grafo, cmap=plt.get_cmap('jet'), node_color=values)
+        #nx.draw(Grafo, cmap=plt.get_cmap('jet'), node_color=self.Values)
         
         ###se dibuja el grafo normal
         #nx.draw(Grafo,pos)
         
         ###se dibuja el grafo con etiquetas
         #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=color)
-        #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=values)
+        #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=self.Values)
         
-        #self.axes_ubicacion.plot(nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=values,alpha=1.0))
+        #self.axes_ubicacion.plot(nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0))
         #nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
         #nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
         #nx.draw_networkx_labels(Grafo,pos,labels)
-        #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
+        #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=self.Values,ax=ax)
         #plt.savefig("GrafoCaminos.png")
         #plt.axis('off')
         #plt.show()
-        #self.canvas_ubicacion.draw()
+        #self.canself.Vas_ubicacion.draw()
         '''self.fig = plt.figure()
-        self.canvas = FigCanvas(self.m_panel3, -1, self.fig)
+        self.canself.Vas = FigCanself.Vas(self.m_panel3, -1, self.fig)
         G=nx.house_graph()
         pos={0:(0,0),
             1:(1,0),
@@ -383,12 +350,12 @@ class Aplicacion ( wx.Frame ):
         nx.draw_networkx_nodes(G,pos,node_size=3000,nodelist=[0,1,2,3],node_color='b')
         nx.draw_networkx_edges(G,pos,alpha=0.5,width=6)
         plt.axis('off')
-        self.vbox = wx.BoxSizer(wx.VERTICAL)
-        self.vbox.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.toolbar = NavigationToolbar(self.canvas)
-        self.vbox.Add(self.toolbar, 0, wx.EXPAND)
-        self.m_panel3.SetSizer(self.vbox)
-        self.vbox.Fit(self)'''
+        self.self.Vbox = wx.BoxSizer(wx.VERTICAL)
+        self.self.Vbox.Add(self.canself.Vas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        self.toolbar = NavigationToolbar(self.canself.Vas)
+        self.self.Vbox.Add(self.toolbar, 0, wx.EXPAND)
+        self.m_panel3.SetSizer(self.self.Vbox)
+        self.self.Vbox.Fit(self)'''
         
         '''bSizer22 = wx.BoxSizer( wx.VERTICAL )
         self.m_button7 = wx.Button( self.m_panel3, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -414,53 +381,51 @@ class Aplicacion ( wx.Frame ):
         ###########################################################################
         ##              PANEL DE REPORTE DE LA FALLA                              #
         ###########################################################################
-        ####////////////////////////////////////////////////////////////
-        ####////////////////////////////////////////////////////////////
-        ####////////////////////////////////////////////////////////////
-        ####///////////////VER COMO AGREGAR LAS IMAGENES A LA///////////
-        ####/////////////////////LISTBOOK///////////////////////////////
-        ####////////////////////////////////////////////////////////////
-        ####////////////////////////////////////////////////////////////
         
         bSizer23 = wx.BoxSizer( wx.VERTICAL )
-        
-        png = wx.Image('labe.png', wx.BITMAP_TYPE_PNG).ConvertToBitmap()
-        bitmap = wx.Bitmap('labe.png')
-        
-        #bitmap = wx.Bitmap('labe.bpm')        
-        self.algo = wx.StaticBitmap(self.m_panel4, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
+        #Imagen del logo del laboratorio
+        png = wx.Image('labe.png', wx.BITMAP_TYPE_PNG)      
+        #self.algo = wx.StaticBitmap(self.m_panel4, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
+        self.algo = wx.StaticBitmap(self.m_panel4, -1, wx.BitmapFromImage(png),(10, 10), (png.GetWidth(), png.GetHeight()))
         
         bSizer23.Add( self.algo, 0, wx.ALL, 5 )
         
         self.m_button8 = wx.Button( self.m_panel4, wx.ID_ANY, u"Generar reporte", wx.DefaultPosition, wx.DefaultSize, 0 )
+        
+        
         bSizer23.Add( self.m_button8, 0, wx.ALL, 5 )
         
         self.m_panel4.SetSizer( bSizer23 )
         self.m_panel4.Layout()
         bSizer23.Fit( self.m_panel4 )
-        # Show how to put an image on one of the notebook tabs,
-        # first make the image list:
-        self.imlist = wx.ImageList(16, 16)
-        #source_pog_icon = self.imlist.Add\
-        #(wx.Bitmap('labe.png',wx.BITMAP_TYPE_PNG))
         
-        source_pog_icon = self.imlist.Add(bitmap)
+        #self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", imageId=0 )
+        self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", False )
+        #Tamanho de las imagenes contenidas en la ImageList
+        self.imlist = wx.ImageList(100,100)
         
-        #idx1 = il.Add(images.Smiles.GetBitmap())
-        #self.AssignImageList(il)
-        
-        # now put an image on the first tab we just created:
-        #self.SetPageImage(0, idx1)
-        
+        #Se anhade la lista de imagenes dentro de el listbook
         self.m_listbook1.AssignImageList(self.imlist)
-        ###ANADE EN EL PANEL 1 LA GRAFICA
-        self.m_listbook1.SetPageImage(0, source_pog_icon)
-        self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", imageId=0 )
+        
+        
+        #Graficas de los paneles
+        inicio= wx.Bitmap('inicio.png')
+        graficas= wx.Bitmap('graficas.png')
+        ubicacion= wx.Bitmap('ubicacion.png')
+        reporte= wx.Bitmap('reporte.png')
+        
+        #Se agregan las imagenes a los paneles de la listbook
+        self.m_listbook1.SetPageImage(0, self.imlist.Add(inicio))
+        self.m_listbook1.SetPageImage(1, self.imlist.Add(graficas))
+        self.m_listbook1.SetPageImage(2, self.imlist.Add(ubicacion))
+        self.m_listbook1.SetPageImage(3, self.imlist.Add(reporte))
 		
         principalSizer.Add( self.m_listbook1, 1, wx.EXPAND |wx.ALL, 5 )
         self.SetSizer( principalSizer )
         self.Layout()
         self.Centre( wx.BOTH )
+        
+        
 
 
 
@@ -469,11 +434,11 @@ class Aplicacion ( wx.Frame ):
         self.axes_voltaje.set_xlabel('t')
         self.axes_voltaje.set_ylabel('V(t)')
         if (self.m_checkBox1.IsChecked()):
-            self.axes_voltaje.plot(va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         if (self.m_checkBox2.IsChecked()):
-            self.axes_voltaje.plot(vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         if (self.m_checkBox3.IsChecked()):
-            self.axes_voltaje.plot(vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         self.m_textCtrl1.SetValue("Monofasica")
         self.m_textCtrl2.SetValue("C")
         #self.m_textCtrl1.IsModified(False)
@@ -486,11 +451,11 @@ class Aplicacion ( wx.Frame ):
         self.axes_corriente.set_xlabel('t')
         self.axes_corriente.set_ylabel('I(t)')
         if (self.m_checkBox4.IsChecked()):
-            self.axes_corriente.plot(ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         if (self.m_checkBox5.IsChecked()):
-            self.axes_corriente.plot(ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         if (self.m_checkBox6.IsChecked()):
-            self.axes_corriente.plot(ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         self.canvas_corriente.draw()
 
     def on_colourFaseAvoltaje(self, event):
@@ -528,12 +493,57 @@ class Aplicacion ( wx.Frame ):
 
     def on_faseC_corriente(self, event):
         self.dibujar_corriente()
+    
+    def inicializar(self):
+        self.dirname = self.actual
+        
+        
+        #Se deja en blanco la lista de los canales que se encuentran en falla
+        self.canales_falla=[]
+        
+        self.Ia=[]
+        self.Ib=[]
+        self.Ic=[]
+        self.In=[]
+        self.Va=[]
+        self.Vb=[]
+        self.Vc=[]
+        
+        self.IA=0
+        self.IB=0
+        self.IC=0
+        #self.V=0
+        #self.Vb=0
 
+        self.ia=[]
+        self.ib=[]
+        self.ic=[]
+        self.i1n=[]
+        self.va=[]
+        self.vb=[]
+        self.vc=[]
+        self.iprea=[]
+        self.ipreb=[]
+        self.iprec=[]
+        self.Ifase=[]
+        self.Ipre=[]
+        
+        self.total=[]
+
+
+        N=32
+        self.T1=np.arange(0,(N-1)*2*math.pi/N+0.001,2*math.pi/N)
+        #T1=0:2*math.pi/N:(N-1)*2*math.pi/N;
+        self.u=2*np.exp(np.multiply(1j,self.T1))/(math.sqrt(3)*N);
+
+    #Funcion que se invoca en el evento de importacion de los datos
     def on_import_file(self, event):
         # Podemos crear un evento extra para abrir un fichero de texto
         """ Abrir un fichero"""
-        #print self.actual
-        self.dirname = self.actual
+        
+        #Llamado a la funcion para inicializar los self.Valores, lo que permite
+        #hacer self.Varios import durante la ejecucion de la aplicacion
+        self.inicializar()
 
         dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.CFG", wx.OPEN)
         # Si se selecciona alguno => OK
@@ -544,28 +554,39 @@ class Aplicacion ( wx.Frame ):
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
 
             self.filename= self.filename.split('.')[0]
-            self.objeto=claseComtrade.comtrade(self.dirname, self.filename)
+            
+            #Objeto de tipo comtrade
+            self.objetoComtrade=claseComtrade.comtrade(self.dirname, self.filename)
             #print(self.dirname)
             #print(self.filename)
             #print(self.objeto.cfg)
-            self.objeto.config()
-            self.objeto.extraerDatos()
-            self.nombreEstacion=(self.objeto.cfg['id']['station_name'])
-            #print(self.objeto.oscilografia[21])
-            #self.objeto.exportTXT()
-            #print(str(self.objeto.LALALA()))
-            self.objeto.extraerListas()
-            #print(self.objeto.arreglo)
-            #self.objeto.excel()
-            #self.objeto.excelRudas()
-            self.cargar_datos(self.objeto.arreglo)
-        dlg.Destroy()   # Finalmente destruimos la ventana de di?logo
+            
+            self.objetoComtrade.config()
+            self.objetoComtrade.extraerDatos()
+            self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
+            self.objetoComtrade.extraerListas()
+            self.cargar_datos(self.objetoComtrade.arreglo)
+            #Se habilita el modulo de exportacion de los datos en formato de excel
+            self.m_menuItem2.Enable(True)
+        # Finalmente destruimos la ventana de dialogo    
+        dlg.Destroy()   
         
+        
+    #Funcion que se invoca en el evento de exportacion de los datos    
     def on_export_file(self, event):
-        
-        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.xls", wx.SAVE)
+        self.dirname = self.actual
+        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, self.filename, "*.xls", wx.SAVE)
         if dlg.ShowModal() == wx.ID_OK:
-            self.objeto.excelRudas()
+            self.dirname  = dlg.GetDirectory()
+            self.filename = dlg.GetFilename()
+            self.objetoComtrade.excelRudas(self.dirname,self.filename)
+        dlg.Destroy()
+        
+        msg = """ 
+        Se ha guardado con exito el archivo
+        """       
+        dlg = wx.MessageDialog(self, msg, "Guardado exitoso", wx.OK)
+        dlg.ShowModal()
         dlg.Destroy()
 
     #Funcion en donde se cargan los datos
@@ -573,27 +594,100 @@ class Aplicacion ( wx.Frame ):
         #Se extraen los datos del arreglo proveniente de la importacion
         #de los archivos en el formato comtrade
         #For que se hace en el numero de columnas, 6
+        #print(arreglo[0])
         for i in range(len(arreglo[0])):
             #For que se hace en el numero de filas, 832
             for j in range(len(arreglo)):
-                temporal=[]
                 if i==5:
-                    Ia.append(arreglo[j][i])
+                    self.Ia.append(arreglo[j][i])
                 if i==4:
-                    Ib.append(arreglo[j][i])
+                    self.Ib.append(arreglo[j][i])
                 if i==3:
-                    Ic.append(arreglo[j][i])
+                    self.Ic.append(arreglo[j][i])
                 if i==6:
-                    In.append(arreglo[j][i])
+                    self.In.append(arreglo[j][i])
                 if i==2:
-                    Va.append(arreglo[j][i])
+                    self.Va.append(arreglo[j][i])
                 if i==1:
-                    Vb.append(arreglo[j][i])
+                    self.Vb.append(arreglo[j][i])
                 if i==0:
-                    Vc.append(arreglo[j][i])
-
+                    self.Vc.append(arreglo[j][i])
                     
-        dlg = wx.TextEntryDialog(None, "Ingrese el valor en el que ocurre la falla",
+        ###################################################################################
+        ###################################################################################
+        ###################################################################################
+        ###################################################################################
+        #################### VERIFICAR EL METODO AUTOMATICO  ##############################
+        ###################################################################################
+        ###################################################################################
+        ###################################################################################
+        ###################################################################################
+        ###################################################################################
+                    
+        #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
+        [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
+        #print ("Ic"+str(sirve))        
+        self.manual=False
+        if (sirve==1 and not self.manual):
+            self.canales_falla.append('C')
+            self.inicioFalla=iniFalla
+            self.finFalla=self.inicioFalla+32
+            self.inicioPreFalla=iniPre
+            self.finPreFalla=self.inicioPreFalla+32
+            self.manual=True
+        
+        #Procedimiento para verificar si la señal de la FASE B se puede analizar de forma automatica
+        [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,10])
+        if (sirve==1 and not self.manual):
+            self.canales_falla.append('B')
+            self.inicioFalla=iniFalla
+            self.finFalla=self.inicioFalla+32
+            self.inicioPreFalla=iniPre
+            self.finPreFalla=self.inicioPreFalla+32
+            self.manual=True
+        
+        #Procedimiento para verificar si la señal de la FASE A se puede analizar de forma automatica            
+        [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,11])
+        if (sirve==1 and not self.manual):
+            self.canales_falla.append('A')
+            self.inicioFalla=iniFalla
+            self.finFalla=self.inicioFalla+32
+            self.inicioPreFalla=iniPre
+            self.finPreFalla=self.inicioPreFalla+32
+            self.manual=True
+        #A=self.objetoComtrade.oscilografia[:,11]
+        #B=self.objetoComtrade.oscilografia[:,10]
+        #C=self.objetoComtrade.oscilografia[:,9]
+        
+        #self.objetoGrafico=claseGraficas.graficas(self.dirname, self.filename,self.objetoComtrade.oscilografia)
+        #self.objetoGrafico.analisis_grafica()
+        self.inicioPreFalla = 0
+        self.sale=False
+        #self.inicializar_grafica()
+        self.analisis_grafica()
+        
+            
+        '''#Entra en el caso que no se haya podido analizar la señal de forma manual    
+        if not self.mono:
+            ############RETOMAR
+            archivo=
+            self.objetoGrafico=claseGraficas(self.dirname, self.filename,archivo)
+
+            #self.objetoGrafico.analisis_grafica()'''
+            
+
+        '''ejemplo2.analisis_grafica(self.dirname,self.filename)
+        self.inicioFalla=ejemplo2.iniFalla
+        self.finFalla=self.inicioFalla+32'''
+        
+        
+        '''
+        self.inicioFalla=576    
+        self.finFalla=self.inicioFalla+32
+        self.inicioPreFalla = 1
+        self.finPreFalla=self.inicioPreFalla+32'''
+        
+        '''dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor en el que ocurre la falla",
         "Ciclo de falla", "576")
         if dlg.ShowModal() == wx.ID_OK:
             self.inicioFalla = int(dlg.GetValue())
@@ -602,25 +696,129 @@ class Aplicacion ( wx.Frame ):
         #print(self.finFalla)
         dlg.Destroy()
 
-        dlg = wx.TextEntryDialog(None, "Ingrese el valor prefalla",
+        dlg = wx.TextEntryDialog(None, "Ingrese el self.Valor prefalla",
         "Ciclo pre-falla", "1")
         if dlg.ShowModal() == wx.ID_OK:
             self.inicioPreFalla = int(dlg.GetValue())
         self.finPreFalla=self.inicioPreFalla+32
         #print(inicioPreFalla)
-        dlg.Destroy()
-        #codigo utilizado para habilitar las graficas de los canales de transmision
-        self.m_checkBox1.SetValue(True)
-        self.m_checkBox2.SetValue(True)
-        self.m_checkBox3.SetValue(True)
-        self.m_checkBox4.SetValue(True)
-        self.m_checkBox5.SetValue(True)
-        self.m_checkBox6.SetValue(True)
-        self.asignarFalla()
-        self.asignarPreFalla()
-        self.dibujar_voltaje()
-        self.dibujar_corriente()
-        self.m_textCtrl3.SetValue(self.takagi())
+        dlg.Destroy()'''
+            
+        
+
+
+    #def inicializar_grafica(self):
+        #def __init__(self, carpeta, nombre, oscilografia):
+        #def __init__(self, carpeta, nombre):
+        #self.carpeta=carpeta
+        #self.nombre=nombre
+        #self.iniFalla=0
+        #self.iniPre=0
+        #self.uno=True
+        #self.dos=False
+        #self.A=oscilografia[:,11]
+        #self.B=oscilografia[:,10]
+        #self.C=oscilografia[:,9]
+        
+        #self.ax = plt.subplot(111)
+        #self.ax = self.figa.add_subplot(1,1,1)
+    
+    def analisis_grafica(self):
+        
+        
+        #prueba=cm.comtrade(carpeta, nombre)
+        #prueba.config()
+        #prueba.extraerDatos()
+        
+        #A=prueba.oscilografia[:,11]
+        #B=prueba.oscilografia[:,10]
+        #C=prueba.oscilografia[:,9]
+        
+        #Figura que contiene la grafica de las senhales
+        self.fig4 = plt.figure('Seleccion manual')
+        plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+        plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+        plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+        plt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
+        plt.legend()  # Creamos la caja con la leyenda
+        
+        #self.Bind(wx.EVT_MOVE, self.on_move, self.figa)
+        #self.Bind(wx.EVT_MOUSE_AUX1_DCLICK, self.on_click, self.figa)
+        binding_id = plt.connect('motion_notify_event', self.on_move)
+        plt.connect('button_press_event', self.on_click)
+        
+        if "test_disconnect" in sys.argv:
+            print("disconnecting console coordinate printout...")
+            plt.disconnect(binding_id)
+        
+        
+        #plt.ion()  # Ponemos el modo interactivo
+        #plt.axvspan(-0.5,0.5, alpha = 0.25)
+        plt.show(False)
+        plt.draw()
+        plt.close(self.fig3)
+        
+
+    def on_move(self,event):
+        # get the x and y pixel coords
+        x, y = event.x, event.y
+
+        if event.inaxes:
+            if not self.sale:
+                ax = event.inaxes  # the axes instance
+                #print('data coords %f %f' % (event.xdata, event.ydata))
+                plt.ion()
+                plt.clf()
+                if (self.inicioPreFalla==0):
+                    #Titulo para el caso de asignar el ciclo prefalla
+                    plt.suptitle(u'Seleccione el ciclo prefalla')  
+                else:
+                    #Titulo para el caso de asignar el ciclo de falla
+                    plt.suptitle(u'Seleccione el ciclo nmbnen que ocurre la falla')
+                plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
+                plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
+                plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+                #Creamos la caja con la leyenda
+                plt.legend()   
+                #plt.draw()
+                plt.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+            
+
+
+    def on_click(self,event):
+        # get the x and y coords, flip y from top to bottom
+        x, y = event.x, event.y
+        if event.button == 1:
+            if event.inaxes is not None:
+                #print('data coords %f %f' % (event.xdata, event.ydata))
+                #Se selecciona el ciclo de prefalla en el primer click
+                if (self.inicioPreFalla==0):
+                    self.inicioPreFalla=int(event.xdata)
+                    self.finPreFalla=self.inicioPreFalla+32
+                    #print('el inicio de prefalla es '+str(self.inicioPreFalla))
+                    #plt.suptitle(u'Seleccione el ciclo de prefalla')  # Ponemos un titulo superior
+                #Se selecciona el ciclo de falla en el segundo click
+                else:
+                    self.inicioFalla=int(event.xdata)
+                    #print('el inicio de falla es '+str(self.inicioFalla))
+                    self.finFalla=self.inicioFalla+32
+                    plt.close(self.fig4)
+                    #print('se cierra la ventana')
+                    #codigo utilizado para habilitar las graficas de los canales de transmision
+                    self.m_checkBox1.SetValue(True)
+                    self.m_checkBox2.SetValue(True)
+                    self.m_checkBox3.SetValue(True)
+                    self.m_checkBox4.SetValue(True)
+                    self.m_checkBox5.SetValue(True)
+                    self.m_checkBox6.SetValue(True)
+                    self.asignarFalla()
+                    self.asignarPreFalla()
+                    self.dibujar_voltaje()
+                    self.dibujar_corriente()
+                    self.m_textCtrl3.SetValue(self.takagi())
+                    self.sale=True
+ 
+    
 
     def asignarFalla(self):
         a=(-1+np.multiply(math.sqrt(3),1j))/2;
@@ -628,19 +826,20 @@ class Aplicacion ( wx.Frame ):
         Tfs=np.divide(Tfs,3)
         #for x in range(self.inicioFalla,self.finFalla):
         for x in range(self.inicioFalla,self.finFalla):
-            ia.append(Ia[x])
-            ib.append(Ib[x])
-            ic.append(Ic[x])
-            i1n.append(In[x])
-            va.append(Va[x])
-            vb.append(Vb[x])
-            vc.append(Vc[x])
+            self.ia.append(self.Ia[x])
+            self.ib.append(self.Ib[x])
+            self.ic.append(self.Ic[x])
+            self.i1n.append(self.In[x])
+            self.va.append(self.Va[x])
+            self.vb.append(self.Vb[x])
+            self.vc.append(self.Vc[x])
 
-        self.IA=np.dot(u,ia)
-        self.IB=np.dot(u,ib)
-        self.IC=np.dot(u,ic)
-        self.IN=np.dot(u,i1n)
-        self.VC=np.dot(u,vc)
+        self.IA=np.dot(self.u,self.ia)
+        self.IB=np.dot(self.u,self.ib)
+        self.IC=np.dot(self.u,self.ic)
+        self.IN=np.dot(self.u,self.i1n)
+        ########VARIABLE NECESARIA PARA EL CALCULO DE TAKAGI, PARA ESTO ES NECESARIO CONOCER LA FASE EN FALLA
+        self.Vc=np.dot(self.u,self.vc)
         Ifase=[]
         Ifase.append(self.IC)
         Ifase.append(self.IA)
@@ -661,31 +860,28 @@ class Aplicacion ( wx.Frame ):
 
         #for x in range(self.inicioPreFalla,self.finPreFalla):
         for x in range(self.inicioPreFalla,self.finPreFalla):
-            iprea.append(Ia[x])
-            ipreb.append(Ib[x])
-            iprec.append(Ic[x])
-        Ipre.append(np.dot(u,iprea))
-        Ipre.append(np.dot(u,ipreb))
-        Ipre.append(np.dot(u,iprec))
+            self.iprea.append(self.Ia[x])
+            self.ipreb.append(self.Ib[x])
+            self.iprec.append(self.Ic[x])
+        self.Ipre.append(np.dot(self.u,self.iprea))
+        self.Ipre.append(np.dot(self.u,self.ipreb))
+        self.Ipre.append(np.dot(self.u,self.iprec))
 
     def takagi(self):
-        Z= complex(0.01,0.1)
-        If=self.IC-Ipre[2]
-
-        #print(If)
+        Z= complex(0.72721,0.0016198)
+        If=self.IC-self.Ipre[2]
 
 
         a= If/(3*self.I0)
         T= np.angle(a)
 
-        #print (T)
         s= np.exp(-T*1j)
 
 
         self.I0=complex(self.I0.real,-self.I0.imag)
 
         #print(s)
-        x=(self.VC*self.I0*s).imag/(Z*self.IC*self.I0*s).imag
+        x=(self.Vc*self.I0*s).imag/(Z*self.IC*self.I0*s).imag
         #print(x)
         return str(x)
     
@@ -697,9 +893,9 @@ class Aplicacion ( wx.Frame ):
     def on_about(self, event):
         msg = """ 
         Aplicacion desarrollada conjuntamente entre la
-        Empresa de Enegia de Cundinamarca y el LABE para la
-        localizacion de fallas en la red electrica de cundinamarca\n
-        Laboratorio de Ensayos Electricos Industriales - Labe
+        Empresa de Energia de Cundinamarca y el LABE para la
+        localizacion de fallas en la red electrica de Cundinamarca.\n
+        Laboratorio de Ensayos Electricos Industriales - LABE
         Contacto: labe_fibog@unal.edu.co
         """
         #image = wx.Image("labe.png", wx.BITMAP_TYPE_ANY)
@@ -707,16 +903,13 @@ class Aplicacion ( wx.Frame ):
         #image.set_from_stock(Gtk.STOCK_CAPS_LOCK_WARNING, Gtk.IconSize.DIALOG)
         #image.show()
         #messagedialog.set_image(image)
-
-        
-
         
         dlg = wx.MessageDialog(self, msg, "Acerca de ...", wx.OK)
         #dlg.set_image(image)
         dlg.ShowModal()
         dlg.Destroy()
 
-
+    #EVENTO SIN IMPLEMENTAR
     def editar_grafo(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()
@@ -724,6 +917,7 @@ class Aplicacion ( wx.Frame ):
         if wx.ID_YES == salir :
             self.Destroy()
 
+    #EVENTO SIN IMPLEMENTAR
     def actualizar_grafo(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
         salir = dlg.ShowModal()

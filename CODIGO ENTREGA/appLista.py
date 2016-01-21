@@ -57,9 +57,21 @@ class Aplicacion ( wx.Frame ):
         self.m_menu1 = wx.Menu()
         #Opcion de Importar archivo, la cual extrae la informacion del archivos comtrade,
         #tambien se le permite al usuario tener un acceso rapido con el comando "Ctrl - 0"
+    
         self.m_menuItem1 = self.m_menu1.Append(-1, "&Importar\tCtrl-O", "Importar datos del archivo")
         self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem1)
         self.m_menu1.AppendSeparator()
+        
+        self.m_menu21 = wx.Menu()
+        self.m_menuItem6 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato CFG", wx.EmptyString, wx.ITEM_NORMAL )
+        self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem6)
+        self.m_menu21.AppendItem( self.m_menuItem6 )
+        
+        self.m_menuItem7 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato xls", wx.EmptyString, wx.ITEM_NORMAL )
+        self.m_menu21.AppendItem( self.m_menuItem7 )
+        self.m_menuItem7.Enable( False )
+        
+        self.m_menu1.AppendSubMenu( self.m_menu21, u"Importar" )
         
         #Opcion de Exportar archivos, permite al usuario guardar los graficos de los datos de corriente y
         #tension, al igual que la ubicacion de la fala. Tambien permitira guardar los
@@ -81,7 +93,7 @@ class Aplicacion ( wx.Frame ):
         #Contenedor del menu Bar Ayuda
         self.m_menu2 = wx.Menu()
         #Opcion de Manual de uso
-        self.m_menuItem = self.m_menu2.Append(-1, "&Manual de uso", "Manual de uso")
+        self.m_menuItem4 = self.m_menu2.Append(-1, "&Manual de uso", "Manual de uso")
         #Opcion de Acerca de, la cual hacer el llamado a una ventana que indica
         #los datos de identificacion de la aplicacion
         self.m_menuItem5 = self.m_menu2.Append(-1, "&Acerca de ...", "Acerca de ...")
@@ -127,15 +139,15 @@ class Aplicacion ( wx.Frame ):
         #Espacio entre Tipo de falla y Canal de falla
         letrasInicioSizer.AddSpacer(8)
         
-        #Objeto de tipo Static text que tiene por nombre Canal de falla
-        self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Canal de falla", wx.DefaultPosition, wx.DefaultSize, 0 )
+        #Objeto de tipo Static text que tiene por nombre Fase(s) en falla
+        self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Fase(s) en falla", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText2.Wrap( -1 )
         self.m_staticText2.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
         letrasInicioSizer.Add( self.m_staticText2, 0, wx.ALL, 5 )
         #Espacio entre Canal de falla y Distancia
         letrasInicioSizer.AddSpacer(8)
         #Objeto de tipo Static text que tiene por nombre Distancia
-        self.m_staticText3 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Distancia", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText3 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Distancia (Km)", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText3.Wrap( -1 )
         self.m_staticText3.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
         letrasInicioSizer.Add( self.m_staticText3, 0, wx.ALL, 5 )
@@ -440,7 +452,7 @@ class Aplicacion ( wx.Frame ):
         if (self.m_checkBox3.IsChecked()):
             self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
         self.m_textCtrl1.SetValue("Monofasica")
-        self.m_textCtrl2.SetValue("C")
+        #self.m_textCtrl2.SetValue("C")
         #self.m_textCtrl1.IsModified(False)
 
         self.canvas_voltaje.draw()
@@ -501,12 +513,34 @@ class Aplicacion ( wx.Frame ):
         self.axes_voltaje.clear()
         self.canvas_voltaje.draw()
         
+        self.manual=False
+        
         
         #Se deja en blanco la lista de los canales que se encuentran en falla
         self.canales_falla=[]
         
         self.inicioPreFalla =0
         self.sale=False
+        self.click=False
+        
+  
+        
+        
+        self.m_checkBox1.Enable(False)
+        self.m_checkBox1.Enable(False)
+        self.m_checkBox2.Enable(False)
+        self.m_checkBox3.Enable(False)
+        self.m_checkBox4.Enable(False)
+        self.m_checkBox5.Enable(False)
+        self.m_checkBox6.Enable(False)
+                    
+        
+        self.m_checkBox1.SetValue(False)
+        self.m_checkBox2.SetValue(False)
+        self.m_checkBox3.SetValue(False)
+        self.m_checkBox4.SetValue(False)
+        self.m_checkBox5.SetValue(False)
+        self.m_checkBox6.SetValue(False)
         
         self.Ia=[]
         self.Ib=[]
@@ -519,6 +553,11 @@ class Aplicacion ( wx.Frame ):
         self.IA=0
         self.IB=0
         self.IC=0
+        
+        self.VA=0
+        self.VB=0
+        self.VC=0
+    
         #self.V=0
         #self.Vb=0
 
@@ -581,7 +620,7 @@ class Aplicacion ( wx.Frame ):
     #Funcion que se invoca en el evento de exportacion de los datos    
     def on_export_file(self, event):
         self.dirname = self.actual
-        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, self.filename, "*.xls", wx.SAVE)
+        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, self.filename, "*.xls", wx.SAVE | wx.OVERWRITE_PROMPT)
         guarda=False
         if dlg.ShowModal() == wx.ID_OK:
             self.dirname  = dlg.GetDirectory()
@@ -637,8 +676,10 @@ class Aplicacion ( wx.Frame ):
         #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
         #print ("Ic"+str(sirve))        
-        self.manual=False
+        
         if (sirve==1 and not self.manual):
+            
+            self.m_textCtrl2.SetValue("C")
             self.canales_falla.append('C')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
@@ -649,6 +690,8 @@ class Aplicacion ( wx.Frame ):
         #Procedimiento para verificar si la señal de la FASE B se puede analizar de forma automatica
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,10])
         if (sirve==1 and not self.manual):
+            
+            self.m_textCtrl2.SetValue("B")
             self.canales_falla.append('B')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
@@ -659,6 +702,8 @@ class Aplicacion ( wx.Frame ):
         #Procedimiento para verificar si la señal de la FASE A se puede analizar de forma automatica            
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,11])
         if (sirve==1 and not self.manual):
+            
+            self.m_textCtrl2.SetValue("A")
             self.canales_falla.append('A')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
@@ -674,11 +719,36 @@ class Aplicacion ( wx.Frame ):
         
         #self.inicializar_grafica()
         
-        
-        seleccion=wx.MessageDialog(None, 'Seleccione el ciclo prefalla y ciclo de falla en la grafica', 'Seleccion de ciclos',  style=wx.OK)
-        seleccion.ShowModal()
-        
-        self.grafica_dentro_panel()
+        #self.manual=False
+        if not self.manual:
+            seleccion=wx.MessageDialog(None, 'Seleccione el ciclo prefalla y ciclo de falla en la grafica', 'Seleccion de ciclos',  style=wx.OK)
+            seleccion.ShowModal()
+            self.inicioPreFalla=0
+            self.grafica_dentro_panel()
+            
+        else:
+            seleccion=wx.MessageDialog(None, 'Se realizo automaticamente la seleccion de los ciclos', 'Seleccion automatica exitosa',  style=wx.OK)
+            seleccion.ShowModal()
+            self.m_checkBox1.Enable(True)
+            self.m_checkBox1.Enable(True)
+            self.m_checkBox2.Enable(True)
+            self.m_checkBox3.Enable(True)
+            self.m_checkBox4.Enable(True)
+            self.m_checkBox5.Enable(True)
+            self.m_checkBox6.Enable(True)
+                        
+            self.m_checkBox1.SetValue(True)
+            self.m_checkBox2.SetValue(True)
+            self.m_checkBox3.SetValue(True)
+            self.m_checkBox4.SetValue(True)
+            self.m_checkBox5.SetValue(True)
+            self.m_checkBox6.SetValue(True)
+            self.asignarFalla()
+            self.asignarPreFalla()
+            self.dibujar_voltaje()
+            self.dibujar_corriente()
+            self.m_textCtrl3.SetValue(self.takagi())
+            self.sale=True
         
         #self.analisis_grafica()
         
@@ -828,9 +898,10 @@ class Aplicacion ( wx.Frame ):
                 #self.axes_corriente.cla()                
                 #plt.ion()
                 #plt.clf()
-                print ('inicio on move esta en '+str(self.inicioPreFalla))
+                #print ('inicio on move esta en '+str(self.inicioPreFalla))
                 
-                if (self.inicioPreFalla==0):
+                #if (self.inicioPreFalla==0):
+                if not self.click:
                     #Titulo para el caso de asignar el ciclo prefalla
                     self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                 else:
@@ -841,8 +912,10 @@ class Aplicacion ( wx.Frame ):
                 self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
                 self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
                 #Creamos la caja con la leyenda
-                self.axes_corriente.legend()   
-                self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
+                self.axes_corriente.legend()
+                #Condicional para que no se desplace fuera de la grafica   
+                if event.xdata<len(self.objetoComtrade.oscilografia[:,11])-32:
+                    self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
                 self.canvas_corriente.draw()
                 #plt.draw()
                 #self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
@@ -863,21 +936,30 @@ class Aplicacion ( wx.Frame ):
                 #print('data coords %f %f' % (event.xdata, event.ydata))
                 #Se selecciona el ciclo de prefalla en el primer click
                 
-                print ('inicio en click esta en '+str(self.inicioPreFalla))
-                if (self.inicioPreFalla==0):
-                    print ('entra')
+                
+                #if (self.inicioPreFalla==0):
+                if not self.click:
+                    print ('pre en click esta en '+str(self.inicioPreFalla))
                     self.inicioPreFalla=int(event.xdata)
                     self.finPreFalla=self.inicioPreFalla+32
-                    #print('el inicio de prefalla es '+str(self.inicioPreFalla))
-                    #plt.suptitle(u'Seleccione el ciclo de prefalla')  # Ponemos un titulo superior
+                    self.click=True
                 #Se selecciona el ciclo de falla en el segundo click
                 else:
+                    print ('falla en click esta en '+str(self.inicioPreFalla))
+                    print ('self.inicioFalla en click esta en '+str(self.inicioFalla))
                     self.inicioFalla=int(event.xdata)
-                    #print('el inicio de falla es '+str(self.inicioFalla))
                     self.finFalla=self.inicioFalla+32
-                    #plt.close(self.fig4)
-                    #print('se cierra la ventana')
                     #codigo utilizado para habilitar las graficas de los canales de transmision
+                
+                    
+                    self.m_checkBox1.Enable(True)
+                    self.m_checkBox1.Enable(True)
+                    self.m_checkBox2.Enable(True)
+                    self.m_checkBox3.Enable(True)
+                    self.m_checkBox4.Enable(True)
+                    self.m_checkBox5.Enable(True)
+                    self.m_checkBox6.Enable(True)
+                        
                     self.m_checkBox1.SetValue(True)
                     self.m_checkBox2.SetValue(True)
                     self.m_checkBox3.SetValue(True)
@@ -912,11 +994,13 @@ class Aplicacion ( wx.Frame ):
         self.IC=np.dot(self.u,self.ic)
         self.IN=np.dot(self.u,self.i1n)
         ########VARIABLE NECESARIA PARA EL CALCULO DE TAKAGI, PARA ESTO ES NECESARIO CONOCER LA FASE EN FALLA
-        self.Vc=np.dot(self.u,self.vc)
+        self.VA=np.dot(self.u,self.va)
+        self.VB=np.dot(self.u,self.vb)
+        self.VC=np.dot(self.u,self.vc)
         Ifase=[]
-        Ifase.append(self.IC)
         Ifase.append(self.IA)
         Ifase.append(self.IB)
+        Ifase.append(self.IC)
         #print(self.IC)
 
         #en la secuencia del codigo de matlab se hallan los fasores de un ciclo con cierto corrimiento,
@@ -925,9 +1009,9 @@ class Aplicacion ( wx.Frame ):
         #Iseck=Tfs*Ifase
         Iseck=np.dot(Tfs,Ifase)
         #print(Iseck)
-        self.I0=Iseck[0]
-        self.I1=Iseck[1]
-        self.I2=Iseck[2]
+        self.I0=Iseck[0]#IA
+        self.I1=Iseck[1]#IB
+        self.I2=Iseck[2]#IC
 
     def asignarPreFalla(self):
 
@@ -942,7 +1026,22 @@ class Aplicacion ( wx.Frame ):
 
     def takagi(self):
         Z= complex(0.72721,0.0016198)
-        If=self.IC-self.Ipre[2]
+        
+        
+        #If=self.IC-self.Ipre[2]
+        #if self.m_textCtrl2.GetValue()=='A':
+        
+        casos = { 'A': [self.IA,self.Ipre[0],self.I0,self.VA], 'B': [self.IB,self.Ipre[1],self.I1,self.VB], 'C': [self.IC,self.Ipre[2],self.I2,self.VA] }
+        
+        print (self.m_textCtrl2.GetValue()) 
+        
+        variables=[]
+        
+        variables=casos[self.m_textCtrl2.GetValue()]
+        
+        print(variables)  
+        
+        If=self.IA-self.Ipre[0]
 
 
         a= If/(3*self.I0)
@@ -954,7 +1053,7 @@ class Aplicacion ( wx.Frame ):
         self.I0=complex(self.I0.real,-self.I0.imag)
 
         #print(s)
-        x=(self.Vc*self.I0*s).imag/(Z*self.IC*self.I0*s).imag
+        x=(self.VA*self.I0*s).imag/(Z*self.IA*self.I0*s).imag
         #print(x)
         return str(x)
     
@@ -964,7 +1063,7 @@ class Aplicacion ( wx.Frame ):
     
 
     def on_about(self, event):
-        msg = """ 
+        '''msg = """ 
         Aplicacion desarrollada conjuntamente entre la
         Empresa de Energia de Cundinamarca y el LABE para la
         localizacion de fallas en la red electrica de Cundinamarca.\n
@@ -977,10 +1076,31 @@ class Aplicacion ( wx.Frame ):
         #image.show()
         #messagedialog.set_image(image)
         
-        dlg = wx.MessageDialog(self, msg, "Acerca de ...", wx.OK)
+        dlg = wx.MessageDialog(self, msg, "Acerca de ...", wx.OK|wx.ICON_EXCLAMATION)
         #dlg.set_image(image)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Destroy()'''
+        
+        description = """
+        Aplicacion desarrollada conjuntamente entre la
+        Empresa de Energia de Cundinamarca y el LABE para la
+        localizacion de fallas en la red electrica de Cundinamarca.\n
+        Laboratorio de Ensayos Electricos Industriales - LABE
+        Contacto: labe_fibog@unal.edu.co
+        """
+        info = wx.AboutDialogInfo()
+        info.SetIcon(wx.Icon('labe.png', wx.BITMAP_TYPE_PNG))
+        info.SetName('Localizados de fallas')
+        info.SetVersion('1.0')
+        info.SetDescription(description)
+        info.SetCopyright('(C) 2016 LABE-EEC')
+        info.SetWebSite('http://www.labe.unal.edu.co/')
+        #info.SetLicence(licence)
+        #info.AddDeveloper('jan bodnar')
+        #info.AddDocWriter('jan bodnar')
+        #info.AddArtist('The Tango crew')
+        #info.AddTranslator('jan bodnar')
+        wx.AboutBox(info)
 
     #EVENTO SIN IMPLEMENTAR
     def editar_grafo(self, event):

@@ -211,10 +211,23 @@ class Aplicacion ( wx.Frame ):
         panelTensionGraficaSizer.Add( self.m_panelTension, 0, wx.EXPAND |wx.ALL, 5)
         #panelTensionSizer contiene el grafico y los checkboxs
         panelTensionSizer.Add( panelTensionGraficaSizer, 0, wx.EXPAND, 5 )
+        
+        
+        self.m_staticText4 = wx.StaticText( self.m_panel2, wx.ID_ANY, u"Seleccion de fase y color de voltaje", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_staticText4.Wrap( -1 )
+        self.m_staticText4.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        #self.m_staticText4.SetForegroundColour(wx.Colour(0,255,0))
+        panelTensionCheckBoxsSizer.Add( self.m_staticText4, 0, wx.ALL, 5 )
+        
+        
+        
+        
         self.m_checkBox1 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE A", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.ColourPickerCtrl1= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseAvoltaje, self.ColourPickerCtrl1)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseA_voltaje, self.m_checkBox1)
+        self.m_checkBox1.Enable(False)
+        self.m_checkBox1.SetValue(False)
         panelTensionCheckBoxsSizer.Add( self.m_checkBox1, 0, wx.ALL, 5 )
         panelTensionCheckBoxsSizer.Add( self.ColourPickerCtrl1, 0, wx.ALL, 5 )
         
@@ -222,6 +235,8 @@ class Aplicacion ( wx.Frame ):
         self.ColourPickerCtrl2= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseBvoltaje, self.ColourPickerCtrl2)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseB_voltaje, self.m_checkBox2)
+        self.m_checkBox2.Enable(False)
+        self.m_checkBox2.SetValue(False)
         panelTensionCheckBoxsSizer.Add( self.m_checkBox2, 0, wx.ALL, 5 )
         panelTensionCheckBoxsSizer.Add( self.ColourPickerCtrl2, 0, wx.ALL, 5 )
         
@@ -229,6 +244,8 @@ class Aplicacion ( wx.Frame ):
         self.ColourPickerCtrl3= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseCvoltaje, self.ColourPickerCtrl3)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseC_voltaje, self.m_checkBox3)
+        self.m_checkBox3.Enable(False)
+        self.m_checkBox3.SetValue(False)
         panelTensionCheckBoxsSizer.Add( self.m_checkBox3, 0, wx.ALL, 5 )
         panelTensionCheckBoxsSizer.Add( self.ColourPickerCtrl3, 0, wx.ALL, 5 )
         
@@ -246,10 +263,17 @@ class Aplicacion ( wx.Frame ):
         #panelCorrienteSizer contiene el grafico y los checkboxs
         panelCorrienteSizer.Add( panelCorrienteGraficaSizer, 0, wx.EXPAND, 5 )
         
+        self.m_staticText5 = wx.StaticText( self.m_panel2, wx.ID_ANY, u"Seleccion de fase y color de corriente", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_staticText5.Wrap( -1 )
+        self.m_staticText5.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        panelCorrienteCheckBoxsSizer.Add( self.m_staticText5, 0, wx.ALL, 5 )
+        
         self.m_checkBox4 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE A", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.ColourPickerCtrl4= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseAcorriente, self.ColourPickerCtrl4)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseA_corriente, self.m_checkBox4)
+        self.m_checkBox4.Enable(False)
+        self.m_checkBox4.SetValue(False)
         panelCorrienteCheckBoxsSizer.Add( self.m_checkBox4, 0, wx.ALL, 5 )
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl4, 0, wx.ALL, 5 )
         
@@ -257,6 +281,8 @@ class Aplicacion ( wx.Frame ):
         self.ColourPickerCtrl5= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseBcorriente, self.ColourPickerCtrl5)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseB_corriente, self.m_checkBox5)
+        self.m_checkBox5.Enable(False)
+        self.m_checkBox5.SetValue(False)
         panelCorrienteCheckBoxsSizer.Add( self.m_checkBox5, 0, wx.ALL, 5 )
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl5, 0, wx.ALL, 5 )
         
@@ -264,6 +290,8 @@ class Aplicacion ( wx.Frame ):
         self.ColourPickerCtrl6= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseCcorriente, self.ColourPickerCtrl6)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseC_corriente, self.m_checkBox6)
+        self.m_checkBox6.Enable(False)
+        self.m_checkBox6.SetValue(False)
         panelCorrienteCheckBoxsSizer.Add( self.m_checkBox6, 0, wx.ALL, 5 )
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl6, 0, wx.ALL, 5 )
         
@@ -275,6 +303,7 @@ class Aplicacion ( wx.Frame ):
         self.m_panel2.Layout()
         panelGraficasSizer.Fit( self.m_panel2 )
         self.m_listbook1.AddPage( self.m_panel2, u"GRAFICAS", False )
+        
         
         ###########################################################################
         ##              PANEL DE UBICACION DE LA FALLA                            #
@@ -446,11 +475,16 @@ class Aplicacion ( wx.Frame ):
         self.axes_voltaje.set_xlabel('t')
         self.axes_voltaje.set_ylabel('V(t)')
         if (self.m_checkBox1.IsChecked()):
-            self.axes_voltaje.plot(self.va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            self.axes_voltaje.legend()
         if (self.m_checkBox2.IsChecked()):
-            self.axes_voltaje.plot(self.vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+            self.axes_voltaje.legend()
         if (self.m_checkBox3.IsChecked()):
-            self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+            self.axes_voltaje.legend()
+        
+        
         self.m_textCtrl1.SetValue("Monofasica")
         #self.m_textCtrl2.SetValue("C")
         #self.m_textCtrl1.IsModified(False)
@@ -463,11 +497,20 @@ class Aplicacion ( wx.Frame ):
         self.axes_corriente.set_xlabel('t')
         self.axes_corriente.set_ylabel('I(t)')
         if (self.m_checkBox4.IsChecked()):
-            self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            self.axes_corriente.legend()
         if (self.m_checkBox5.IsChecked()):
-            self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+            self.axes_corriente.legend()
         if (self.m_checkBox6.IsChecked()):
-            self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))
+            self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+            self.axes_corriente.legend()
+        if not self.manual:
+            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+            self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+            self.axes_corriente.legend()
         self.canvas_corriente.draw()
 
     def on_colourFaseAvoltaje(self, event):
@@ -498,13 +541,43 @@ class Aplicacion ( wx.Frame ):
         self.dibujar_voltaje()
 
     def on_faseA_corriente(self, event):
-        self.dibujar_corriente()
+        #Caso en que se este haciendo la seleccion manual
+        if not self.manual:
+            if self.m_checkBox4.IsChecked():
+                self.m_staticText5.SetLabel("Falla en fase A")
+                self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
+            else:
+                self.m_staticText5.SetLabel("Seleccione la fase en falla")
+                self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
+        ######################################TERMINAR DE REVISAR QUE SOLO SE HABILITE UNO PARA EXTRAER LA FASE EN FALLA
+            if self.m_checkBox5.IsChecked():
+                self.m_checkBox5.SetValue(False)
+            if self.m_checkBox6.IsChecked():
+                self.m_checkBox6.SetValue(False)
+        else:
+            self.dibujar_corriente()
 
     def on_faseB_corriente(self, event):
-        self.dibujar_corriente()
+        #Caso en que se este haciendo la seleccion manual
+        if not self.manual:
+            if self.m_checkBox4.IsChecked():
+                self.m_checkBox4.SetValue(False)
+            if self.m_checkBox6.IsChecked():
+                self.m_checkBox6.SetValue(False)
+        else:
+            self.dibujar_corriente()
 
     def on_faseC_corriente(self, event):
-        self.dibujar_corriente()
+        #Caso en que se este haciendo la seleccion manual
+        if not self.manual:
+            
+            if self.m_checkBox4.IsChecked():
+                self.m_checkBox4.SetValue(False)
+            if self.m_checkBox5.IsChecked():
+                self.m_checkBox5.SetValue(False)
+                
+        else:
+            self.dibujar_corriente()
     
     def inicializar(self):
         
@@ -522,25 +595,6 @@ class Aplicacion ( wx.Frame ):
         self.inicioPreFalla =0
         self.sale=False
         self.click=False
-        
-  
-        
-        
-        self.m_checkBox1.Enable(False)
-        self.m_checkBox1.Enable(False)
-        self.m_checkBox2.Enable(False)
-        self.m_checkBox3.Enable(False)
-        self.m_checkBox4.Enable(False)
-        self.m_checkBox5.Enable(False)
-        self.m_checkBox6.Enable(False)
-                    
-        
-        self.m_checkBox1.SetValue(False)
-        self.m_checkBox2.SetValue(False)
-        self.m_checkBox3.SetValue(False)
-        self.m_checkBox4.SetValue(False)
-        self.m_checkBox5.SetValue(False)
-        self.m_checkBox6.SetValue(False)
         
         self.Ia=[]
         self.Ib=[]
@@ -724,12 +778,12 @@ class Aplicacion ( wx.Frame ):
             seleccion=wx.MessageDialog(None, 'Seleccione el ciclo prefalla y ciclo de falla en la grafica', 'Seleccion de ciclos',  style=wx.OK)
             seleccion.ShowModal()
             self.inicioPreFalla=0
+            
             self.grafica_dentro_panel()
             
         else:
             seleccion=wx.MessageDialog(None, 'Se realizo automaticamente la seleccion de los ciclos', 'Seleccion automatica exitosa',  style=wx.OK)
             seleccion.ShowModal()
-            self.m_checkBox1.Enable(True)
             self.m_checkBox1.Enable(True)
             self.m_checkBox2.Enable(True)
             self.m_checkBox3.Enable(True)
@@ -810,14 +864,22 @@ class Aplicacion ( wx.Frame ):
         #self.ax = self.figa.add_subplot(1,1,1)
     
     def grafica_dentro_panel(self):
+        
+        self.m_staticText5.SetLabel("Seleccione la fase en falla")
+        self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
+        
         self.axes_corriente.clear()
         
         self.axes_corriente.set_xlabel('t')
         self.axes_corriente.set_ylabel('I(t)')
         
-        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
-        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
-        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+        self.m_checkBox4.Enable(True)
+        self.m_checkBox5.Enable(True)
+        self.m_checkBox6.Enable(True)
+        
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+        self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
         self.axes_corriente.set_title('Seleccione el ciclo prefalla')
         #self.axes_corriente.title(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
         self.axes_corriente.legend()  # Creamos la caja con la leyenda
@@ -848,42 +910,6 @@ class Aplicacion ( wx.Frame ):
             self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))'''
         #self.canvas_corriente.draw()
     
-    
-    def analisis_grafica(self):
-        
-        
-        #prueba=cm.comtrade(carpeta, nombre)
-        #prueba.config()
-        #prueba.extraerDatos()
-        
-        #A=prueba.oscilografia[:,11]
-        #B=prueba.oscilografia[:,10]
-        #C=prueba.oscilografia[:,9]
-        
-        #Figura que contiene la grafica de las senhales
-        self.fig4 = plt.figure('Seleccion manual')
-        plt.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
-        plt.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
-        plt.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
-        plt.suptitle(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
-        plt.legend()  # Creamos la caja con la leyenda
-        
-        
-        #self.Bind(wx.EVT_MOVE, self.on_move, self.figa)
-        #self.Bind(wx.EVT_MOUSE_AUX1_DCLICK, self.on_click, self.figa)
-        binding_id = plt.connect('motion_notify_event', self.on_move)
-        plt.connect('button_press_event', self.on_click)
-        
-        if "test_disconnect" in sys.argv:
-            print("disconnecting console coordinate printout...")
-            plt.disconnect(binding_id)
-        
-        
-        #plt.ion()  # Ponemos el modo interactivo
-        #plt.axvspan(-0.5,0.5, alpha = 0.25)
-        plt.show(False)
-        plt.draw()
-        plt.close(self.fig3)
         
 
     def on_move(self,event):
@@ -908,9 +934,9 @@ class Aplicacion ( wx.Frame ):
                     #Titulo para el caso de asignar el ciclo de falla
                     self.axes_corriente.set_title('Seleccione el ciclo en que ocurre la falla')
                 
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],'g',label='A')
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],'r',label='B')
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],'y',label='C')
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
                 #Creamos la caja con la leyenda
                 self.axes_corriente.legend()
                 #Condicional para que no se desplace fuera de la grafica   
@@ -920,7 +946,11 @@ class Aplicacion ( wx.Frame ):
                 #plt.draw()
                 #self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
                 
-                
+    '''
+    se debe activar cuando self.sale esta en true, se este haciendo la seleccion manual
+    
+    por lo que el caso es monofasico se puede solo habilitar uno
+    '''            
                 
                 
                 
@@ -946,19 +976,15 @@ class Aplicacion ( wx.Frame ):
                 #Se selecciona el ciclo de falla en el segundo click
                 else:
                     print ('falla en click esta en '+str(self.inicioPreFalla))
-                    print ('self.inicioFalla en click esta en '+str(self.inicioFalla))
+                    #print ('self.inicioFalla en click esta en '+str(self.inicioFalla))
                     self.inicioFalla=int(event.xdata)
                     self.finFalla=self.inicioFalla+32
                     #codigo utilizado para habilitar las graficas de los canales de transmision
                 
                     
                     self.m_checkBox1.Enable(True)
-                    self.m_checkBox1.Enable(True)
                     self.m_checkBox2.Enable(True)
-                    self.m_checkBox3.Enable(True)
-                    self.m_checkBox4.Enable(True)
-                    self.m_checkBox5.Enable(True)
-                    self.m_checkBox6.Enable(True)
+                    self.m_checkBox3.Enable(True)                    
                         
                     self.m_checkBox1.SetValue(True)
                     self.m_checkBox2.SetValue(True)
@@ -993,7 +1019,7 @@ class Aplicacion ( wx.Frame ):
         self.IB=np.dot(self.u,self.ib)
         self.IC=np.dot(self.u,self.ic)
         self.IN=np.dot(self.u,self.i1n)
-        ########VARIABLE NECESARIA PARA EL CALCULO DE TAKAGI, PARA ESTO ES NECESARIO CONOCER LA FASE EN FALLA
+        #VARIABLE NECESARIA PARA EL CALCULO DE TAKAGI, PARA ESTO ES NECESARIO CONOCER LA FASE EN FALLA
         self.VA=np.dot(self.u,self.va)
         self.VB=np.dot(self.u,self.vb)
         self.VC=np.dot(self.u,self.vc)
@@ -1035,27 +1061,31 @@ class Aplicacion ( wx.Frame ):
         
         print (self.m_textCtrl2.GetValue()) 
         
-        variables=[]
+        v=[]
         
-        variables=casos[self.m_textCtrl2.GetValue()]
+        v=casos[self.m_textCtrl2.GetValue()]
         
-        print(variables)  
+        print(v)  
+        if self.m_textCtrl2.GetValue() == 'A' or self.m_textCtrl2.GetValue() == 'B' or self.m_textCtrl2.GetValue() == 'C':
+            If=v[0]-v[1]
+            a= If/(3*v[2])
+            T= np.angle(a)
+            s= np.exp(-T*1j)
+            v[2]=complex(v[2].real,-v[2].imag)
+            x=(v[3]*v[2]*s).imag/(Z*v[0]*v[2]*s).imag
+            return str(x)
+        print ('el resultado es'+str(x))
         
+        
+        '''original
         If=self.IA-self.Ipre[0]
-
-
         a= If/(3*self.I0)
         T= np.angle(a)
-
         s= np.exp(-T*1j)
-
-
         self.I0=complex(self.I0.real,-self.I0.imag)
-
-        #print(s)
         x=(self.VA*self.I0*s).imag/(Z*self.IA*self.I0*s).imag
-        #print(x)
         return str(x)
+        print ('el otro resultado es'+str(x))'''
     
     #def reporte(self):
         
@@ -1090,7 +1120,7 @@ class Aplicacion ( wx.Frame ):
         """
         info = wx.AboutDialogInfo()
         info.SetIcon(wx.Icon('labe.png', wx.BITMAP_TYPE_PNG))
-        info.SetName('Localizados de fallas')
+        info.SetName('Localizador de fallas')
         info.SetVersion('1.0')
         info.SetDescription(description)
         info.SetCopyright('(C) 2016 LABE-EEC')

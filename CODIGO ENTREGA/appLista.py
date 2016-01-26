@@ -4,6 +4,7 @@ import wx.xrc
 import math
 import matplotlib
 import xlrd
+from compiler.ast import Break
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
@@ -68,8 +69,9 @@ class Aplicacion ( wx.Frame ):
         self.m_menu21.AppendItem( self.m_menuItem6 )
         
         self.m_menuItem7 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato xls", wx.EmptyString, wx.ITEM_NORMAL )
+        self.Bind(wx.EVT_MENU, self.on_import_excel, self.m_menuItem7)
         self.m_menu21.AppendItem( self.m_menuItem7 )
-        self.m_menuItem7.Enable( False )
+        #self.m_menuItem7.Enable( False )
         
         self.m_menu1.AppendSubMenu( self.m_menu21, u"Importar" )
         
@@ -425,7 +427,7 @@ class Aplicacion ( wx.Frame ):
         
         bSizer23 = wx.BoxSizer( wx.VERTICAL )
         #Imagen del logo del laboratorio
-        png = wx.Image('labe.png', wx.BITMAP_TYPE_PNG)      
+        png = wx.Image('LOGO_LABE.png', wx.BITMAP_TYPE_PNG)      
         #self.algo = wx.StaticBitmap(self.m_panel4, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
         self.algo = wx.StaticBitmap(self.m_panel4, -1, wx.BitmapFromImage(png),(10, 10), (png.GetWidth(), png.GetHeight()))
         
@@ -466,6 +468,13 @@ class Aplicacion ( wx.Frame ):
         self.Layout()
         self.Centre( wx.BOTH )
         
+        self.manual=True
+        self.faseA=False
+        self.faseB=False
+        self.faseC=False
+        self.carga=False
+        
+        
         
 
 
@@ -474,15 +483,25 @@ class Aplicacion ( wx.Frame ):
         self.axes_voltaje.clear()
         self.axes_voltaje.set_xlabel('t')
         self.axes_voltaje.set_ylabel('V(t)')
-        if (self.m_checkBox1.IsChecked()):
-            self.axes_voltaje.plot(self.va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
-            self.axes_voltaje.legend()
-        if (self.m_checkBox2.IsChecked()):
-            self.axes_voltaje.plot(self.vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
-            self.axes_voltaje.legend()
-        if (self.m_checkBox3.IsChecked()):
-            self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-            self.axes_voltaje.legend()
+        
+        
+        if self.manual and self.carga:
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,8],color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,7],color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,6],color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+        if not self.manual and self.sale:
+                       
+            if (self.m_checkBox1.IsChecked()):
+                self.axes_voltaje.plot(self.va,color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+                self.axes_voltaje.legend()
+            if (self.m_checkBox2.IsChecked()):
+                self.axes_voltaje.plot(self.vb,color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+                self.axes_voltaje.legend()
+            if (self.m_checkBox3.IsChecked()):
+                self.axes_voltaje.plot(self.vc,color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+                self.axes_voltaje.legend()
+            
+        
         
         
         self.m_textCtrl1.SetValue("Monofasica")
@@ -496,21 +515,38 @@ class Aplicacion ( wx.Frame ):
         self.axes_corriente.clear()
         self.axes_corriente.set_xlabel('t')
         self.axes_corriente.set_ylabel('I(t)')
-        if (self.m_checkBox4.IsChecked()):
-            self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
-            self.axes_corriente.legend()
-        if (self.m_checkBox5.IsChecked()):
-            self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
-            self.axes_corriente.legend()
-        if (self.m_checkBox6.IsChecked()):
-            self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-            self.axes_corriente.legend()
-        if not self.manual:
+        if self.manual and self.carga:
+            #Caso en que ya se haya seleccionado la fase en falla
+            if self.faseA or self.faseB or self.faseC:
+                self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+            else:
+                self.axes_corriente.set_title('Seleccione la fase en falla')
+                self.m_staticText5.SetLabel("Seleccione la fase en falla")
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-            self.axes_corriente.set_title('Seleccione el ciclo prefalla')
             self.axes_corriente.legend()
+        if not self.manual and self.sale:
+            self.m_staticText5.SetLabel("Seleccion de fase y color de corriente")
+            self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
+            
+            if self.faseA:
+                self.m_checkBox4.Enable(False)
+            if self.faseB:
+                self.m_checkBox5.Enable(False)
+            if self.faseC:
+                self.m_checkBox6.Enable(False)
+                
+            if (self.m_checkBox4.IsChecked()):
+                self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+                self.axes_corriente.legend()
+            if (self.m_checkBox5.IsChecked()):
+                self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+                self.axes_corriente.legend()
+            if (self.m_checkBox6.IsChecked()):
+                self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+                self.axes_corriente.legend()
+        
         self.canvas_corriente.draw()
 
     def on_colourFaseAvoltaje(self, event):
@@ -542,34 +578,106 @@ class Aplicacion ( wx.Frame ):
 
     def on_faseA_corriente(self, event):
         #Caso en que se este haciendo la seleccion manual
-        if not self.manual:
+        if self.manual:
+            #Caso en que la fase A esta seleccionada y se habilita la seleccion de las fallas
             if self.m_checkBox4.IsChecked():
+                self.faseA=True
+                #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+                self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase A")
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
+            #Caso en que la fase A esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
             else:
+                self.grafica_dentro_panel()
+                self.faseA=False
                 self.m_staticText5.SetLabel("Seleccione la fase en falla")
                 self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
         ######################################TERMINAR DE REVISAR QUE SOLO SE HABILITE UNO PARA EXTRAER LA FASE EN FALLA
+            #Caso en que la fase B esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
             if self.m_checkBox5.IsChecked():
+                self.faseB=False
                 self.m_checkBox5.SetValue(False)
+            #Caso en que la fase C esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
             if self.m_checkBox6.IsChecked():
+                self.faseC=False
                 self.m_checkBox6.SetValue(False)
+        #Caso en que se este haciendo la seleccion manual
         else:
             self.dibujar_corriente()
 
     def on_faseB_corriente(self, event):
         #Caso en que se este haciendo la seleccion manual
-        if not self.manual:
+        if self.manual:
+            #Caso en que la fase B esta seleccionada y se habilita la seleccion de las fallas
+            if self.m_checkBox5.IsChecked():
+                self.faseB=True
+                self.dibujar_corriente()
+                #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+                self.m_staticText5.SetLabel("Falla en fase B")
+                self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
+            #Caso en que la fase B esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
+            else:
+                self.grafica_dentro_panel()
+                self.faseB=False
+                self.m_staticText5.SetLabel("Seleccione la fase en falla")
+                self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
+        ######################################TERMINAR DE REVISAR QUE SOLO SE HABILITE UNO PARA EXTRAER LA FASE EN FALLA
+            #Caso en que la fase A esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
+            if self.m_checkBox4.IsChecked():
+                self.faseA=False
+                self.m_checkBox4.SetValue(False)
+            #Caso en que la fase C esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
+            if self.m_checkBox6.IsChecked():
+                self.faseC=False
+                self.m_checkBox6.SetValue(False)
+        #Caso en que se este haciendo la seleccion manual
+        else:
+            self.dibujar_corriente()
+            
+        
+        
+        
+        '''#Caso en que se este haciendo la seleccion manual
+        if self.manual:
             if self.m_checkBox4.IsChecked():
                 self.m_checkBox4.SetValue(False)
             if self.m_checkBox6.IsChecked():
                 self.m_checkBox6.SetValue(False)
         else:
-            self.dibujar_corriente()
+            self.dibujar_corriente()'''
 
     def on_faseC_corriente(self, event):
         #Caso en que se este haciendo la seleccion manual
-        if not self.manual:
+        if self.manual:
+            #Caso en que la fase C esta seleccionada y se habilita la seleccion de las fallas
+            if self.m_checkBox6.IsChecked():
+                self.faseC=True
+                #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+                self.dibujar_corriente()
+                self.m_staticText5.SetLabel("Falla en fase C")
+                self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
+            #Caso en que la fase C esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
+            else:
+                self.grafica_dentro_panel()
+                self.faseC=False
+                self.m_staticText5.SetLabel("Seleccione la fase en falla")
+                self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
+        ######################################TERMINAR DE REVISAR QUE SOLO SE HABILITE UNO PARA EXTRAER LA FASE EN FALLA
+            #Caso en que la fase A esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
+            if self.m_checkBox4.IsChecked():
+                self.faseA=False
+                self.m_checkBox4.SetValue(False)
+            #Caso en que la fase B esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
+            if self.m_checkBox5.IsChecked():
+                self.faseB=False
+                self.m_checkBox5.SetValue(False)
+        #Caso en que se este haciendo la seleccion manual
+        else:
+            self.dibujar_corriente()
+        
+        
+        '''#Caso en que se este haciendo la seleccion manual
+        if self.manual:
             
             if self.m_checkBox4.IsChecked():
                 self.m_checkBox4.SetValue(False)
@@ -577,24 +685,38 @@ class Aplicacion ( wx.Frame ):
                 self.m_checkBox5.SetValue(False)
                 
         else:
-            self.dibujar_corriente()
+            self.dibujar_corriente()'''
     
     def inicializar(self):
         
+        #Se dibujan nuevamente los paneles de voltaje y de corriente
         self.axes_corriente.clear()
         self.canvas_corriente.draw()
         self.axes_voltaje.clear()
         self.canvas_voltaje.draw()
         
-        self.manual=False
+        #Se inicializa el valor de los text control
+        self.m_textCtrl2.SetValue("")
+        self.m_textCtrl3.SetValue("")
         
-        
-        #Se deja en blanco la lista de los canales que se encuentran en falla
-        self.canales_falla=[]
-        
+        #Se inicializan variables de control
+        self.faseA=False
+        self.faseB=False
+        self.faseC=False
+        self.manual=True
+        self.carga=True
         self.inicioPreFalla =0
         self.sale=False
-        self.click=False
+        self.click1=False
+        self.click2=False
+        self.xant=0
+        self.yant=0
+        
+        #Se inicializan variables de almacenamiento de datos
+        
+        self.lista=[]
+        
+        self.muestras=[]
         
         self.Ia=[]
         self.Ib=[]
@@ -612,9 +734,6 @@ class Aplicacion ( wx.Frame ):
         self.VB=0
         self.VC=0
     
-        #self.V=0
-        #self.Vb=0
-
         self.ia=[]
         self.ib=[]
         self.ic=[]
@@ -629,14 +748,27 @@ class Aplicacion ( wx.Frame ):
         self.Ipre=[]
         
         self.total=[]
-
+        
+        #Se deshabilitan los check box 
+        self.m_checkBox1.Enable(False)
+        self.m_checkBox2.Enable(False)
+        self.m_checkBox3.Enable(False)                    
+        self.m_checkBox4.Enable(False)
+        self.m_checkBox5.Enable(False)
+        self.m_checkBox6.Enable(False)
+                        
+        self.m_checkBox1.SetValue(False)
+        self.m_checkBox2.SetValue(False)
+        self.m_checkBox3.SetValue(False)
+        self.m_checkBox4.SetValue(False)
+        self.m_checkBox5.SetValue(False)
+        self.m_checkBox6.SetValue(False)
 
         N=32
         self.T1=np.arange(0,(N-1)*2*math.pi/N+0.001,2*math.pi/N)
-        #T1=0:2*math.pi/N:(N-1)*2*math.pi/N;
         self.u=2*np.exp(np.multiply(1j,self.T1))/(math.sqrt(3)*N);
 
-    #Funcion que se invoca en el evento de importacion de los datos
+    #Funcion que se invoca en el evento de importacion de los datos desde el comtrade
     def on_import_file(self, event):
         # Podemos crear un evento extra para abrir un fichero de texto
         """ Abrir un fichero"""
@@ -650,8 +782,6 @@ class Aplicacion ( wx.Frame ):
         if dlg.ShowModal() == wx.ID_OK:
             self.inicializar()     
             
-            print ('inicio desp ini esta en '+str(self.inicioPreFalla))
-                   
             self.dirname = dlg.GetDirectory()   # Y el directorio            
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
 
@@ -665,11 +795,79 @@ class Aplicacion ( wx.Frame ):
             self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
             self.objetoComtrade.extraerListas()
             self.cargar_datos(self.objetoComtrade.arreglo)
+            
             #Se habilita el modulo de exportacion de los datos en formato de excel
             self.m_menuItem2.Enable(True)
         # Finalmente destruimos la ventana de dialogo    
         dlg.Destroy()   
+    
+    
+    
+    #Funcion que se invoca en el evento de importacion de los datos desde un archivo excel
+    def on_import_excel(self, event):
+        # Podemos crear un evento extra para abrir un fichero de texto
+        """ Abrir un fichero"""
         
+        #Llamado a la funcion para inicializar los self.Valores, lo que permite
+        #hacer self.Varios import durante la ejecucion de la aplicacion
+        self.dirname = self.actual
+
+        dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.xls" , wx.OPEN)
+        # Si se selecciona alguno => OK
+        if dlg.ShowModal() == wx.ID_OK:
+            self.inicializar()     
+            
+            self.dirname = dlg.GetDirectory()   # Y el directorio            
+            self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
+            
+            #print(self.dirname)
+            #print(self.filename)
+            
+            libro = xlrd.open_workbook(self.dirname+"/"+self.filename)
+            if (libro != 0):
+                
+                temporal=[]
+                
+
+                for r in range(int(libro.nsheets)):
+                    if libro.sheet_by_index(r).name == "Datos":
+                        p = r
+                    pest = libro.sheet_by_index(p)
+                for j in range(pest.nrows):
+                    temporal=[]
+                    for i in range(pest.ncols):
+                        if i==0:
+                            self.muestras.append(pest.cell_value(rowx=j, colx=i))
+                        elif not i ==1:
+                            temporal.append(pest.cell_value(rowx=j, colx=i))
+                    
+                    self.lista.append(temporal)
+            del self.lista[0]
+            del self.muestras[0]
+            print(self.lista)
+            print(self.muestras)
+            self.cargar_datos(self.lista)
+            
+            #print(len(lista))
+            #print(lista)
+            
+            
+
+            '''self.filename= self.filename.split('.')[0]
+            
+            #Objeto de tipo comtrade creado a partir del archivo contrade .CFG Y .DAT
+            self.objetoComtrade=claseComtrade.comtrade(self.dirname, self.filename)
+            
+            self.objetoComtrade.config()
+            self.objetoComtrade.extraerDatos()
+            self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
+            self.objetoComtrade.extraerListas()
+            self.cargar_datos(self.objetoComtrade.arreglo)
+            #Se habilita el modulo de exportacion de los datos en formato de excel
+            self.m_menuItem2.Enable(True)'''
+        # Finalmente destruimos la ventana de dialogo    
+        dlg.Destroy()  
+    
         
     #Funcion que se invoca en el evento de exportacion de los datos    
     def on_export_file(self, event):
@@ -697,7 +895,7 @@ class Aplicacion ( wx.Frame ):
         #Se extraen los datos del arreglo proveniente de la importacion
         #de los archivos en el formato comtrade
         #For que se hace en el numero de columnas, 6
-        #print(arreglo[0])
+        print(len(arreglo))
         for i in range(len(arreglo[0])):
             #For que se hace en el numero de filas, 832
             for j in range(len(arreglo)):
@@ -728,57 +926,54 @@ class Aplicacion ( wx.Frame ):
         ###################################################################################
                     
         #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
-        [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
+        if (len(self.lista)>0):
+            [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.muestras,self.Ia)
+        else:
+            [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
         #print ("Ic"+str(sirve))        
         
-        if (sirve==1 and not self.manual):
+        if (sirve==1 and self.manual):
             
             self.m_textCtrl2.SetValue("C")
-            self.canales_falla.append('C')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.manual=True
+            self.manual=False
+            self.faseC=True
+            
+        
         
         #Procedimiento para verificar si la señal de la FASE B se puede analizar de forma automatica
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,10])
-        if (sirve==1 and not self.manual):
+        if (sirve==1 and self.manual):
             
             self.m_textCtrl2.SetValue("B")
-            self.canales_falla.append('B')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.manual=True
+            self.manual=False
+            self.faseB=True
+        
         
         #Procedimiento para verificar si la señal de la FASE A se puede analizar de forma automatica            
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,11])
-        if (sirve==1 and not self.manual):
+        if (sirve==1 and self.manual):
             
             self.m_textCtrl2.SetValue("A")
-            self.canales_falla.append('A')
             self.inicioFalla=iniFalla
             self.finFalla=self.inicioFalla+32
             self.inicioPreFalla=iniPre
             self.finPreFalla=self.inicioPreFalla+32
-            self.manual=True
-        #A=self.objetoComtrade.oscilografia[:,11]
-        #B=self.objetoComtrade.oscilografia[:,10]
-        #C=self.objetoComtrade.oscilografia[:,9]
-        
-        #self.objetoGrafico=claseGraficas.graficas(self.dirname, self.filename,self.objetoComtrade.oscilografia)
-        #self.objetoGrafico.analisis_grafica()
-        
-        #self.inicializar_grafica()
-        
-        #self.manual=False
-        if not self.manual:
+            self.manual=False
+            self.faseA=True
+
+        if self.manual:
             seleccion=wx.MessageDialog(None, 'Seleccione el ciclo prefalla y ciclo de falla en la grafica', 'Seleccion de ciclos',  style=wx.OK)
             seleccion.ShowModal()
             self.inicioPreFalla=0
-            
+            self.sale=False
             self.grafica_dentro_panel()
             
         else:
@@ -799,10 +994,12 @@ class Aplicacion ( wx.Frame ):
             self.m_checkBox6.SetValue(True)
             self.asignarFalla()
             self.asignarPreFalla()
+            self.sale=True
             self.dibujar_voltaje()
             self.dibujar_corriente()
             self.m_textCtrl3.SetValue(self.takagi())
-            self.sale=True
+            #self.sale=True
+            #self.manual=True
         
         #self.analisis_grafica()
         
@@ -865,8 +1062,18 @@ class Aplicacion ( wx.Frame ):
     
     def grafica_dentro_panel(self):
         
+        #Grafica de voltaje
+        self.dibujar_voltaje()
+        
+        #Texto indicador
         self.m_staticText5.SetLabel("Seleccione la fase en falla")
         self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
+        
+        #Variables de control
+        self.inicioPreFalla =0
+        self.inicioFalla=0
+        self.sale=False
+        #self.click=False
         
         self.axes_corriente.clear()
         
@@ -880,13 +1087,15 @@ class Aplicacion ( wx.Frame ):
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-        self.axes_corriente.set_title('Seleccione el ciclo prefalla')
+        self.axes_corriente.set_title('Seleccione la fase en falla')
         #self.axes_corriente.title(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
         self.axes_corriente.legend()  # Creamos la caja con la leyenda
         
-        binding_id = self.canvas_corriente.mpl_connect('motion_notify_event', self.on_move)
-        self.canvas_corriente.mpl_connect('button_press_event', self.on_click)
         
+        
+        binding_id = self.canvas_corriente.mpl_connect('motion_notify_event', self.on_move)
+        #self.canvas_corriente.mpl_connect('button_press_event', self.on_click)
+        self.canvas_corriente.mpl_connect('button_release_event', self.on_click)
         self.canvas_corriente.draw()
     
         
@@ -917,7 +1126,7 @@ class Aplicacion ( wx.Frame ):
         x, y = event.x, event.y
 
         if event.inaxes:
-            if not self.sale:
+            if not self.sale and (self.faseA or self.faseB or self.faseC):
                 ax = event.inaxes  # the axes instance
                 #print('data coords %f %f' % (event.xdata, event.ydata))
                 self.axes_corriente.clear()
@@ -927,10 +1136,12 @@ class Aplicacion ( wx.Frame ):
                 #print ('inicio on move esta en '+str(self.inicioPreFalla))
                 
                 #if (self.inicioPreFalla==0):
-                if not self.click:
+                
+                ##############REVISAR PORQUE EN EL MODO AUTOMATICO LA SEGUNDA VEZ NO ENTRA AL SEGUNDO CLICK ######################
+                if not self.click1:
                     #Titulo para el caso de asignar el ciclo prefalla
                     self.axes_corriente.set_title('Seleccione el ciclo prefalla')
-                else:
+                if self.click2:
                     #Titulo para el caso de asignar el ciclo de falla
                     self.axes_corriente.set_title('Seleccione el ciclo en que ocurre la falla')
                 
@@ -946,61 +1157,61 @@ class Aplicacion ( wx.Frame ):
                 #plt.draw()
                 #self.axes_corriente.axvspan(event.xdata,event.xdata+32, alpha = 0.25)
                 
-    '''
-    se debe activar cuando self.sale esta en true, se este haciendo la seleccion manual
-    
-    por lo que el caso es monofasico se puede solo habilitar uno
-    '''            
-                
-                
-                
-            
 
 
     def on_click(self,event):
         # get the x and y coords, flip y from top to bottom
         x, y = event.x, event.y
-        if event.button == 1:
-            if event.inaxes is not None and not self.sale:
-                #print ('inicio prefalla esta en '+str(self.inicioPreFalla))
-                #print('data coords %f %f' % (event.xdata, event.ydata))
-                #Se selecciona el ciclo de prefalla en el primer click
-                
-                
-                #if (self.inicioPreFalla==0):
-                if not self.click:
-                    print ('pre en click esta en '+str(self.inicioPreFalla))
-                    self.inicioPreFalla=int(event.xdata)
-                    self.finPreFalla=self.inicioPreFalla+32
-                    self.click=True
-                #Se selecciona el ciclo de falla en el segundo click
-                else:
-                    print ('falla en click esta en '+str(self.inicioPreFalla))
-                    #print ('self.inicioFalla en click esta en '+str(self.inicioFalla))
-                    self.inicioFalla=int(event.xdata)
-                    self.finFalla=self.inicioFalla+32
-                    #codigo utilizado para habilitar las graficas de los canales de transmision
-                
+        if  x != self.xant and y != self.yant:
+            if event.button == 1:
+                if event.inaxes:
+                    if not self.sale and (self.faseA or self.faseB or self.faseC):
+                        #Se selecciona el ciclo de prefalla en el primer click
+                        if not self.click1:
+                            self.inicioPreFalla=int(event.xdata)
+                            self.finPreFalla=self.inicioPreFalla+32
+                            #self.click=True
+                            
+                        #Se selecciona el ciclo de falla en el segundo click                        
+                        if self.click2:
+                            self.inicioFalla=int(event.xdata)
+                            self.finFalla=self.inicioFalla+32
+                            #codigo utilizado para habilitar las graficas de los canales de transmision
                     
-                    self.m_checkBox1.Enable(True)
-                    self.m_checkBox2.Enable(True)
-                    self.m_checkBox3.Enable(True)                    
                         
-                    self.m_checkBox1.SetValue(True)
-                    self.m_checkBox2.SetValue(True)
-                    self.m_checkBox3.SetValue(True)
-                    self.m_checkBox4.SetValue(True)
-                    self.m_checkBox5.SetValue(True)
-                    self.m_checkBox6.SetValue(True)
-                    self.asignarFalla()
-                    self.asignarPreFalla()
-                    self.dibujar_voltaje()
-                    self.dibujar_corriente()
-                    self.m_textCtrl3.SetValue(self.takagi())
-                    self.sale=True
- 
+                            self.m_checkBox1.Enable(True)
+                            self.m_checkBox2.Enable(True)
+                            self.m_checkBox3.Enable(True)                    
+                            
+                            self.m_checkBox1.SetValue(True)
+                            self.m_checkBox2.SetValue(True)
+                            self.m_checkBox3.SetValue(True)
+                            self.m_checkBox4.SetValue(True)
+                            self.m_checkBox5.SetValue(True)
+                            self.m_checkBox6.SetValue(True)
+                        
+                            if self.faseA:
+                                self.m_textCtrl2.SetValue("A")
+                            if self.faseB:
+                                self.m_textCtrl2.SetValue("B")
+                            if self.faseC:
+                                self.m_textCtrl2.SetValue("C")    
+                            #self.click=False
+                            self.asignarFalla()
+                            self.asignarPreFalla()
+                            self.sale=True
+                            self.manual=False
+                            self.dibujar_voltaje()
+                            self.dibujar_corriente()
+                        
+                            self.m_textCtrl3.SetValue(self.takagi())
+                            
+                        
+                        self.click1=True
+                        self.click2=True
+                        self.xant=x
+                        self.yant=y
     
-
     def asignarFalla(self):
         a=(-1+np.multiply(math.sqrt(3),1j))/2;
         Tfs=[[1,1,1],[1,np.power(a,2),a],[1,a,np.power(a,2)]]
@@ -1046,9 +1257,15 @@ class Aplicacion ( wx.Frame ):
             self.iprea.append(self.Ia[x])
             self.ipreb.append(self.Ib[x])
             self.iprec.append(self.Ic[x])
+        
+        #print('iprea '+str(len(self.iprea)))
+        #print('ipre '+str(len(self.Ipre)))
+        #print('inicio prefalla '+str(self.inicioPreFalla))
+        #print('fin prefalla '+str(self.finPreFalla))
         self.Ipre.append(np.dot(self.u,self.iprea))
         self.Ipre.append(np.dot(self.u,self.ipreb))
         self.Ipre.append(np.dot(self.u,self.iprec))
+        #print(self.Ipre)
 
     def takagi(self):
         Z= complex(0.72721,0.0016198)
@@ -1059,13 +1276,13 @@ class Aplicacion ( wx.Frame ):
         
         casos = { 'A': [self.IA,self.Ipre[0],self.I0,self.VA], 'B': [self.IB,self.Ipre[1],self.I1,self.VB], 'C': [self.IC,self.Ipre[2],self.I2,self.VA] }
         
-        print (self.m_textCtrl2.GetValue()) 
+        #print (self.m_textCtrl2.GetValue()) 
         
         v=[]
         
         v=casos[self.m_textCtrl2.GetValue()]
         
-        print(v)  
+        #print(v)  
         if self.m_textCtrl2.GetValue() == 'A' or self.m_textCtrl2.GetValue() == 'B' or self.m_textCtrl2.GetValue() == 'C':
             If=v[0]-v[1]
             a= If/(3*v[2])
@@ -1074,7 +1291,6 @@ class Aplicacion ( wx.Frame ):
             v[2]=complex(v[2].real,-v[2].imag)
             x=(v[3]*v[2]*s).imag/(Z*v[0]*v[2]*s).imag
             return str(x)
-        print ('el resultado es'+str(x))
         
         
         '''original
@@ -1119,7 +1335,7 @@ class Aplicacion ( wx.Frame ):
         Contacto: labe_fibog@unal.edu.co
         """
         info = wx.AboutDialogInfo()
-        info.SetIcon(wx.Icon('labe.png', wx.BITMAP_TYPE_PNG))
+        info.SetIcon(wx.Icon('LOGO_LABE.png', wx.BITMAP_TYPE_PNG))
         info.SetName('Localizador de fallas')
         info.SetVersion('1.0')
         info.SetDescription(description)

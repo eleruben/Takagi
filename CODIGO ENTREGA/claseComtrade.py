@@ -71,6 +71,7 @@ class comtrade(object):
                 "samples":[
                     ]
                 },
+            #Tiempo de lectura
             "date-time-init":{
                 "dd":"",
                 "mm":"",
@@ -79,6 +80,7 @@ class comtrade(object):
                 "min":"",
                 "ss":""
                 },
+            #Tiempo de disparo
             "date-time-trigger":{
                 "dd":"",
                 "mm":"",

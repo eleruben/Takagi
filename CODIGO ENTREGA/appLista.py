@@ -63,6 +63,7 @@ class Aplicacion ( wx.Frame ):
         self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem1)
         self.m_menu1.AppendSeparator()
         
+        #Todavia no estan habilitados los dos modulos de importacion, REVISAR
         self.m_menu21 = wx.Menu()
         self.m_menuItem6 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato CFG", wx.EmptyString, wx.ITEM_NORMAL )
         self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem6)
@@ -71,6 +72,7 @@ class Aplicacion ( wx.Frame ):
         self.m_menuItem7 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato xls", wx.EmptyString, wx.ITEM_NORMAL )
         self.Bind(wx.EVT_MENU, self.on_import_excel, self.m_menuItem7)
         self.m_menu21.AppendItem( self.m_menuItem7 )
+        #self.m_menuItem7.Enable( False )
         #self.m_menuItem7.Enable( False )
         
         self.m_menu1.AppendSubMenu( self.m_menu21, u"Importar" )
@@ -313,35 +315,55 @@ class Aplicacion ( wx.Frame ):
         panelUbicacionSizer = wx.BoxSizer( wx.HORIZONTAL )
         self.m_panelUbicacion = wx.Panel( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         retorno=Circuito.Grafos()
+        #Colocar la distancia que se extrae del metodo de localizacion REVISAR
         distancia=13
-        Grafo=Circuito.punto_falla(retorno,distancia)
+        self.Grafo=Circuito.punto_falla(retorno,distancia)
+        #Circuito.imprimir_grafo(Grafo)
         #Circuito.imprimir_grafo(imprimible)
-        color=nx.get_node_attributes(Grafo,'color')
-        self.Values = [color.get(node, 50) for node in Grafo.nodes()]
+        color=nx.get_node_attributes(self.Grafo,'color')
+        self.Values = [color.get(node, 50) for node in self.Grafo.nodes()]
         #imprimible de circuito
-        pos=nx.get_node_attributes(Grafo,'pos')
+        pos=nx.get_node_attributes(self.Grafo,'pos')
         #print("las posiciones son "+str(pos))
         etiquetas={}
         for n in pos.keys():
             #print(str(n)+" tiene "+str(pos[n][0]))
             etiquetas[n]=[pos[n][0]+0.5,pos[n][1]+0.5]
             #print("la posicion de las etiquetas son "+str(etiquetas))
-            color=nx.get_node_attributes(Grafo,'color')
+            color=nx.get_node_attributes(self.Grafo,'color')
         
+        self.press = None
+        self.cur_xlim = None
+        self.cur_ylim = None
+        self.x0 = None
+        self.y0 = None
+        self.x1 = None
+        self.y1 = None
+        self.xpress = None
+        self.ypress = None
+        self.zoomEntry = True
 
-        self.fig3 = plt.figure(figsize=(10.0,20.0))
+        self.fig3 = plt.figure(figsize=(12.0,25.0))
         self.canvas_ubicacion = FigCanvas(self.m_panel3, -1, self.fig3)
         
+        #self.ax = self.fig3.add_subplot(111, xlim=(0,1), ylim=(0,1), autoscale_on=False)
+        self.ax = self.fig3.add_subplot(111)
         
-        nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
-        nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
-        nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
+        nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
+        nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
+        nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
+        
+        self.canvas_ubicacion.mpl_connect('button_press_event',self.onPress)
+        self.canvas_ubicacion.mpl_connect('button_release_event',self.onRelease)
+        self.canvas_ubicacion.mpl_connect('motion_notify_event',self.onMotion)
+        self.canvas_ubicacion.mpl_connect('scroll_event', self.zoom)
+        #self.fig3.canvas.
         
         plt.axis('off')
 
         panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)
-        #self.toolbar = NavigationToolbar(self.canself.Vas)
-        #self.self.Vbox.Add(self.toolbar, 0, wx.EXPAND)
+        #self.toolbar = NavigationToolbar(self.canvas_ubicacion)
+        #panelUbicacionSizer.Add( self.toolbar, 0, wx.EXPAND |wx.ALL, 5)
         #self.m_panel3.SetSizer(self.self.Vbox)
         #self.self.Vbox.Fit(self)
         
@@ -474,10 +496,89 @@ class Aplicacion ( wx.Frame ):
         self.faseC=False
         self.carga=False
         
+    def onPress(self,event):
+        if event.inaxes != self.ax: return
+        self.cur_xlim = self.ax.get_xlim()
+        self.cur_ylim = self.ax.get_ylim()
+        self.press = self.x0, self.y0, event.xdata, event.ydata
+        self.x0, self.y0, self.xpress, self.ypress = self.press
+    
+    def onRelease(self,event):
+        self.press = None
+        self.canvas_ubicacion.draw()
+    
+    def onMotion(self,event):
+        if self.press is None: return
+        if event.inaxes != self.ax: return
+        dx = event.xdata - self.xpress
+        dy = event.ydata - self.ypress
+        self.cur_xlim -= dx
+        self.cur_ylim -= dy
+        self.ax.set_xlim(self.cur_xlim)
+        self.ax.set_ylim(self.cur_ylim)
+
+        self.ax.figure.canvas.draw()
+        self.canvas_ubicacion.draw()
+    
+    def zoom(self,event):
+        #base_scale = 0.6
+        
+        cur_xlim = self.ax.get_xlim()
+        cur_ylim = self.ax.get_ylim()
+        xdata = event.xdata # get event x location
+        ydata = event.ydata # get event y location
+        relx = (cur_xlim[1] - xdata)/(cur_xlim[1] - cur_xlim[0])
+        rely = (cur_ylim[1] - ydata)/(cur_ylim[1] - cur_ylim[0])
+        if self.zoomEntry: 
+            self.new_width = (cur_xlim[1] - cur_xlim[0]) * 1
+            self.zoomEntry=False
+        #REVISAR LAS POSICIONES QUE SE AJUSTEN AL ZOOM
+        
+        '''pos=nx.get_node_attributes(self.Grafo,'pos')
+        etiquetas={}
+        for n in pos.keys():
+            #print(str(n)+" tiene "+str(pos[n][0]))
+            etiquetas[n]=[pos[n][0]+0.5,pos[n][1]+0.1]
+            #print("la posicion de las etiquetas son "+str(etiquetas))
+            color=nx.get_node_attributes(self.Grafo,'color')'''
         
         
+        '''###arbol binario, agregar los nodos y despues ordenar, cargado a izquierda o derecha dependiendo, 
+        la rama mas larga sera la troncal
+        '''
+        
+        if event.button == 'down':
+            # cambia con  zoom in 
+            #No permite hacer mas zoom in cuando llegue a cierto factor
+            if self.new_width > 15:
+                scale_factor = 1
+            else:
+                scale_factor = 1.1
+            
+        elif event.button == 'up':
+            # cambia con zoom out
+            #No permite hacer mas zoom out cuando llegue a cierto factor            
+            if self.new_width < 1.9:
+                scale_factor = 1
+            else:
+                scale_factor = 0.9
+            
+            #scale_factor = 0.9
+        else:
+            # deal with something that should never happen
+            scale_factor = 1
+            print event.button
 
-
+        self.new_width = (cur_xlim[1] - cur_xlim[0]) * scale_factor
+        self.new_height = (cur_ylim[1] - cur_ylim[0]) * scale_factor
+        
+        #print ('new_width'+str(self.new_width))
+        #print ('new_height'+str(self.new_height))
+        
+        
+        self.ax.set_xlim([xdata - self.new_width * (1-relx), xdata + self.new_width * (relx)])
+        self.ax.set_ylim([ydata - self.new_height * (1-rely), ydata + self.new_height * (rely)])
+        self.canvas_ubicacion.draw()
 
     def dibujar_voltaje(self):
         self.axes_voltaje.clear()
@@ -486,9 +587,12 @@ class Aplicacion ( wx.Frame ):
         
         
         if self.manual and self.carga:
-            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,8],color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            '''self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,8],color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
             self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,7],color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
-            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,6],color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,6],color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')'''
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,5],color= self.ColourPickerCtrl1.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,4],color= self.ColourPickerCtrl2.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+            self.axes_voltaje.plot(self.objetoComtrade.oscilografia[:,3],color= self.ColourPickerCtrl3.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
         if not self.manual and self.sale:
                        
             if (self.m_checkBox1.IsChecked()):
@@ -509,7 +613,9 @@ class Aplicacion ( wx.Frame ):
         #self.m_textCtrl1.IsModified(False)
 
         self.canvas_voltaje.draw()
-
+    
+    
+    
 
     def dibujar_corriente(self):
         self.axes_corriente.clear()
@@ -714,7 +820,6 @@ class Aplicacion ( wx.Frame ):
         
         #Se inicializan variables de almacenamiento de datos
         
-        self.lista=[]
         
         self.muestras=[]
         
@@ -780,7 +885,8 @@ class Aplicacion ( wx.Frame ):
         dlg = wx.FileDialog(self, "Elige un fichero", self.dirname, "", "*.CFG", wx.OPEN)
         # Si se selecciona alguno => OK
         if dlg.ShowModal() == wx.ID_OK:
-            self.inicializar()     
+            self.inicializar()    
+             
             
             self.dirname = dlg.GetDirectory()   # Y el directorio            
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
@@ -794,7 +900,10 @@ class Aplicacion ( wx.Frame ):
             self.objetoComtrade.extraerDatos()
             self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
             self.objetoComtrade.extraerListas()
+            #print(self.objetoComtrade.oscilografia)
             self.cargar_datos(self.objetoComtrade.arreglo)
+            #print('arreglo')
+            #print(self.objetoComtrade.arreglo)
             
             #Se habilita el modulo de exportacion de los datos en formato de excel
             self.m_menuItem2.Enable(True)
@@ -820,51 +929,11 @@ class Aplicacion ( wx.Frame ):
             self.dirname = dlg.GetDirectory()   # Y el directorio            
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
             
-            #print(self.dirname)
-            #print(self.filename)
-            
-            libro = xlrd.open_workbook(self.dirname+"/"+self.filename)
-            if (libro != 0):
-                
-                temporal=[]
-                
-
-                for r in range(int(libro.nsheets)):
-                    if libro.sheet_by_index(r).name == "Datos":
-                        p = r
-                    pest = libro.sheet_by_index(p)
-                for j in range(pest.nrows):
-                    temporal=[]
-                    for i in range(pest.ncols):
-                        if i==0:
-                            self.muestras.append(pest.cell_value(rowx=j, colx=i))
-                        elif not i ==1:
-                            temporal.append(pest.cell_value(rowx=j, colx=i))
-                    
-                    self.lista.append(temporal)
-            del self.lista[0]
-            del self.muestras[0]
-            print(self.lista)
-            print(self.muestras)
-            self.cargar_datos(self.lista)
-            
-            #print(len(lista))
-            #print(lista)
-            
-            
-
-            '''self.filename= self.filename.split('.')[0]
-            
-            #Objeto de tipo comtrade creado a partir del archivo contrade .CFG Y .DAT
             self.objetoComtrade=claseComtrade.comtrade(self.dirname, self.filename)
+            self.objetoComtrade.generarOscilografiaExcel()
             
-            self.objetoComtrade.config()
-            self.objetoComtrade.extraerDatos()
-            self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
-            self.objetoComtrade.extraerListas()
             self.cargar_datos(self.objetoComtrade.arreglo)
-            #Se habilita el modulo de exportacion de los datos en formato de excel
-            self.m_menuItem2.Enable(True)'''
+            self.m_menuItem2.Enable(True)
         # Finalmente destruimos la ventana de dialogo    
         dlg.Destroy()  
     
@@ -895,7 +964,6 @@ class Aplicacion ( wx.Frame ):
         #Se extraen los datos del arreglo proveniente de la importacion
         #de los archivos en el formato comtrade
         #For que se hace en el numero de columnas, 6
-        print(len(arreglo))
         for i in range(len(arreglo[0])):
             #For que se hace en el numero de filas, 832
             for j in range(len(arreglo)):
@@ -913,25 +981,9 @@ class Aplicacion ( wx.Frame ):
                     self.Vb.append(arreglo[j][i])
                 if i==0:
                     self.Vc.append(arreglo[j][i])
-                    
-        ###################################################################################
-        ###################################################################################
-        ###################################################################################
-        ###################################################################################
-        #################### VERIFICAR EL METODO AUTOMATICO  ##############################
-        ###################################################################################
-        ###################################################################################
-        ###################################################################################
-        ###################################################################################
-        ###################################################################################
-                    
-        #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
-        if (len(self.lista)>0):
-            [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.muestras,self.Ia)
-        else:
-            [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])
-        #print ("Ic"+str(sirve))        
         
+        #Procedimiento para verificar si la señal de la FASE C se puede analizar de forma automatica
+        [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,9])        
         if (sirve==1 and self.manual):
             
             self.m_textCtrl2.SetValue("C")
@@ -1274,7 +1326,7 @@ class Aplicacion ( wx.Frame ):
         #If=self.IC-self.Ipre[2]
         #if self.m_textCtrl2.GetValue()=='A':
         
-        casos = { 'A': [self.IA,self.Ipre[0],self.I0,self.VA], 'B': [self.IB,self.Ipre[1],self.I1,self.VB], 'C': [self.IC,self.Ipre[2],self.I2,self.VA] }
+        casos = { 'A': [self.IA,self.Ipre[0],self.I0,self.VA], 'B': [self.IB,self.Ipre[1],self.I1,self.VB], 'C': [self.IC,self.Ipre[2],self.I2,self.VC] }
         
         #print (self.m_textCtrl2.GetValue()) 
         

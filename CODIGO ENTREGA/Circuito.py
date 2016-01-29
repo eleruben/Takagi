@@ -206,6 +206,8 @@ def punto_falla(Grafo,distancia):
                         #Se debe agregar en la coordenada X hacia izquierda
                         Grafo.add_node('Falla'+str(nodo)+"-"+str(n),pos=(pos[nodo][0]+(distancia-acumulado[nodo]),pos[n][1]),acumulado=distancia,color=4.0)
                         afuera=False
+    
+    
     if afuera:
         print("LA DISTANCIA DE FALLA NO ESTA EN EL CIRCUITO")
     return Grafo      
@@ -262,12 +264,13 @@ def imprimir_grafo(Grafo):
     nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=values,alpha=1.0)
     nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
     nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
+    ax.set_title('Click to zoom')
     #nx.draw_networkx_labels(Grafo,pos,labels)
     #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=values,ax=ax)
     
     #plt.savefig("GrafoCaminos.png")
     #plt.axis('off')
-    #plt.show()
+    plt.show()
 
 
     

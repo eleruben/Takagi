@@ -6,6 +6,7 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import os
 
+import sqlite3
 
 ##########################################################################
 #                CODIGO PARA IMPLEMENTACION VERTICAL DE LOS NODOS        #
@@ -272,7 +273,90 @@ def imprimir_grafo(Grafo):
     #plt.axis('off')
     plt.show()
 
-
+def creacion_BD():
+    bd = sqlite3.connect("grafo1.dat")
+    cursor = bd.cursor()
+    #Tabla de nodos la cual contiene un identificador autoincremental, el nombre del nodo y un valor de 
+    #1 si pertenece a la troncal y 0 si pertenece al ramal
+    
+    cursor.execute('''create table if not exists Nodos 
+        (Id_Nodo INTEGER PRIMARY KEY AUTOINCREMENT,
+        Nombre TEXT NOT NULL,
+        Troncal INTEGER NOT NULL)''')
+    #Solo el nodo B1 se inserta sin trigger asociado ???? crear el trigger despues de insertar el nodo B1???? REVISAR
+    
+    
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B1', 1)")
+    
+    bd.commit()
+    
+    #Tabla Lineas, la cual contiene un identificador autoincremental, la llave foranea de los dos nodos
+    #que se relacionan, una R0, un X0, una distancia, un aculumado y un alias
+    cursor.execute('''create table if not exists Lineas
+        (Id_linea INTEGER PRIMARY KEY AUTOINCREMENT,
+        Id_Nodo1 INTEGER NOT NULL,
+        Id_Nodo2 INTEGER NOT NULL,
+        R0 FLOAT NOT NULL,
+        R1 FLOAT NOT NULL,
+        X0 FLOAT NOT NULL,
+        X1 FLOAT NOT NULL,
+        DISTANCIA NOT NULL,
+        ACUMULADO NOT NULL)''')
+    #Acumulado resulta de la operacion de las distancias, puede que para el caso no sea necesario
+    #calcularlo, sino sera calculado directamente en el grafo
+    
+    #La insercion de los datos en la tabla linea se realizara por medio de un trigger,
+    
+    cursor.execute('''create table if not exists Cargas
+        (Id_carga INTEGER PRIMARY KEY AUTOINCREMENT,
+        Id_Nodo INTEGER NOT NULL,
+        ALIAS TEXT NOT NULL,
+        POTENCIA TEXT NOT NULL,
+        FACTOR TEXT NOT NULL)''')
+    
+    #Despues de creadas las tablas se procede a crear los triggers de forma dinamica??? REVISAR
+    
+    
+    ###TRIGER DE CREACION DE NODOS CON LINEAS
+    
+    
+    #####REVISAR PARA LA INSERCION DE LOS DATOS
+    #conn.execute('''
+    #            UPDATE account_stat SET put_timestamp = ?
+    #            WHERE put_timestamp < ? ''', (timestamp, timestamp))conn.execute('''
+    #            UPDATE account_stat SET put_timestamp = ?
+    #            WHERE put_timestamp < ? ''', (timestamp, timestamp))
+    
+    
+    
+    ###TRIGGER DE CREACION DE NODOS CON CARGAS
+    
+    
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B3', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B4', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B5', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B6', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B7', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B8', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B9', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B10', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('B11', 1)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB2', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB3', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB4', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB5', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB6', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB7', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB8', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB9', 0)")
+    cursor.execute("INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB10', 0)")
+    
+    ###PARA EL DELETE DE UN NODO SOLO SE PODRA ELIMINAR SI SU ID NO SE ENCUENTRA EN
+    #LA COLUMNA DEL ID DEL SEGUNDO NODO, LO CUAL INDICA QUE NO HAY UN NODO ASOCIADO A ESTE NODO,
+    #SINO QUE ESTA ASOCIADO A OTRO NODO (ES UNA RAMA)
+    
+    
     
 retorno=Grafos()
 distancia=13

@@ -6,7 +6,7 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import os
 
-import sqlite3
+import sqlite3 as sq3
 
 ##########################################################################
 #                CODIGO PARA IMPLEMENTACION VERTICAL DE LOS NODOS        #
@@ -14,9 +14,35 @@ import sqlite3
 
 
 def Grafos():
+    
+    
+    base_datos="yacopi.s3db"
+    """ Establece la conexion con la base de datos
+    y ejecuta las consultas solicitadas en la interfaz.
+    Si no existe la tabla, la crea.
+    Inserta datos de prueba """
+    base = os.path.exists(base_datos)
+    conexion = sq3.connect(base_datos)
+    '''if not base:
+        self.crearTabla()
+    '''
+    cursor = conexion.cursor()
+    sql="SELECT Id_Nodo2,Id_Nodo1,DISTANCIA FROM Lineas"
+    cursor.execute(sql)
+    registros = cursor.fetchall()
     Ext1=[]
     Ext2=[]
     Distancia=[]
+    ####Es necesaria la equivalencia de los nombres con el identificador del nodo???REVISAR
+    for i in range(len(registros)):
+        Ext1.append(registros[i][0])
+        Ext2.append(registros[i][1])
+        Distancia.append(registros[i][2])
+    print('Ext1'+str(Ext1))
+    print('Ext2'+str(Ext2))
+    print('Distancia'+str(Distancia))
+    
+    
     #Abre el archivo de excel en donde esta el modelo del circuito, este archivo debe estar
     #en la misma carpeta que el archivo que se esta ejecutando
     libro = xlrd.open_workbook(str(os.getcwd())+"\Modelo circuito.xlsX")

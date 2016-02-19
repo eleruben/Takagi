@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import wx
 import wx.grid as wxgrid
-import yacopi
+import modeloDatos
 import modelo
  
 class Rejilla(wxgrid.Grid):
@@ -28,8 +28,8 @@ class Rejilla(wxgrid.Grid):
             ('X1',50, False, wxgrid.GridCellStringRenderer()),
             ('Distancia',70, False, wxgrid.GridCellStringRenderer()),
             ('Alias',50, False, wxgrid.GridCellStringRenderer()),
-            ('Potencia',60, False, wxgrid.GridCellStringRenderer()),
-            ('Factor',50, False, wxgrid.GridCellStringRenderer())
+            ('P',60, False, wxgrid.GridCellStringRenderer()),
+            ('Q',50, False, wxgrid.GridCellStringRenderer())
            ]
  
     def crearColumnas(self):
@@ -61,7 +61,7 @@ class Ventana(wx.Frame):
         sizerV.Add(sizerH, 0, wx.EXPAND)
         panel.SetSizer(sizerV)
         self.Center()
-        self.modelo = yacopi.Modelo()
+        self.modelo = modeloDatos.Modelo("yacopi")
  
     def datosBotones(self):
         """ Define el rótulo y el manejador de evento del botón """
@@ -153,6 +153,7 @@ class Ventana(wx.Frame):
                     self.grilla.SetCellValue(fila, col, 
                                              valor.encode('utf-8')) 
                 else: self.grilla.SetCellValue(fila, col, str(valor))'''
+        #self.grilla.Enable(False)
  
     def limpiarRejilla(self, event):
         difFilas = self.grilla.GetNumberRows() - self.numFilas 

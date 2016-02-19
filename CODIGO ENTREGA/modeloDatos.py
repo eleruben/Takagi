@@ -2,17 +2,25 @@ import sqlite3 as sq3
 import os
 import wx
  
-class Modelo(object):
-    def __init__(self, nombre):
+class Modelo(object):    
+    def __init__(self, nombre,otro):
         base_datos=nombre+".s3db"
         """ Establece la conexion con la base de datos
         y ejecuta las consultas solicitadas en la interfaz.
         Si no existe la tabla, la crea.
         Inserta datos de prueba """
-        base = os.path.exists(base_datos)
-        self.conexion = sq3.connect(base_datos)
-        if not base:
-            self.crearTabla()
+        if otro:
+            base = os.path.exists(base_datos)
+            self.conexion = sq3.connect(base_datos)
+            if not base:
+                self.crearTabla()
+                self.autollenado()
+        else:
+            base = os.path.exists(base_datos)
+            self.conexion = sq3.connect(base_datos)
+            if not base:
+                self.crearTabla()
+                self.autollenado1()
  
     def insertar(self, d1):
         """ Inserta un nuevo registro en la base de datos
@@ -135,7 +143,15 @@ class Modelo(object):
         BEGIN
         INSERT INTO Cargas (Id_Nodo,ALIAS) VALUES (new.Id_Nodo,new.Nombre);
         END;
-        
+                   
+        '''
+        print( 'lo crea')
+
+        self.ejecutar_script(sql)
+    
+    #Se cargan los datos del circuito si este no ha sido creado
+    def autollenado(self):
+        sql='''
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1);
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B3', 1);
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('RB3', 0);
@@ -198,8 +214,21 @@ class Modelo(object):
         UPDATE Cargas set P='PRB9', Q='FRB9'  where Id_Nodo=19;
         UPDATE Cargas set P='PRB10', Q='FRB10'  where Id_Nodo=20;    
         
-            
         '''
-        print( 'lo llama')
+        print( 'lo autollena')
+
+        self.ejecutar_script(sql)
+        
+    def autollenado1(self):
+        sql='''
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1);
+        
+        
+        UPDATE Lineas set Id_Nodo2 = 1, R0 =0.0, R1 =0.0, X0 =0.0,X1 =0.0, DISTANCIA = 5.0  where Id_Nodo1=2;
+        
+        UPDATE Cargas set P='PB2', Q='FB2'  where Id_Nodo=2;   
+        
+        '''
+        print( 'lo autollena')
 
         self.ejecutar_script(sql)

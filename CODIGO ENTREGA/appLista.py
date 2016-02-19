@@ -1,5 +1,6 @@
 # -*- coding: cp1252 -*-
 import wx
+import wx.grid as wxgrid
 import wx.xrc
 import math
 import matplotlib
@@ -25,6 +26,9 @@ import claseComtrade
 
 import lecturaDeSenalesLUCHO as lect
 import sys
+
+import Consultas
+import modeloDatos
 #import ejemplo2
 
 #import claseGraficas
@@ -124,58 +128,516 @@ class Aplicacion ( wx.Frame ):
         self.m_panel3 = wx.Panel( self.m_listbook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         #Panel de reporte
         self.m_panel4 = wx.Panel( self.m_listbook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        
+        
         ###########################################################################
-        ##                          PANEL DE INICIO                               #
+        ##              PANEL DE UBICACION DE LA FALLA                            #
         ###########################################################################
-        #Creacion de los BoxSizer que contienen los elementos del panel de inicio
-        panelInicioSizer = wx.BoxSizer( wx.HORIZONTAL )
-        letrasInicioSizer = wx.BoxSizer( wx.VERTICAL )
-        cajasInicioSizer = wx.BoxSizer( wx.VERTICAL )
-        '''self.m_button5 = wx.Button( self.m_panel1, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
-        panelInicioSizer.Add( self.m_button5, 0, wx.ALL, 5 )'''
+        panelUbicacionSizer = wx.BoxSizer( wx.HORIZONTAL )
+        self.m_panelUbicacion = wx.Panel( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        self.m_TabPanel = wx.Notebook( self.m_panel3, wx.ID_ANY, style=wx.BK_DEFAULT )
         
-        #Objeto de tipo Static text que tiene por nombre Tipo de falla
-        self.m_staticText1 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Tipo de falla", wx.DefaultPosition, wx.DefaultSize, 0)
-        self.m_staticText1.Wrap( -1 )
-        self.m_staticText1.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-        letrasInicioSizer.Add( self.m_staticText1, 0, wx.ALL, 5 )
+        #Panel de consulta
+        self.m_panel5 = wx.Panel( self.m_TabPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         
-        #Espacio entre Tipo de falla y Canal de falla
-        letrasInicioSizer.AddSpacer(8)
+        #Panel de edicion de grafo
+        self.m_panel6 = wx.Panel( self.m_TabPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         
-        #Objeto de tipo Static text que tiene por nombre Fase(s) en falla
-        self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Fase(s) en falla", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText2.Wrap( -1 )
-        self.m_staticText2.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-        letrasInicioSizer.Add( self.m_staticText2, 0, wx.ALL, 5 )
-        #Espacio entre Canal de falla y Distancia
-        letrasInicioSizer.AddSpacer(8)
-        #Objeto de tipo Static text que tiene por nombre Distancia
-        self.m_staticText3 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Distancia (Km)", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText3.Wrap( -1 )
-        self.m_staticText3.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-        letrasInicioSizer.Add( self.m_staticText3, 0, wx.ALL, 5 )
-        panelInicioSizer.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
         
-        ######Boxsizer que contiene los datos asociados a el BoxSizer4, que se muestran cuando se importan los datos
-        #de la falla
-        self.m_textCtrl1 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_textCtrl1.Enable( False )
-        cajasInicioSizer.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
+
+             
+        #######################################################
+        ##       SUBPANEL CONSULTA DE CIRCUITO                #
+        #######################################################
         
-        self.m_textCtrl2 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_textCtrl2.Enable( False )
-        cajasInicioSizer.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
+        bSizerTotal = wx.BoxSizer( wx.VERTICAL )
         
-        self.m_textCtrl3 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_textCtrl3.Enable( False )
-        cajasInicioSizer.Add( self.m_textCtrl3, 0, wx.ALL, 5 )
+        bSizer22 = wx.BoxSizer( wx.VERTICAL )
+        #Sizer de circuitos
+        bSizerCircuitos = wx.BoxSizer( wx.HORIZONTAL )
+        #Sizer de nodos
+        bSizerNodos = wx.BoxSizer( wx.HORIZONTAL )
+        #Sizer de lineas
+        bSizerLineas = wx.BoxSizer( wx.HORIZONTAL )
+        #Sizer de cargas
+        bSizerCargas = wx.BoxSizer( wx.HORIZONTAL )
         
-        panelInicioSizer.Add( cajasInicioSizer, 0, wx.EXPAND, 5 )
-        self.m_panel1.SetSizer( panelInicioSizer )
-        self.m_panel1.Layout()
-        panelInicioSizer.Fit( self.m_panel1 )
-        self.m_listbook1.AddPage( self.m_panel1, u"INICIO", True )
+        
+        self.m_staticText6 = wx.StaticText( self.m_panel3, wx.ID_ANY, u"Circuito", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText6.Wrap( -1 )
+        self.m_staticText6.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        bSizerCircuitos.Add( self.m_staticText6, 0, wx.ALL, 5 )
+        #bSizer22.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
+        
+        m_comboBox1Choices = ["yacopi","lalala"]
+        #self.m_comboBox1 = wx.ComboBox(self.m_panel3, size=(95, -1), choices=m_comboBox1Choices, style=wx.CB_DROPDOWN)
+        self.m_comboBox1 = wx.ComboBox( self.m_panel3, wx.ID_ANY, u"yacopi", wx.DefaultPosition, wx.DefaultSize, m_comboBox1Choices, 0 )
+        self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxCircuitos, self.m_comboBox1)
+        bSizerCircuitos.Add( self.m_comboBox1, 0, wx.ALL, 5 )
+        
+        texto = str(self.m_comboBox1.GetValue())
+        self.objetoModelo=modeloDatos.Modelo(texto,True)
+        
+        '''self.m_button11 = wx.Button( self.m_panel3, wx.ID_ANY, u"+", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.Bind(wx.EVT_BUTTON, self.agregar, self.m_button11)
+        bSizerCircuitos.Add( self.m_button11, 0, wx.ALL, 5 )'''
+        
+        
+        bSizerTotal.Add( bSizerCircuitos, 0, wx.ALL, 5 )
+        
+        self.m_staticText7 = wx.StaticText( self.m_panel5, wx.ID_ANY, u"NODO", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText7.Wrap( -1 )
+        self.m_staticText7.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        bSizer22.Add( self.m_staticText7, 0, wx.ALL, 5 )
+        #bSizer22.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
+        texto = str(self.m_comboBox1.GetValue())
+        self.objetoBaseDatos=Consultas.baseDatos(texto)
+        
+        m_comboBox2Choices = self.objetoBaseDatos.tablaNodos()
+        #print(m_comboBox2Choices)
+        
+        #self.filename= self.filename.split('.')[0]
+        
+        #m_comboBox2Choices = ["1", "2", "3"]
+        #self.m_comboBox1 = wx.ComboBox(self.m_panel3, size=(95, -1), choices=m_comboBox1Choices, style=wx.CB_DROPDOWN)
+        self.m_comboBox2 = wx.ComboBox( self.m_panel5, wx.ID_ANY, u"----", wx.DefaultPosition, wx.DefaultSize, m_comboBox2Choices, 0 )
+        self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxNodos, self.m_comboBox2)
+        bSizerNodos.Add( self.m_comboBox2, 0, wx.ALL, 5 )
+        
+        '''self.m_button12 = wx.Button( self.m_panel5, wx.ID_ANY, u"+", wx.DefaultPosition, wx.DefaultSize, 0 )
+        #self.Bind(wx.EVT_BUTTON, self.agregar, self.m_button12)
+        bSizerNodos.Add( self.m_button12, 0, wx.ALL, 5 )'''
+        
+        bSizer22.Add( bSizerNodos, 0, wx.ALL, 5 )
+        
+        
+        self.reja=wxgrid.Grid(self.m_panel5, wx.ID_ANY)
+        self.reja.CreateGrid(1,2)
+        nombres=[('Nombre Nodo', 100, False, wxgrid.GridCellStringRenderer()),
+            ('Troncal',50, False, wxgrid.GridCellStringRenderer())]
+        
+        for ind, col in enumerate(nombres):
+            self.reja.SetColLabelValue(ind, col[0])
+            self.reja.SetColSize(ind, col[1])
+            atrib = wxgrid.GridCellAttr()
+            atrib.SetReadOnly(col[2])
+            atrib.SetRenderer(col[3])
+            self.reja.SetColAttr(ind, atrib)
+        
+        self.reja.Enable(False)
+            
+        bSizer22.Add( self.reja, 0, wx.ALL, 5 )
+        
+        
+        
+        self.m_staticText8 = wx.StaticText( self.m_panel5, wx.ID_ANY, u"LINEA(S)", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText8.Wrap( -1 )
+        self.m_staticText8.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        bSizer22.Add( self.m_staticText8, 0, wx.ALL, 5 )
+        #bSizer22.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
+        
+        
+        
+        self.reja1=wxgrid.Grid(self.m_panel5, wx.ID_ANY)
+        self.reja1.CreateGrid(5,6)
+        nombres=[('Conexion con nodo',120, False, wxgrid.GridCellStringRenderer()),
+            ('R0',30, False, wxgrid.GridCellStringRenderer()),
+            ('R1',30, False, wxgrid.GridCellStringRenderer()),
+            ('X0',30, False, wxgrid.GridCellStringRenderer()),
+            ('X1',30, False, wxgrid.GridCellStringRenderer()),
+            ('Distancia',120, False, wxgrid.GridCellStringRenderer())]
+        
+        for ind, col in enumerate(nombres):
+            self.reja1.SetColLabelValue(ind, col[0])
+            self.reja1.SetColSize(ind, col[1])
+            atrib = wxgrid.GridCellAttr()
+            atrib.SetReadOnly(col[2])
+            atrib.SetRenderer(col[3])
+            self.reja1.SetColAttr(ind, atrib)
+        
+        self.reja1.Enable(False)
+            
+        bSizerLineas.Add( self.reja1, 0, wx.ALL, 5 )
+        bSizer22.Add( bSizerLineas, 0, wx.ALL, 5 )
+        
+        
+        self.m_staticText9 = wx.StaticText( self.m_panel5, wx.ID_ANY, u"CARGA DEL NODO", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText9.Wrap( -1 )
+        self.m_staticText9.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        bSizer22.Add( self.m_staticText9, 0, wx.ALL, 5 )
+        #bSizer22.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
+        
+        self.reja2=wxgrid.Grid(self.m_panel5, wx.ID_ANY)
+        self.reja2.CreateGrid(1,3)
+        nombres=[('Alias',50, False, wxgrid.GridCellStringRenderer()),
+            ('P',60, False, wxgrid.GridCellStringRenderer()),
+            ('Q',50, False, wxgrid.GridCellStringRenderer())]
+        
+        for ind, col in enumerate(nombres):
+            self.reja2.SetColLabelValue(ind, col[0])
+            self.reja2.SetColSize(ind, col[1])
+            atrib = wxgrid.GridCellAttr()
+            atrib.SetReadOnly(col[2])
+            atrib.SetRenderer(col[3])
+            self.reja2.SetColAttr(ind, atrib)
+        self.reja2.Enable(False)
+        
+        bSizerCargas.Add( self.reja2, 0, wx.ALL, 5 )
+        
+        
+        
+        #######################################################
+        ##       SUBPANEL EDICION DE CIRCUITO                 #
+        #######################################################
+        
+        panelEdicionSizer = wx.BoxSizer( wx.VERTICAL )
+        bSizerNod = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerEdNodo = wx.BoxSizer( wx.VERTICAL )
+        bSizerNombreNodo = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerNvoNodo= wx.BoxSizer( wx.VERTICAL )
+        
+        grid = wx.GridBagSizer(hgap=7, vgap=6)
+        gridCarga = wx.GridBagSizer(hgap=3, vgap=2)
+        
+        bSizerNombres = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerVecino1 = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerVecino2 = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerVecino3 = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerVecino4 = wx.BoxSizer( wx.HORIZONTAL )
+        bSizerVecino5 = wx.BoxSizer( wx.HORIZONTAL )
+        
+        self.m_radioBtn1 = wx.RadioButton( self.m_panel6, -1, " Seleccion nodo de circuito ", style = wx.RB_GROUP )
+        
+        '''self.m_staticText10 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Seleccion nodo de circuito", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText10.Wrap( -1 )
+        self.m_staticText10.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )'''
+        bSizerEdNodo.Add( self.m_radioBtn1, 0, wx.ALL, 5 )
+        
+        texto = str(self.m_comboBox1.GetValue())
+        self.objetoBaseDatos=Consultas.baseDatos(texto)
+        
+        
+        
+        m_comboBox3Choices = self.objetoBaseDatos.tablaNodos()
+        #print(m_comboBox2Choices)
+        
+        #self.filename= self.filename.split('.')[0]
+        
+        #m_comboBox2Choices = ["1", "2", "3"]
+        #self.m_comboBox1 = wx.ComboBox(self.m_panel3, size=(95, -1), choices=m_comboBox1Choices, style=wx.CB_DROPDOWN)
+        self.m_comboBox3 = wx.ComboBox( self.m_panel6, wx.ID_ANY, u"----", wx.DefaultPosition, wx.DefaultSize, m_comboBox3Choices, 0 )
+        self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxEdNodos, self.m_comboBox3)
+        #CASO DEL RADIO BUTTON self.m_comboBox3.Enable(False)
+        bSizerEdNodo.Add( self.m_comboBox3, 0, wx.ALL, 5 )
+        
+        self.m_staticText10 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Nombre nodo", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText10.Wrap( -1 )
+        self.m_staticText10.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        bSizerNombreNodo.Add( self.m_staticText10, 0, wx.ALL, 5 )
+        
+        self.m_textCtrl4 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_textCtrl4.Enable( False )
+        bSizerNombreNodo.Add( self.m_textCtrl4, 0, wx.ALL, 5 )
+        
+        bSizerEdNodo.Add( bSizerNombreNodo, 0, wx.ALL, 5 )
+        
+        ###INSERTAR RADIOBUTTON Y CREAR LOS EVENT_TEXT PARA LOS TEXTCTRL DE LOS CAMPOS DE LINEAS Y DE CARGA   REVISAR
+        
+        
+        bSizerNod.Add( bSizerEdNodo, 0, wx.ALL, 5 )
+        bSizerNod.AddSpacer(80)
+        
+        self.m_radioBtn2 = wx.RadioButton( self.m_panel6, -1, " Nuevo nodo " )
+        bSizerNvoNodo.Add( self.m_radioBtn2, 0, wx.ALL, 5 )
+        
+        
+        bSizerNvoNodo.AddSpacer(40)
+        self.m_checkBox7 = wx.CheckBox( self.m_panel6, wx.ID_ANY, u"Troncal", wx.DefaultPosition, wx.DefaultSize, 0 )
+        
+        bSizerNvoNodo.Add( self.m_checkBox7, 0, wx.ALL, 5 )
+        
+  
+        bSizerNod.Add( bSizerNvoNodo, 0, wx.ALL, 5 )
+        panelEdicionSizer.Add( bSizerNod, 0, wx.ALL, 5 )
+        
+        
+        self.group1_ctrls = []        
+        self.group1_ctrls.append((self.m_radioBtn1, self.m_comboBox3))        
+        self.group1_ctrls.append((self.m_radioBtn2, self.m_textCtrl4))
+
+        for radio, text in self.group1_ctrls:
+            wx.EVT_RADIOBUTTON( self, radio.GetId(), self.OnGroup1Select )
+        
+        
+        self.m_staticText12 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Conexion", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText12.Wrap( -1 )
+        self.m_staticText12.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText12, pos=(0,0))
+        
+        self.m_staticText13 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"R0", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText13.Wrap( -1 )
+        self.m_staticText13.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText13, pos=(0,1))
+        
+        self.m_staticText14 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"R1", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText14.Wrap( -1 )
+        self.m_staticText14.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText14, pos=(0,2))
+        
+        
+        self.m_staticText15 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"X0", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText15.Wrap( -1 )
+        self.m_staticText15.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText15, pos=(0,3))
+        
+        self.m_staticText16 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"X1", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText16.Wrap( -1 )
+        self.m_staticText16.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText16, pos=(0,4))
+        
+        self.m_staticText17 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Distancia", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText17.Wrap( -1 )
+        self.m_staticText17.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText17, pos=(0,5))
+        
+        
+        
+        self.m_comboBox4Choices = []
+        self.m_comboBox4 = wx.ComboBox( self.m_panel6, wx.ID_ANY, u"----", wx.DefaultPosition, size=wx.Size(70,25), choices=self.m_comboBox4Choices, style=0 )
+        grid.Add(self.m_comboBox4, pos=(1,0))
+        self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxVecino1, self.m_comboBox4)
+        
+        self.m_textCtrl1R0 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl1R0, pos=(1,1))
+        
+        self.m_textCtrl1R1 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl1R1, pos=(1,2))
+        
+        self.m_textCtrl1X0 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl1X0, pos=(1,3))
+        
+        self.m_textCtrl1X1 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl1X1, pos=(1,4))
+        
+        self.m_textCtrl1Dis = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl1Dis, pos=(1,5))
+        
+        
+        #Nueva conexion esta habilitada solo para los casos del nuevo nodo, en el caso de edicion, si se crea una nueva conexion,
+        #se estaria creando un ciclo en el circuito
+        
+        #Evaluar viabilidad de establecer cambio de conexion en el circuito REVISAR
+        self.m_staticText18 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Nueva conexion", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText18.Wrap( -1 )
+        self.m_staticText18.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText18, pos=(2,0))
+        
+        self.m_staticText19 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"R0", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText19.Wrap( -1 )
+        self.m_staticText19.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText19, pos=(2,1))
+        
+        self.m_staticText20 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"R1", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText20.Wrap( -1 )
+        self.m_staticText20.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText20, pos=(2,2))
+        
+        
+        self.m_staticText21 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"X0", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText21.Wrap( -1 )
+        self.m_staticText21.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText21, pos=(2,3))
+        
+        self.m_staticText22 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"X1", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText22.Wrap( -1 )
+        self.m_staticText22.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        grid.Add(self.m_staticText22, pos=(2,4))
+        
+        self.m_staticText23 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Distancia", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText23.Wrap( -1 )
+        self.m_staticText23.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        
+        grid.Add(self.m_staticText23, pos=(2,5))
+        
+        
+        
+        self.m_comboBox5Choices = []
+        
+        self.m_comboBox5Choices = self.objetoBaseDatos.tablaNodos()
+        print(self.m_comboBox5Choices)
+        self.m_comboBox5 = wx.ComboBox( self.m_panel6, wx.ID_ANY, u"----", wx.DefaultPosition, size=wx.Size(70,25), choices=self.m_comboBox5Choices, style=0 )
+        grid.Add(self.m_comboBox5, pos=(3,0))
+        self.m_comboBox5.Enable(False)
+        
+        self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxNuevaConexion, self.m_comboBox5)
+        
+        
+        self.m_textCtrl2R0 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl2R0, pos=(3,1))
+        self.m_textCtrl2R0.Enable(False)
+        
+        
+        self.m_textCtrl2R1 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl2R1, pos=(3,2))
+        self.m_textCtrl2R1.Enable(False)
+        
+        
+        self.m_textCtrl2X0 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl2X0, pos=(3,3))
+        self.m_textCtrl2X0.Enable(False)
+        
+        
+        self.m_textCtrl2X1 = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl2X1, pos=(3,4))
+        self.m_textCtrl2X1.Enable(False)
+        
+        
+        self.m_textCtrl2Dis = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        grid.Add(self.m_textCtrl2Dis, pos=(3,5))
+        self.m_textCtrl2Dis.Enable(False)
+        
+    
+        #Adicion de grid de lineas al sizer del panel de edicion
+        panelEdicionSizer.Add( grid, 0, wx.ALL, 5 )
+        
+        panelEdicionSizer.AddSpacer(30)
+        
+        self.m_staticText24 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Alias", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText24.Wrap( -1 )
+        self.m_staticText24.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        gridCarga.Add(self.m_staticText24, pos=(0,0))
+        
+        self.m_staticText19 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"P", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText19.Wrap( -1 )
+        self.m_staticText19.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        gridCarga.Add(self.m_staticText19, pos=(0,1))
+        
+        self.m_staticText20 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Q", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText20.Wrap( -1 )
+        self.m_staticText20.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        gridCarga.Add(self.m_staticText20, pos=(0,2))
+        
+        
+        self.m_textCtrlAlias = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        gridCarga.Add(self.m_textCtrlAlias, pos=(1,0))
+        
+        
+        
+        self.m_textCtrlP = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        gridCarga.Add(self.m_textCtrlP, pos=(1,1))
+    
+        
+        
+        self.m_textCtrlQ = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
+        gridCarga.Add(self.m_textCtrlQ, pos=(1,2))
+    
+        
+        #Adicion de grid de cargas al sizer del panel de edicion
+        panelEdicionSizer.Add( gridCarga, 0, wx.ALL, 5 )
+        
+        #panelEdicionSizer.Add( bSizerVecino1, 0, wx.ALL, 5 )
+        
+        
+        
+        
+        
+                
+        self.m_panel6.SetSizer( panelEdicionSizer )
+        self.m_panel6.Layout()
+        panelEdicionSizer.Fit( self.m_panel6 )
+        
+        
+        
+        
+        
+        bSizer22.Add( bSizerCargas, 0, wx.ALL, 5 )
+        
+        self.m_panel5.SetSizer( bSizer22 )
+        self.m_panel5.Layout()
+        bSizer22.Fit( self.m_panel5 )
+        
+        
+        self.m_TabPanel.AddPage(self.m_panel5, u"CONSULTA DE CIRCUITO", True )
+        self.m_TabPanel.AddPage(self.m_panel6, u"EDICION DE CIRCUITO", False )
+        #bSizer22.Add( self.m_TabPanel, 0, wx.ALL, 5 )
+        
+        
+        bSizerTotal.Add( self.m_TabPanel, 0, wx.ALL, 5 )
+        
+        
+        #######################################################
+        ##       SUBPANEL DE GRAFICA CIRCUITO                 #
+        #######################################################
+        
+                
+        self.objetoCircuito=Circuito.claseCircuito(texto)
+        retorno=self.objetoCircuito.Grafos()
+        distancia=40
+        self.Grafo=self.objetoCircuito.punto_falla(retorno,distancia)
+        #Circuito.imprimir_grafo(Grafo)
+        #Circuito.imprimir_grafo(imprimible)
+        color=nx.get_node_attributes(self.Grafo,'color')
+        self.Values = [color.get(node, 50) for node in self.Grafo.nodes()]
+        #imprimible de circuito
+        pos=nx.get_node_attributes(self.Grafo,'pos')
+        #print("las posiciones son "+str(pos))
+        etiquetas={}
+        for n in pos.keys():
+            #print(str(n)+" tiene "+str(pos[n][0]))
+            etiquetas[n]=[pos[n][0]+0.05,pos[n][1]+0.05]
+            #print("la posicion de las etiquetas son "+str(etiquetas))
+            color=nx.get_node_attributes(self.Grafo,'color')
+        
+        self.press = None
+        self.cur_xlim = None
+        self.cur_ylim = None
+        self.x0 = None
+        self.y0 = None
+        self.x1 = None
+        self.y1 = None
+        self.xpress = None
+        self.ypress = None
+        self.zoomEntry = True
+
+        self.fig3 = plt.figure(figsize=(7.0,25.0))
+        self.canvas_ubicacion = FigCanvas(self.m_panel3, -1, self.fig3)
+        
+        #self.ax = self.fig3.add_subplot(111, xlim=(0,1), ylim=(0,1), autoscale_on=False)
+        self.ax = self.fig3.add_subplot(111)
+        
+        
+        nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
+        nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
+        nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
+        
+        self.canvas_ubicacion.mpl_connect('button_press_event',self.onPress)
+        self.canvas_ubicacion.mpl_connect('button_release_event',self.onRelease)
+        self.canvas_ubicacion.mpl_connect('motion_notify_event',self.onMotion)
+        self.canvas_ubicacion.mpl_connect('scroll_event', self.zoom)
+        #self.fig3.canvas.
+        
+        plt.axis('off')
+        
+        
+        
+        panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)        
+        panelUbicacionSizer.Add( self.m_panelUbicacion, 0, wx.EXPAND |wx.ALL, 5)
+        
+        
+
+        
+        
+        
+        panelUbicacionSizer.Add( bSizerTotal, 1, wx.EXPAND |wx.ALL, 5 )
+        
+        #panelUbicacionSizer.Add( self.m_button9, 0, wx.EXPAND |wx.ALL, 5)
+        
+        self.m_panel3.SetSizer( panelUbicacionSizer )
+        self.m_panel3.Layout()
+        panelUbicacionSizer.Fit( self.m_panel3 )
+        self.m_listbook1.AddPage( self.m_panel3, u"UBICACION DE LA FALLA", True )
+        
+    
         ###########################################################################
         ##                          PANEL DE GRAFICAS                             #
         ###########################################################################
@@ -310,139 +772,59 @@ class Aplicacion ( wx.Frame ):
         
         
         ###########################################################################
-        ##              PANEL DE UBICACION DE LA FALLA                            #
+        ##                          PANEL DE INFORMACION                          #
         ###########################################################################
-        panelUbicacionSizer = wx.BoxSizer( wx.HORIZONTAL )
-        self.m_panelUbicacion = wx.Panel( self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        retorno=Circuito.Grafos()
-        #Colocar la distancia que se extrae del metodo de localizacion REVISAR
-        distancia=13
-        self.Grafo=Circuito.punto_falla(retorno,distancia)
-        #Circuito.imprimir_grafo(Grafo)
-        #Circuito.imprimir_grafo(imprimible)
-        color=nx.get_node_attributes(self.Grafo,'color')
-        self.Values = [color.get(node, 50) for node in self.Grafo.nodes()]
-        #imprimible de circuito
-        pos=nx.get_node_attributes(self.Grafo,'pos')
-        #print("las posiciones son "+str(pos))
-        etiquetas={}
-        for n in pos.keys():
-            #print(str(n)+" tiene "+str(pos[n][0]))
-            etiquetas[n]=[pos[n][0]+0.5,pos[n][1]+0.5]
-            #print("la posicion de las etiquetas son "+str(etiquetas))
-            color=nx.get_node_attributes(self.Grafo,'color')
+        #Creacion de los BoxSizer que contienen los elementos del panel de informacion
+        panelInicioSizer = wx.BoxSizer( wx.HORIZONTAL )
+        letrasInicioSizer = wx.BoxSizer( wx.VERTICAL )
+        cajasInicioSizer = wx.BoxSizer( wx.VERTICAL )
+        '''self.m_button5 = wx.Button( self.m_panel1, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
+        panelInicioSizer.Add( self.m_button5, 0, wx.ALL, 5 )'''
         
-        self.press = None
-        self.cur_xlim = None
-        self.cur_ylim = None
-        self.x0 = None
-        self.y0 = None
-        self.x1 = None
-        self.y1 = None
-        self.xpress = None
-        self.ypress = None
-        self.zoomEntry = True
-
-        self.fig3 = plt.figure(figsize=(12.0,25.0))
-        self.canvas_ubicacion = FigCanvas(self.m_panel3, -1, self.fig3)
+        #Objeto de tipo Static text que tiene por nombre Tipo de falla
+        self.m_staticText1 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Tipo de falla", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.m_staticText1.Wrap( -1 )
+        self.m_staticText1.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        letrasInicioSizer.Add( self.m_staticText1, 0, wx.ALL, 5 )
         
-        #self.ax = self.fig3.add_subplot(111, xlim=(0,1), ylim=(0,1), autoscale_on=False)
-        self.ax = self.fig3.add_subplot(111)
+        #Espacio entre Tipo de falla y Canal de falla
+        letrasInicioSizer.AddSpacer(8)
         
-        nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
-        nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
-        nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
+        #Objeto de tipo Static text que tiene por nombre Fase(s) en falla
+        self.m_staticText2 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Fase(s) en falla", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText2.Wrap( -1 )
+        self.m_staticText2.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        letrasInicioSizer.Add( self.m_staticText2, 0, wx.ALL, 5 )
+        #Espacio entre Canal de falla y Distancia
+        letrasInicioSizer.AddSpacer(8)
+        #Objeto de tipo Static text que tiene por nombre Distancia
+        self.m_staticText3 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Distancia (Km)", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_staticText3.Wrap( -1 )
+        self.m_staticText3.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+        letrasInicioSizer.Add( self.m_staticText3, 0, wx.ALL, 5 )
+        panelInicioSizer.Add( letrasInicioSizer, 0, wx.EXPAND, 5 )
         
-        self.canvas_ubicacion.mpl_connect('button_press_event',self.onPress)
-        self.canvas_ubicacion.mpl_connect('button_release_event',self.onRelease)
-        self.canvas_ubicacion.mpl_connect('motion_notify_event',self.onMotion)
-        self.canvas_ubicacion.mpl_connect('scroll_event', self.zoom)
-        #self.fig3.canvas.
+        ######Boxsizer que contiene los datos asociados a el BoxSizer4, que se muestran cuando se importan los datos
+        #de la falla
+        self.m_textCtrl1 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_textCtrl1.Enable( False )
+        cajasInicioSizer.Add( self.m_textCtrl1, 0, wx.ALL, 5 )
         
-        plt.axis('off')
-
-        panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)
-        #self.toolbar = NavigationToolbar(self.canvas_ubicacion)
-        #panelUbicacionSizer.Add( self.toolbar, 0, wx.EXPAND |wx.ALL, 5)
-        #self.m_panel3.SetSizer(self.self.Vbox)
-        #self.self.Vbox.Fit(self)
+        self.m_textCtrl2 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_textCtrl2.Enable( False )
+        cajasInicioSizer.Add( self.m_textCtrl2, 0, wx.ALL, 5 )
         
-        panelUbicacionSizer.Add( self.m_panelUbicacion, 0, wx.EXPAND |wx.ALL, 5)
+        self.m_textCtrl3 = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_textCtrl3.Enable( False )
+        cajasInicioSizer.Add( self.m_textCtrl3, 0, wx.ALL, 5 )
         
-        #panelCorrienteGraficaSizer.Add( self.m_panelCorriente, 0, wx.EXPAND |wx.ALL, 5)
-        
-        #f = plt.figure(1)
-        #ax = f.add_subplot(1,1,1)
-        
-        '''for label in self.Val_map:
-                ax.plot([0],[0],color=scalarMap.to_rgba(self.Val_map[label]),label=label)'''
-        #self.Values = [self.Val_map.get(node, 30) for node in Grafo.nodes()]
-        
-        #self.fig3.set_facecolor('w')
-        #plt.legend(loc='best')
+        panelInicioSizer.Add( cajasInicioSizer, 0, wx.EXPAND, 5 )
+        self.m_panel1.SetSizer( panelInicioSizer )
+        self.m_panel1.Layout()
+        panelInicioSizer.Fit( self.m_panel1 )
+        self.m_listbook1.AddPage( self.m_panel1, u"INFORMACION", False )
         
         
-        #self.fig3.tight_layout()
-        
-        #nx.draw(Grafo, cmap=plt.get_cmap('jet'), node_color=self.Values)
-        
-        ###se dibuja el grafo normal
-        #nx.draw(Grafo,pos)
-        
-        ###se dibuja el grafo con etiquetas
-        #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=color)
-        #nx.draw_networkx(Grafo,pos, arrows=True, with_labels=True,node_color=self.Values)
-        
-        #self.axes_ubicacion.plot(nx.draw_networkx_nodes(Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0))
-        #nx.draw_networkx_edges(Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
-        #nx.draw_networkx_labels(Grafo,etiquetas,fontsize=14)
-        #nx.draw_networkx_labels(Grafo,pos,labels)
-        #nx.draw_networkx(Grafo,pos, arrows=False, with_labels=True,node_color=self.Values,ax=ax)
-        #plt.savefig("GrafoCaminos.png")
-        #plt.axis('off')
-        #plt.show()
-        #self.canself.Vas_ubicacion.draw()
-        '''self.fig = plt.figure()
-        self.canself.Vas = FigCanself.Vas(self.m_panel3, -1, self.fig)
-        G=nx.house_graph()
-        pos={0:(0,0),
-            1:(1,0),
-            2:(0,1),
-            3:(1,1),
-            4:(0.5,2.0)}
-
-        nx.draw_networkx_nodes(G,pos,node_size=2000,nodelist=[4])
-        nx.draw_networkx_nodes(G,pos,node_size=3000,nodelist=[0,1,2,3],node_color='b')
-        nx.draw_networkx_edges(G,pos,alpha=0.5,width=6)
-        plt.axis('off')
-        self.self.Vbox = wx.BoxSizer(wx.VERTICAL)
-        self.self.Vbox.Add(self.canself.Vas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.toolbar = NavigationToolbar(self.canself.Vas)
-        self.self.Vbox.Add(self.toolbar, 0, wx.EXPAND)
-        self.m_panel3.SetSizer(self.self.Vbox)
-        self.self.Vbox.Fit(self)'''
-        
-        '''bSizer22 = wx.BoxSizer( wx.VERTICAL )
-        self.m_button7 = wx.Button( self.m_panel3, wx.ID_ANY, u"MyButton", wx.DefaultPosition, wx.DefaultSize, 0 )
-        bSizer22.Add( self.m_button7, 0, wx.ALL, 5 )'''
-        bSizer22 = wx.BoxSizer( wx.VERTICAL )
-        self.m_button9 = wx.Button( self.m_panel3, wx.ID_ANY, u"Editar grafo", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.Bind(wx.EVT_BUTTON, self.editar_grafo, self.m_button9)
-        
-        self.m_button10 = wx.Button( self.m_panel3, wx.ID_ANY, u"Actualizar grafo", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.Bind(wx.EVT_BUTTON, self.actualizar_grafo, self.m_button10)
-        
-        bSizer22.Add( self.m_button9, 0, wx.ALL, 5 )
-        bSizer22.Add( self.m_button10, 0, wx.ALL, 5 )
-        
-        panelUbicacionSizer.Add( bSizer22, 0, wx.EXPAND, 5 )
-        
-        #panelUbicacionSizer.Add( self.m_button9, 0, wx.EXPAND |wx.ALL, 5)
-        
-        self.m_panel3.SetSizer( panelUbicacionSizer )
-        self.m_panel3.Layout()
-        panelUbicacionSizer.Fit( self.m_panel3 )
-        self.m_listbook1.AddPage( self.m_panel3, u"UBICACION DE LA FALLA", False )
         ###########################################################################
         ##              PANEL DE REPORTE DE LA FALLA                              #
         ###########################################################################
@@ -450,10 +832,9 @@ class Aplicacion ( wx.Frame ):
         bSizer23 = wx.BoxSizer( wx.VERTICAL )
         #Imagen del logo del laboratorio
         png = wx.Image('LOGO_LABE.png', wx.BITMAP_TYPE_PNG)      
-        #self.algo = wx.StaticBitmap(self.m_panel4, -1, png, (10, 10), (png.GetWidth(), png.GetHeight()))
-        self.algo = wx.StaticBitmap(self.m_panel4, -1, wx.BitmapFromImage(png),(10, 10), (png.GetWidth(), png.GetHeight()))
+        self.logo = wx.StaticBitmap(self.m_panel4, -1, wx.BitmapFromImage(png),(10, 10), (png.GetWidth(), png.GetHeight()))
         
-        bSizer23.Add( self.algo, 0, wx.ALL, 5 )
+        bSizer23.Add( self.logo, 0, wx.ALL, 5 )
         
         self.m_button8 = wx.Button( self.m_panel4, wx.ID_ANY, u"Generar reporte", wx.DefaultPosition, wx.DefaultSize, 0 )
         
@@ -466,6 +847,11 @@ class Aplicacion ( wx.Frame ):
         
         #self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", imageId=0 )
         self.m_listbook1.AddPage( self.m_panel4, u"REPORTE", False )
+        
+        ###########################################################################
+        ##              INSERCION DE LAS GRAFICAS A LOS PANELES                   #
+        ###########################################################################
+        
         #Tamanho de las imagenes contenidas en la ImageList
         self.imlist = wx.ImageList(100,100)
         
@@ -473,16 +859,17 @@ class Aplicacion ( wx.Frame ):
         self.m_listbook1.AssignImageList(self.imlist)
         
         
+        
         #Graficas de los paneles
-        inicio= wx.Bitmap('inicio.png')
-        graficas= wx.Bitmap('graficas.png')
         ubicacion= wx.Bitmap('ubicacion.png')
+        graficas= wx.Bitmap('graficas.png')
+        informacion= wx.Bitmap('informacion.png')
         reporte= wx.Bitmap('reporte.png')
         
         #Se agregan las imagenes a los paneles de la listbook
-        self.m_listbook1.SetPageImage(0, self.imlist.Add(inicio))
+        self.m_listbook1.SetPageImage(0, self.imlist.Add(ubicacion))
         self.m_listbook1.SetPageImage(1, self.imlist.Add(graficas))
-        self.m_listbook1.SetPageImage(2, self.imlist.Add(ubicacion))
+        self.m_listbook1.SetPageImage(2, self.imlist.Add(informacion))
         self.m_listbook1.SetPageImage(3, self.imlist.Add(reporte))
 		
         principalSizer.Add( self.m_listbook1, 1, wx.EXPAND |wx.ALL, 5 )
@@ -532,7 +919,7 @@ class Aplicacion ( wx.Frame ):
         if self.zoomEntry: 
             self.new_width = (cur_xlim[1] - cur_xlim[0]) * 1
             self.zoomEntry=False
-        #REVISAR LAS POSICIONES QUE SE AJUSTEN AL ZOOM
+        
         
         '''pos=nx.get_node_attributes(self.Grafo,'pos')
         etiquetas={}
@@ -1171,7 +1558,253 @@ class Aplicacion ( wx.Frame ):
             self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX))'''
         #self.canvas_corriente.draw()
     
+    
+    def EvtComboBoxCircuitos(self,event):
+        #self.logger.AppendText('Evento de combo box: %sn' % event.GetString())    
+        #texto=self.m_comboBox2.GetValue()
         
+        texto = str(self.m_comboBox1.GetValue())
+        
+        self.objetoModelo=modeloDatos.Modelo(texto,False)
+        self.m_comboBox2.Clear()
+        
+        self.objetoBaseDatos=Consultas.baseDatos(texto)
+        m_comboBox2Choices = self.objetoBaseDatos.tablaNodos()
+        
+        self.m_comboBox2.SetItems(m_comboBox2Choices)
+        
+        self.ax.clear()
+        
+        
+        
+        self.objetoCircuito=Circuito.claseCircuito(texto)
+        retorno=self.objetoCircuito.Grafos()
+        distancia=4
+        self.Grafo=self.objetoCircuito.punto_falla(retorno,distancia)
+        #Circuito.imprimir_grafo(Grafo)
+        #Circuito.imprimir_grafo(imprimible)
+        color=nx.get_node_attributes(self.Grafo,'color')
+        self.Values = [color.get(node, 50) for node in self.Grafo.nodes()]
+        #imprimible de circuito
+        pos=nx.get_node_attributes(self.Grafo,'pos')
+        #print("las posiciones son "+str(pos))
+        etiquetas={}
+        for n in pos.keys():
+            #print(str(n)+" tiene "+str(pos[n][0]))
+            etiquetas[n]=[pos[n][0]+0.05,pos[n][1]+0.01]
+            #print("la posicion de las etiquetas son "+str(etiquetas))
+            color=nx.get_node_attributes(self.Grafo,'color')
+        
+        self.press = None
+        self.cur_xlim = None
+        self.cur_ylim = None
+        self.x0 = None
+        self.y0 = None
+        self.x1 = None
+        self.y1 = None
+        self.xpress = None
+        self.ypress = None
+        self.zoomEntry = True
+        
+        
+        
+        nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
+        nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
+        nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
+        
+        plt.axis('off')
+        
+        self.ax.figure.canvas.draw()
+        self.canvas_ubicacion.draw()
+        
+        self.blanquearTabla(self.reja)
+        self.blanquearTabla(self.reja1)
+        self.blanquearTabla(self.reja2)
+        
+        #self.objetoModelo=modeloDatos.Modelo(texto)
+        '''self.objetoBaseDatos=Consultas.baseDatos(texto)
+        #texto=event.GetString()
+        #self.objetoBaseDatos.consultaLineas(texto)
+        #print('resultado de nodo'+str(self.objetoBaseDatos.consultaNodo(str(texto))))
+        registros = self.objetoBaseDatos.consultaNodo(str(texto)) 
+        self.dibujarTablas(self.reja,registros)
+        registros = self.objetoBaseDatos.consultaLineas(str(texto)) 
+        self.dibujarTablas(self.reja1,registros)
+        registros = self.objetoBaseDatos.consultaCargas(str(texto)) 
+        self.dibujarTablas(self.reja2,registros)'''
+        
+        
+    def EvtComboBoxEdNodos(self,event):
+        '''texto = str(self.m_comboBox2.GetValue())
+        registros = self.objetoBaseDatos.consultaNodo(str(texto)) 
+        self.dibujarTablas(self.reja,registros)
+        registros = self.objetoBaseDatos.consultaLineas(str(texto)) 
+        self.dibujarTablas(self.reja1,registros)
+        registros = self.objetoBaseDatos.consultaCargas(str(texto)) 
+        self.dibujarTablas(self.reja2,registros)'''
+        
+        texto = str(self.m_comboBox3.GetValue())
+        self.m_textCtrl4.SetValue(texto)
+        
+        m_comboBox4Choices= self.Grafo.neighbors(texto)     
+        self.m_comboBox4.SetItems(m_comboBox4Choices)
+        '''m_comboBox5Choices= self.Grafo.neighbors(texto)     
+        self.m_comboBox5.SetItems(m_comboBox5Choices)'''
+        #m_comboBox4Choices= self.Grafo.neighbors(texto)     
+        #self.m_comboBox4.SetItems(m_comboBox4Choices)
+       
+        
+        troncal=nx.get_node_attributes(self.Grafo,'troncal')
+        if troncal[texto]==1:
+            self.m_checkBox7.SetValue(True)
+        elif troncal[texto]==0:
+            self.m_checkBox7.SetValue(False)
+            
+        registros = self.objetoBaseDatos.consultaCargas(str(texto))
+        self.m_textCtrlAlias.SetValue(registros[0][0]) 
+        self.m_textCtrlP.SetValue(registros[0][0])
+        self.m_textCtrlQ.SetValue(registros[0][0])
+        
+        #print(troncal[texto])
+        
+        #self.m_checkBox7
+        #if
+        #self.combo
+        #registros = self.objetoBaseDatos.consultaLineas(str(texto)) 
+        
+        print('cambio')
+    
+    #
+    def EvtComboBoxNodos(self,event):
+        texto = str(self.m_comboBox2.GetValue())
+        #print(self.Grafo.neighbors(texto))
+        #print(self.Grafo.edge.length(texto))
+        
+        #revisar con un for, llenar la tabla
+        #print(self.Grafo[texto][self.Grafo.neighbors(texto)[1]]['length'])
+        
+        registros = self.objetoBaseDatos.consultaNodo(str(texto)) 
+        self.dibujarTablas(self.reja,registros)
+        y=[]
+        x= self.Grafo.neighbors(texto)
+        for i in range(len(x)):
+            distancia=self.Grafo[texto][x[i]]['length']
+            r0=self.Grafo[texto][x[i]]['R0']
+            r1=self.Grafo[texto][x[i]]['R1']
+            x0=self.Grafo[texto][x[i]]['X0']
+            x1=self.Grafo[texto][x[i]]['X1']
+            #registro = self.objetoBaseDatos.consultaLineas(i)
+            f=(x[i],r0,r1,x0,x1,distancia)
+            y.append(f)
+        registros = self.objetoBaseDatos.consultaLineas(str(texto)) 
+        self.dibujarTablas(self.reja1,y)
+        registros = self.objetoBaseDatos.consultaCargas(str(texto)) 
+        self.dibujarTablas(self.reja2,registros)
+        
+    
+    
+    def EvtComboBoxVecino1(self,event):
+        #Evento del primer vecino
+        '''texto = str(self.m_comboBox2.GetValue())
+        registros = self.objetoBaseDatos.consultaNodo(str(texto)) 
+        self.dibujarTablas(self.reja,registros)
+        registros = self.objetoBaseDatos.consultaLineas(str(texto)) 
+        self.dibujarTablas(self.reja1,registros)
+        registros = self.objetoBaseDatos.consultaCargas(str(texto)) 
+        self.dibujarTablas(self.reja2,registros)'''
+        
+       
+        
+        texto = str(self.m_comboBox3.GetValue())
+        texto1 = str(self.m_comboBox4.GetValue())
+        
+        
+        r0=self.Grafo[texto][texto1]['R0']
+        r1=self.Grafo[texto][texto1]['R1']
+        x0=self.Grafo[texto][texto1]['X0']
+        x1=self.Grafo[texto][texto1]['X1']
+        distancia=self.Grafo[texto][texto1]['length']
+        
+        self.m_textCtrl1R0.SetValue(str(r0))
+        self.m_textCtrl1R1.SetValue(str(r1))
+        self.m_textCtrl1X0.SetValue(str(x0))
+        self.m_textCtrl1X1.SetValue(str(x1))
+        self.m_textCtrl1Dis.SetValue(str(distancia))
+        
+        ###REVISAR FALTA LA EDICION DE LOS DATOS, METODO PARA INSERCION, CARGAS, PERO YA SE IMPLEMENTA LA MAYOR PARTE,
+        #CONSULTAS SE REALIZA SOBRE LOS NODOS, TAL VEZ NO SEA NECESARIAS LAS RESTRICCIONES EN LOS EDIT NI DELETE
+        
+        print(r0,r1,x0,x1,distancia)
+        '''
+        #self.dibujarTablas(self.reja,registros)
+        
+        #m_comboBox4Choices = self.objetoBaseDatos.consultaVecinos(str(texto)) 
+        m_comboBox4Choices= self.Grafo.neighbors(texto)
+        
+        self.m_comboBox4.SetItems(m_comboBox4Choices)
+        
+        #self.combo
+        #registros = self.objetoBaseDatos.consultaLineas(str(texto)) '''
+        
+        print('cambiiiii')
+        
+     
+    def EvtComboBoxNuevaConexion(self,event):
+        pass
+        
+    
+    def dibujarTablas(self,rejilla,registros):
+        self.numFilas = rejilla.GetNumberRows()
+        difFilas = len(registros) - self.numFilas 
+        self.blanquearTabla(rejilla)
+        
+        '''if difFilas > 0: 
+            rejilla.AppendRows(difFilas) 
+        elif difFilas < 0: 
+            rejilla.AppendRows(-difFilas) '''
+        for fila, dato in enumerate(registros): 
+            for col, valor in enumerate(dato): 
+                rejilla.SetCellValue(fila, col, str(valor))  
+    
+    def blanquearTabla(self,rejilla):
+        rejilla.ClearGrid()
+    
+    
+    
+    def OnGroup1Select( self, event ):
+        radio_sel = event.GetEventObject()
+        for radio, texto in self.group1_ctrls:
+            if radio is radio_sel:
+                texto.Enable(True)
+                self.m_comboBox5.Enable(True)
+                self.m_textCtrl2R0.Enable(True)
+                self.m_textCtrl2R1.Enable(True)
+                self.m_textCtrl2X0.Enable(True)
+                self.m_textCtrl2X1.Enable(True)
+                self.m_textCtrl2Dis.Enable(True)
+                self.m_comboBox4.Enable(False)
+                self.m_textCtrl1R0.Enable(False)
+                self.m_textCtrl1R1.Enable(False)
+                self.m_textCtrl1X0.Enable(False)
+                self.m_textCtrl1X1.Enable(False)
+                self.m_textCtrl1Dis.Enable(False)
+            else:
+                texto.Enable(False)
+                self.m_comboBox5.Enable(False)
+                self.m_textCtrl2R0.Enable(False)
+                self.m_textCtrl2R1.Enable(False)
+                self.m_textCtrl2X0.Enable(False)
+                self.m_textCtrl2X1.Enable(False)
+                self.m_textCtrl2Dis.Enable(False)
+                self.m_comboBox4.Enable(True)
+                self.m_textCtrl1R0.Enable(True)
+                self.m_textCtrl1R1.Enable(True)
+                self.m_textCtrl1X0.Enable(True)
+                self.m_textCtrl1X1.Enable(True)
+                self.m_textCtrl1Dis.Enable(True)
+    
+
+
 
     def on_move(self,event):
         # get the x and y pixel coords
@@ -1358,7 +1991,11 @@ class Aplicacion ( wx.Frame ):
     #def reporte(self):
         
     
-    
+    '''def agregar(self, event):
+        pass
+        #if self.m_comboBox1.GetStringSelection() not in self.m_comboBox1.SelectAll():
+        #    self.m_comboBox1.Append('otro')'''
+           
 
     def on_about(self, event):
         '''msg = """ 
@@ -1400,21 +2037,6 @@ class Aplicacion ( wx.Frame ):
         #info.AddTranslator('jan bodnar')
         wx.AboutBox(info)
 
-    #EVENTO SIN IMPLEMENTAR
-    def editar_grafo(self, event):
-        dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
-        salir = dlg.ShowModal()
-        dlg.Destroy()
-        if wx.ID_YES == salir :
-            self.Destroy()
-
-    #EVENTO SIN IMPLEMENTAR
-    def actualizar_grafo(self, event):
-        dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )
-        salir = dlg.ShowModal()
-        dlg.Destroy()
-        if wx.ID_YES == salir :
-            self.Destroy()
 
     def salir(self, event):
         dlg = wx.MessageDialog( self, 'Realmente desea salir del programa?', 'Aviso', wx.YES_NO | wx.ICON_QUESTION )

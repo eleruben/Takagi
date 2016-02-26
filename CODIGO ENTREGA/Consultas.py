@@ -13,6 +13,7 @@ class baseDatos(object):
         base = os.path.exists(base_datos)
         conexion = sq3.connect(base_datos)
         self.cursor = conexion.cursor()
+        
     
     def tablaNodos(self):
         sql="SELECT Nombre FROM Nodos"
@@ -45,7 +46,10 @@ class baseDatos(object):
     
     def consultaId(self,nombre):
         self.cursor.execute('''SELECT Id_Nodo FROM Nodos WHERE Nombre=?;''', (str(nombre),))
-        registros = self.cursor.fetchall()
+        registros = str(self.cursor.fetchone())
+        registros=registros.lstrip('(')
+        registros=registros.rstrip(')')
+        registros=registros.rstrip(',')
         return registros
     
     def consultaNodo(self,nombre):

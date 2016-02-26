@@ -145,8 +145,6 @@ class Modelo(object):
         END;
                    
         '''
-        print( 'lo crea')
-
         self.ejecutar_script(sql)
     
     #Se cargan los datos del circuito si este no ha sido creado
@@ -215,7 +213,6 @@ class Modelo(object):
         UPDATE Cargas set P='PRB10', Q='FRB10'  where Id_Nodo=20;    
         
         '''
-        print( 'lo autollena')
 
         self.ejecutar_script(sql)
         

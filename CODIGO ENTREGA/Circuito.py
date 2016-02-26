@@ -28,8 +28,10 @@ class claseCircuito(object):
     def Grafos(self):
         
        
-        
-        self.cursor.execute('''DROP VIEW IF EXISTS X;''')
+        try:
+            self.cursor.execute('''DROP VIEW X;''')
+        except sq3.OperationalError:
+            pass
         self.cursor.execute('''
             CREATE VIEW X AS SELECT Nombre,Troncal,DISTANCIA,R0,R1,X0,X1  
             FROM Nodos a, Lineas b  
@@ -44,7 +46,6 @@ class claseCircuito(object):
         tablaR1=[]
         tablaX0=[]
         tablaX1=[]
-        ####Es necesaria la equivalencia de los nombres con el identificador del nodo???REVISAR
         for i in range(len(registros)):
             Ext2.append(str(registros[i][0]))            
             Troncal.append(registros[i][1])
@@ -118,63 +119,154 @@ class claseCircuito(object):
                     if Ext1[i] in Grafo.nodes() and Ext2[i] not in Grafo.nodes():
                         ##En el caso de las ramas se necesita conocer la posicion del
                         ##nodo al que esta asociado
-    
-                        if len(Grafo.neighbors(Ext1[i]))==2:
-                            #Caso en que se agrega una rama estando dos en linea en la linea base #0
-                            if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
-                                Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-                            #Caso en que se agrega una nueva rama a la izquierda #1
-                            elif((pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0)) and (troncal[Ext1[i]]==0):
-                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-                            #Caso en que se agrega una nueva rama a la derecha #2
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]>0):
-                                Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-                            #Caso en que se agrega una troncal a la linea base habiendo agregado antes una rama
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0):
-                                Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-                            #elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and troncal[Ext1[i]]==1:
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-    
-                        if len(Grafo.neighbors(Ext1[i]))==3:
-                            
-                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 2 #0
-                            if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
-                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 2 y 3 #0
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
-                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 3 #0
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
-                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 2 #1
-                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1] == 0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 2 y 3 #1
-                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 3 #1
-                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            
+                        
+                        
                         if len(Grafo.neighbors(Ext1[i]))==1:
-                            
-                            #Caso en que el vecino este agregado por abajo, se agrega hacia arriba #0
+                            #Cuando solo hay un vecino existen solo 4 casos
+                            #El unico vecino esta agregado por abajo, se descarta el caso de agregar una troncal a un ramal desde la interfaz #0 (troncal[Ext1[i]]==1)
                             if(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]>0):
                                 #Caso en que se este agregando una rama a un nodo troncal, se agrega por la derecha 
                                 if(Troncal[i] == 0):
-                                    Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                    Grafo.add_node(Ext2[i],pos=(Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                #Caso en que se este agregando una troncal a un nodo troncal, hacia arriba
                                 elif(Troncal[i] == 1):
                                     Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
-                            #Caso en que el vecino este agregado por arriba, se agrega por la izquierda #1
+                            
+                            #Caso en que el vecino este agregado por arriba, se agrega a la derecha a la altura del vecino #1 (troncal[Ext1[i]]==0)
                             elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]<0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0]+Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que el vecino este agregado por izquierda, se agrega hacia arriba #2
-                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])
-                            #Caso en que el vecino este agregado por derecha, se agrega hacia arriba #3
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0]+Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            #Caso en que el vecino este agregado por izquierda, se agrega hacia arriba #2 (troncal[Ext1[i]]==0)
                             elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0):
-                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i])                            
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            #Caso en que el vecino este agregado por derecha, se agrega hacia arriba #3 (troncal[Ext1[i]]==0)
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                        
+    
+                        if len(Grafo.neighbors(Ext1[i]))==2:
+                            #Cuando hay dos vecinos existen solo 4 casos
+                            
+                            #revisarrrrr
+                            #Caso en que se agrega una rama estando dos en linea en la linea base, se agrega rama a la derecha (troncal[Ext1[i]]==1)
+                            if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
+                                Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            
+                            #Caso en que el nodo Ex1 sea troncal, el segundo vecino es una rama
+                            elif(troncal[Ext1[i]]==1):
+                                #Caso en que se agrega una troncal a la linea base habiendo agregado antes una rama
+                                if(Troncal[i]==1):
+                                    Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                #Caso en que se agrega una rama a la izquierda de la linea base habiendo agregado antes una rama
+                                elif(Troncal[i]==0):
+                                    Grafo.add_node(Ext2[i],pos=(-Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            
+                            #Se simplifican los casos ya que si hay un nodo agrado a la izquierda el otro se agrega a la derecha sin importar el segundo
+                            #Caso en que el nodo Ex1 no es troncal, y hay uno por debajo y otro a la derecha, se agrega nodo a la izquierda
+                            #Caso en que el nodo Ex1 no es troncal, y hay uno por arriba y otro a la derecha, se agrega nodo a la izquierda
+                            elif (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0]-Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i]) 
+                    
+                            #Se simplifican los casos ya que si hay un nodo agregado a la derecha el otro se agrega a la derecha sin importar el segundo
+                            #Caso en que el nodo Ex1 no es troncal, y hay uno por debajo y otro a la izquierda, se agrega nodo a la derecha (no se da el caso)
+                            #Caso en que el nodo Ex1 no es troncal, y hay uno por arriba y otro a la izquierda, se agrega nodo a la derecha
+                            elif (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]>0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0]+Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            
+                            
+                            
+                            '''
+                                #Caso en que el segundo vecino 
+                            #Caso en que se agrega una nueva rama a la izquierda #1
+                            elif((pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0)) and (troncal[Ext1[i]]==0):
+                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('2')
+                            #Caso en que se agrega una nueva rama a la derecha #2
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]>0) or (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]>0):
+                                Grafo.add_node(Ext2[i],pos=(Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('3')
+                            #Caso en que se agrega una rama a la linea base habiendo agregado antes una rama
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]<0) and (Troncal[i]==0):
+                                #if Troncal[i]==1:
+                                    
+                                
+                                print('4')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                                
+                            #elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]<0):
+                            #Caso en que se agrega una troncal a la linea base habiendo agregado antes una rama
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and troncal[Ext1[i]]==1:
+                                #Caso de agregar una troncal
+                                if(Troncal[i]==1):
+                                    Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                #Caso de agregar una rama a la izquierda
+                                elif(Troncal[i]==0):
+                                    Grafo.add_node(Ext2[i],pos=(-Distancia[i],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                    
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])'''
+    
+                        if len(Grafo.neighbors(Ext1[i]))==3:
+                            
+                            #Cuando solo hay tres vecino existen solo 3 casos
+                            
+                            #Caso en que se agregue un nodo a la linea base
+                            if(troncal[Ext1[i]]==1):
+                                #Caso en que Ext1 ya tenga agregado dos nodos ramales y se agregue un nuevo nodo troncal, se descartan casos desde la interfaz 
+                                if(Troncal[i]==1):
+                                    Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                #Caso en que Ext1 ya tenga agregado un ramal y dos troncales, se agrega ramal a la izquierda
+                                if(Troncal[i]==0):
+                                    Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            
+                            
+                            #Caso en que se agregue por debajo, debido a la conformacion del circuito los otros 3 vecinos debieron cubrir las demas posiciones
+                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]<0) or (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1]<0) or (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1]<0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],-Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            
+                            #caso en que se agregue por encima, debido a la conformacion del circuito los otros 3 vecinos debieron cubrir las demas posiciones
+                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]>0) or (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1]>0) or (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1]>0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],Distancia[i]+pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                            '''
+                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 2 #0
+                            if(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0] == 0):
+                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 2 y 3 #0
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[1]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
+                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            #Caso en que se agrega una nueva rama a la izquierda, los nodos alineados en Y son 1 y 3 #0
+                            elif(pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[0]][0]==0) and (pos[Ext1[i]][0]-pos[Grafo.neighbors(Ext1[i])[2]][0] == 0):
+                                Grafo.add_node(Ext2[i],pos=(-Distancia[i]+pos[Ext1[i]][0],pos[Ext1[i]][1]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 2 #1
+                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1] == 0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 2 y 3 #1
+                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[1]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            #Caso en que se agrega una nueva rama abajo, los nodos alineados en X son 1 y 3 #1
+                            elif(pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[0]][1]==0) and (pos[Ext1[i]][1]-pos[Grafo.neighbors(Ext1[i])[2]][1] == 0):
+                                Grafo.add_node(Ext2[i],pos=(pos[Ext1[i]][0],pos[Ext1[i]][1]-Distancia[i]),acumulado=acumulado[Ext1[i]]+Distancia[i],troncal=Troncal[i])
+                                print('5')
+                                print(Ext1[i])
+                                print(Ext2[i])
+                            '''
+                                                    
          
                         Grafo.add_edge(Ext1[i],Ext2[i],length=Distancia[i],R0=tablaR0[i],R1=tablaR1[i],X0=tablaX0[i],X1=tablaX1[i])
                         break

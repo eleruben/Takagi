@@ -61,7 +61,7 @@ class Ventana(wx.Frame):
         sizerV.Add(sizerH, 0, wx.EXPAND)
         panel.SetSizer(sizerV)
         self.Center()
-        self.modelo = modeloDatos.Modelo("yacopi")
+        self.modelo = modeloDatos.Modelo("yacopi",False)
  
     def datosBotones(self):
         """ Define el rótulo y el manejador de evento del botón """
@@ -145,7 +145,7 @@ class Ventana(wx.Frame):
         if difFilas > 0: 
             self.grilla.AppendRows(difFilas) 
         elif difFilas < 0: 
-            self,grilla.AppendRows(-difFilas) 
+            self.grilla.AppendRows(-difFilas) 
         for fila, dato in enumerate(registros): 
             for col, valor in enumerate(dato): 
                 self.grilla.SetCellValue(fila, col, str(valor))

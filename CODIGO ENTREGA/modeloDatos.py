@@ -3,24 +3,25 @@ import os
 import wx
  
 class Modelo(object):    
-    def __init__(self, nombre,otro):
+    def __init__(self, nombre,nueva):
         base_datos=nombre+".s3db"
         """ Establece la conexion con la base de datos
         y ejecuta las consultas solicitadas en la interfaz.
         Si no existe la tabla, la crea.
         Inserta datos de prueba """
-        if otro:
+        if nueva:
             base = os.path.exists(base_datos)
             self.conexion = sq3.connect(base_datos)
             if not base:
                 self.crearTabla()
-                self.autollenado()
+                self.autollenadoYacopi()
         else:
             base = os.path.exists(base_datos)
             self.conexion = sq3.connect(base_datos)
             if not base:
                 self.crearTabla()
-                self.autollenado1()
+                #self.autollenadoNueva()
+                self.autollenadoPrueba()
  
     def insertar(self, d1):
         """ Inserta un nuevo registro en la base de datos
@@ -148,7 +149,7 @@ class Modelo(object):
         self.ejecutar_script(sql)
     
     #Se cargan los datos del circuito si este no ha sido creado
-    def autollenado(self):
+    def autollenadoYacopi(self):
         sql='''
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1);
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B3', 1);
@@ -216,7 +217,7 @@ class Modelo(object):
 
         self.ejecutar_script(sql)
         
-    def autollenado1(self):
+    def autollenadoNueva(self):
         sql='''
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1);
         
@@ -226,6 +227,33 @@ class Modelo(object):
         UPDATE Cargas set P='PB2', Q='FB2'  where Id_Nodo=2;   
         
         '''
-        print( 'lo autollena')
 
+        self.ejecutar_script(sql)
+    
+    def autollenadoPrueba(self):
+        print('entra')
+        sql='''
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B2', 1);
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B3', 1);
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B4', 1);
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B5', 0);
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B6', 0);
+        INSERT INTO Nodos (Nombre, Troncal) VALUES ('B7', 1);
+        
+        UPDATE Lineas set Id_Nodo2 = 1, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 30  where Id_Nodo1=2;
+        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 15  where Id_Nodo1=3;
+        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 10  where Id_Nodo1=4;
+        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 8  where Id_Nodo1=5;
+        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 20  where Id_Nodo1=6;
+        UPDATE Lineas set Id_Nodo2 = 4, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 19  where Id_Nodo1=7;
+    
+        
+        UPDATE Cargas set Alias='C2', P=0.008, Q=100  where Id_Nodo=2;
+        UPDATE Cargas set Alias='C3', P=0.008, Q=100  where Id_Nodo=3;
+        UPDATE Cargas set Alias='C4', P=0.008, Q=100  where Id_Nodo=4;
+        UPDATE Cargas set Alias='C5', P=0.008, Q=100  where Id_Nodo=5;
+        UPDATE Cargas set Alias='C6', P=0.008, Q=100  where Id_Nodo=6;
+        UPDATE Cargas set Alias='C7', P=0.008, Q=100  where Id_Nodo=7;
+        
+        '''
         self.ejecutar_script(sql)

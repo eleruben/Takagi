@@ -5,8 +5,6 @@ import wx.xrc
 import math
 import matplotlib
 import xlrd
-from compiler.ast import Break
-from bokeh.properties import Event
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
@@ -32,6 +30,8 @@ import Consultas
 import modeloDatos
 
 import re
+
+import clases_Circuito
 #import ejemplo2
 
 #import claseGraficas
@@ -62,7 +62,7 @@ class Aplicacion ( wx.Frame ):
         #Lista con todos los ficheros del directorio:
         lstDir = os.walk(self.actual)   #os.walk()Lista directorios y ficheros
         
-        #Crea una lista de los ficheros jpg que existen en el directorio y los incluye a la lista.
+        #Crea una lista de los ficheros s3db que existen en el directorio y los incluye a la lista.
          
         for root, dirs, files in lstDir:
             for fichero in files:
@@ -90,7 +90,7 @@ class Aplicacion ( wx.Frame ):
         self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem1)
         self.m_menu1.AppendSeparator()
         
-        #Todavia no estan habilitados los dos modulos de importacion, REVISAR
+        #Modulos de importacion desde archivo CFG y desde Archivo Excel con un formato especifico
         self.m_menu21 = wx.Menu()
         self.m_menuItem6 = wx.MenuItem( self.m_menu21, wx.ID_ANY, u"Formato CFG", wx.EmptyString, wx.ITEM_NORMAL )
         self.Bind(wx.EVT_MENU, self.on_import_file, self.m_menuItem6)
@@ -198,26 +198,30 @@ class Aplicacion ( wx.Frame ):
         self.m_comboBox1 = wx.ComboBox( self.m_panel3, wx.ID_ANY, u"yacopi", wx.DefaultPosition, wx.DefaultSize, self.m_comboBox1Choices, 0 )
         self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxCircuitos, self.m_comboBox1)
         bSizerCircuitos.Add( self.m_comboBox1, 0, wx.ALL, 5 )
-        
+        #Se ejecuta para crear la base de datos de yacopi, por si no esta creada
         texto = str(self.m_comboBox1.GetValue())
         self.objetoModelo=modeloDatos.Modelo(texto,True)
         
         bSizerCircuitos.AddSpacer(120)
         
         
-        self.m_staticText7 = wx.StaticText( self.m_panel3, wx.ID_ANY, u"Nuevo circuito", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.m_staticText7.Wrap( -1 )
-        self.m_staticText7.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-        bSizerCircuitos.Add( self.m_staticText7, 0, wx.ALL, 5 )
         
-        if
-        self.m_textCtrlNuevoCircuito = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_checkBoxNuevoCircuito = wx.CheckBox( self.m_panel3, wx.ID_ANY, u"Nuevo Circuito", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_checkBoxNuevoCircuito.SetValue(False)
+        self.Bind(wx.EVT_CHECKBOX, self.on_NuevoCircuito, self.m_checkBoxNuevoCircuito)
+        bSizerCircuitos.Add( self.m_checkBoxNuevoCircuito, 0, wx.ALL, 5 )
+        
+        self.m_textCtrlNuevoCircuito = wx.TextCtrl( self.m_panel3, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_textCtrlNuevoCircuito.Enable( False )
         self.valTextCtrlNuevoCircuito=False
-        if
-        ###REVISAR LA NUEVA INSERCION DE CIRCUITO
-        self.Bind(wx.EVT_TEXT, self.EvtTextCtrl4, self.m_textCtrl4)
-        bSizerNombreNodo.Add( self.m_textCtrl4, 0, wx.ALL, 5 )
+        self.Bind(wx.EVT_TEXT, self.EvtTextCtrlNuevoCircuito, self.m_textCtrlNuevoCircuito)
+        bSizerCircuitos.Add( self.m_textCtrlNuevoCircuito, 0, wx.ALL, 5 )
+        
+        self.m_buttonNuevoCircuito = wx.Button( self.m_panel3, wx.ID_ANY, u"+", wx.DefaultPosition, size=wx.Size(20,25), style=0 )
+        self.Bind(wx.EVT_BUTTON, self.NuevoCircuito, self.m_buttonNuevoCircuito)
+        self.m_buttonNuevoCircuito.Enable(False)
+        bSizerCircuitos.Add( self.m_buttonNuevoCircuito, 0, wx.ALL, 5 )
+        
         
         bSizerTotal.Add( bSizerCircuitos, 0, wx.ALL, 5 )
         
@@ -241,8 +245,8 @@ class Aplicacion ( wx.Frame ):
         
         self.reja=wxgrid.Grid(self.m_panel5, wx.ID_ANY)
         self.reja.CreateGrid(1,2)
-        nombres=[('Nombre Nodo', 100, False, wxgrid.GridCellStringRenderer()),
-            ('Troncal',50, False, wxgrid.GridCellStringRenderer())]
+        nombres=[('Nombre Nodo', 120, False, wxgrid.GridCellStringRenderer()),
+            ('Troncal',60, False, wxgrid.GridCellStringRenderer())]
         
         for ind, col in enumerate(nombres):
             self.reja.SetColLabelValue(ind, col[0])
@@ -297,9 +301,9 @@ class Aplicacion ( wx.Frame ):
         
         self.reja2=wxgrid.Grid(self.m_panel5, wx.ID_ANY)
         self.reja2.CreateGrid(1,3)
-        nombres=[('Alias',50, False, wxgrid.GridCellStringRenderer()),
+        nombres=[('Nombre de carga',120, False, wxgrid.GridCellStringRenderer()),
             ('P',60, False, wxgrid.GridCellStringRenderer()),
-            ('Q',50, False, wxgrid.GridCellStringRenderer())]
+            ('Q',60, False, wxgrid.GridCellStringRenderer())]
         
         for ind, col in enumerate(nombres):
             self.reja2.SetColLabelValue(ind, col[0])
@@ -556,14 +560,21 @@ class Aplicacion ( wx.Frame ):
         self.Bind(wx.EVT_TEXT, self.EvtText2Dis, self.m_textCtrl2Dis)
         grid.Add(self.m_textCtrl2Dis, pos=(3,5))
         self.m_textCtrl2Dis.Enable(False)
-        
-    
         #Adicion de grid de lineas al sizer del panel de edicion
         panelEdicionSizer.Add( grid, 0, wx.ALL, 5 )
         
-        panelEdicionSizer.AddSpacer(30)
+        panelEdicionSizer.AddSpacer(15)
         
-        self.m_staticText24 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Alias", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_checkBoxNodoConCarga = wx.CheckBox( self.m_panel6, wx.ID_ANY, u"Nodo incluye carga", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_checkBoxNodoConCarga.SetValue(False)
+        self.Bind(wx.EVT_CHECKBOX, self.on_NodoConCarga, self.m_checkBoxNodoConCarga)
+        panelEdicionSizer.Add( self.m_checkBoxNodoConCarga, 0, wx.ALL, 5 )
+        
+        
+        
+        panelEdicionSizer.AddSpacer(15)
+        
+        self.m_staticText24 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Nombre de carga       ", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText24.Wrap( -1 )
         self.m_staticText24.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
         gridCarga.Add(self.m_staticText24, pos=(0,0))
@@ -582,7 +593,7 @@ class Aplicacion ( wx.Frame ):
         self.m_textCtrlAlias = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, size=wx.Size(80,25), style=0 )
         self.valTextCtrlAlias=False
         self.Bind(wx.EVT_TEXT, self.EvtTextAlias, self.m_textCtrlAlias)
-        self.m_textCtrlAlias.SetToolTipString('Alias de la carga')
+        self.m_textCtrlAlias.SetToolTipString('Nombre de la carga')
         gridCarga.Add(self.m_textCtrlAlias, pos=(1,0))
         
         
@@ -1410,10 +1421,25 @@ class Aplicacion ( wx.Frame ):
             self.filename = dlg.GetFilename()   # Guardamos el nombre del fichero
             
             self.objetoComtrade=claseComtrade.comtrade(self.dirname, self.filename)
-            self.objetoComtrade.generarOscilografiaExcel()
+            ERROR=False
             
-            self.cargar_datos(self.objetoComtrade.arreglo)
-            self.m_menuItem2.Enable(True)
+            try:
+                try:
+                    self.objetoComtrade.generarOscilografiaExcel()
+                    self.cargar_datos(self.objetoComtrade.arreglo)
+                    self.m_menuItem2.Enable(True)
+                except ValueError:
+                    msg='Por favor revise los datos del archivo'
+                    ERROR=True  
+            except UnboundLocalError or ValueError:
+                self.m_menuItem2.Enable(False)
+                msg='El archivo debe tener Datos'
+                ERROR=True
+            if ERROR:
+                dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+            
         # Finalmente destruimos la ventana de dialogo    
         dlg.Destroy()  
     
@@ -1491,6 +1517,7 @@ class Aplicacion ( wx.Frame ):
         
         #Procedimiento para verificar si la señal de la FASE A se puede analizar de forma automatica            
         [sirve, iniPre, iniFalla, Difn]=lect.Verificar(self.objetoComtrade.oscilografia[:,0],self.objetoComtrade.oscilografia[:,11])
+        #FASE N print(self.objetoComtrade.oscilografia[:,12])
         if (sirve==1 and self.manual):
             
             self.m_textCtrl2.SetValue("A")
@@ -1689,9 +1716,9 @@ class Aplicacion ( wx.Frame ):
         #retorno=self.objetoCircuito.Grafos()
                
         self.Grafo=self.objetoCircuito.Grafos()
-        #distancia=4
-        #self.Grafo=self.objetoCircuito.punto_falla(retorno,distancia)
-        
+        #Metodo para insertar nodos a la misma distancia
+        #distancia=30
+        #self.Grafo=self.objetoCircuito.punto_falla(self.Grafo,distancia)
         color=nx.get_node_attributes(self.Grafo,'color')
         self.Values = [color.get(node, 50) for node in self.Grafo.nodes()]
         
@@ -1736,7 +1763,12 @@ class Aplicacion ( wx.Frame ):
         self.m_textCtrl1X0.SetValue('')
         self.m_textCtrl1X1.SetValue('')
         self.m_textCtrl1Dis.SetValue('')
-        
+        self.m_textCtrlAlias.SetValue('')
+        self.m_textCtrlP.SetValue('')
+        self.m_textCtrlQ.SetValue('')
+        self.m_textCtrlAlias.Enable(True) 
+        self.m_textCtrlP.Enable(True)
+        self.m_textCtrlQ.Enable(True)
         
         texto = str(self.m_comboBox3.GetValue())
         self.m_textCtrl4.SetValue(texto)
@@ -1745,25 +1777,62 @@ class Aplicacion ( wx.Frame ):
         self.m_comboBox4.SetItems(m_comboBox4Choices)
 
        
-        
+        #Se carga el valor de troncal o ramal del nodo
         troncal=nx.get_node_attributes(self.Grafo,'troncal')
         if troncal[texto]==1:
             self.m_checkBox7.SetValue(True)            
         elif troncal[texto]==0:
             self.m_checkBox8.SetValue(True)
         
-        #Caso en que se puede cambiar de troncal a ramal 
+        #Caso en que se puede cambiar de troncal a ramal, nodo es troncal, es diferente de B1 y nodo solo tiene un vecino
         if len(m_comboBox4Choices)==1 and self.m_checkBox7.IsChecked() and texto != 'B1':
             self.m_checkBox7.Enable(True)  
             self.m_checkBox8.Enable(True)
-            
-            
-            
+        #Caso en que se puede cambiar de ramal a troncal, tiene solo un vecino y este vecino es de tipo troncal
+        elif self.m_checkBox8.IsChecked() and len(m_comboBox4Choices)==1 and troncal[self.Grafo.neighbors(texto)[0]]==1  :
+            if len(self.Grafo.neighbors(m_comboBox4Choices[0]))==1:
+                #NO SE DA EL CASO, PORQUE SI ES UN RAMAL Y EL VECINO SOLO TIENE UN VECINO ESTARIAN SOLO CONECTADOS LOS DOS, SIN UNA LINEA BASE
+                pass 
+            elif len(self.Grafo.neighbors(m_comboBox4Choices[0]))==2:
+                #Si tiene dos vecinos se puede hacer el cambio, ya que uno es el vecino que esta cambiando y el otro es el vecino troncal de abajo
+                self.m_checkBox7.Enable(True)  
+                self.m_checkBox8.Enable(True)
+            elif len(self.Grafo.neighbors(m_comboBox4Choices[0]))==3:
+                #Casos en que tenga dos vecinos troncales
+                if troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[0]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[1]]==1:
+                    pass
+                elif troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[0]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[2]]==1:
+                    pass
+                elif troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[1]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[2]]==1:
+                    pass
+                #Caso en que no tenga dos vecinos troncales, se puede habilita el paso de troncal a ramal
+                elif True:
+                    self.m_checkBox7.Enable(True)
+                    self.m_checkBox8.Enable(True)
+        
+        self.m_checkBoxNodoConCarga.Enable(True)
+
         registros = self.objetoBaseDatos.consultaCargas(str(texto))
-        if(len(registros))>0:
-            self.m_textCtrlAlias.SetValue(registros[0][0]) 
-            self.m_textCtrlP.SetValue(registros[0][1])
-            self.m_textCtrlQ.SetValue(registros[0][2])
+        #Caso en que sea diferente de B1
+        if(len(registros))>0 and texto!='B1':
+            self.m_checkBoxNodoConCarga.SetValue(True)
+            try:
+                self.m_textCtrlAlias.SetValue(registros[0][0]) 
+                self.m_textCtrlP.SetValue(registros[0][1])
+                self.m_textCtrlQ.SetValue(registros[0][2])
+            except TypeError:
+                self.m_checkBoxNodoConCarga.SetValue(False)
+                self.m_textCtrlAlias.Enable(False) 
+                self.m_textCtrlP.Enable(False)
+                self.m_textCtrlQ.Enable(False)
+        #Caso en que el nodo seleccionado sea B1
+        else:
+            if (texto=='B1'):
+                self.m_checkBoxNodoConCarga.Enable(False)
+            self.m_checkBoxNodoConCarga.SetValue(False)
+            self.m_textCtrlAlias.Enable(False) 
+            self.m_textCtrlP.Enable(False)
+            self.m_textCtrlQ.Enable(False)
         self.LlenarObservaciones()
         
     
@@ -1801,12 +1870,12 @@ class Aplicacion ( wx.Frame ):
         
         #Se considera que se puede eliminar una conexion cuando solo exista un vecino
         x= self.Grafo.neighbors(texto1)
-        if(len(x)==1) and texto1!='B1':
+        if(len(x)==1) and texto1!='B1'and texto!='B1':
             self.m_button12.Enable(True)
             self.EliminacionNormal=True
         
         x= self.Grafo.neighbors(texto)
-        if(len(x)==1) and texto1!='B1':
+        if(len(x)==1) and texto!='B1'and texto1!='B1':
             self.m_button12.Enable(True)
             self.EliminacionNormal=False
         
@@ -1931,10 +2000,7 @@ class Aplicacion ( wx.Frame ):
         self.LlenarObservaciones()
             
     def GuardarCircuito(self,event):
-        #Faltan las validaciones
         #Caso en que se actualiza un nuevo nodo
-        
-        ####REVISAR BLANQUEAR TODO CON LOS CHANGE Y LOS EVENTOS DE LOS BOTONES
         if(self.m_radioBtn1.GetValue()):
             nombre=str(self.m_comboBox3.GetValue())
             vecino=str(self.m_comboBox4.GetValue())
@@ -2024,6 +2090,62 @@ class Aplicacion ( wx.Frame ):
     def ResetCircuito(self,event):
         pass
     
+    
+    def on_NuevoCircuito(self,event):  
+        if self.m_checkBoxNuevoCircuito.IsChecked():
+            self.m_textCtrlNuevoCircuito.Enable(True)
+        else:
+            self.m_textCtrlNuevoCircuito.Enable(False)
+            self.m_textCtrlNuevoCircuito.SetValue('')
+          
+    def EvtTextCtrlNuevoCircuito(self,event):
+        campo=self.m_textCtrlNuevoCircuito.GetValue()
+        if re.match('[a-z]+|[A-Z]+', campo):
+            self.m_buttonNuevoCircuito.Enable(True)
+        else:
+            self.m_textCtrlObs.SetValue('El nombre del nuevo circuito debe empezar por una letra')
+            self.m_buttonNuevoCircuito.Enable(False)
+
+    def NuevoCircuito(self,event):
+        NombreNuevo=self.m_textCtrlNuevoCircuito.GetValue()
+        repetido=False
+        #Lista vacia para incluir los ficheros
+        for i in self.m_comboBox1Choices:
+            if NombreNuevo==i:
+                msg='El nombre del circuito ya existe, no se puede crear un circuito con el mismo nombre'
+                dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
+                self.m_textCtrlNuevoCircuito.SetValue('')
+                dlg.ShowModal()
+                dlg.Destroy()
+                repetido=True
+        if not repetido:
+            self.objetoModelo=modeloDatos.Modelo(NombreNuevo,False)
+            msg="""
+            Se creo el nuevo circuito con valores por defecto, 
+            por favor ingrese al modulo de edicion y cambie 
+            los valores de acuerdo al modelo del circuito
+            """
+            dlg = wx.MessageDialog(self, msg, "Nuevo circuito agregado", wx.OK|wx.ICON_INFORMATION)
+            self.m_textCtrlNuevoCircuito.SetValue('')
+            self.m_checkBoxNuevoCircuito.SetValue(False)
+            dlg.ShowModal()
+            dlg.Destroy()
+            
+            self.m_comboBox1Choices = []         
+            #Lista con todos los ficheros del directorio:
+            lstDir = os.walk(self.actual)   #os.walk()Lista directorios y ficheros
+            
+            #Crea una lista de los ficheros s3db que existen en el directorio y los incluye a la lista.
+            for root, dirs, files in lstDir:
+                for fichero in files:
+                    (nombreFichero, extension) = os.path.splitext(fichero)
+                    if(extension == ".s3db"):
+                        self.m_comboBox1Choices.append(nombreFichero)
+            self.m_comboBox1Choices.sort()
+            self.m_comboBox1.SetItems(self.m_comboBox1Choices)
+            self.limpiarPaneles()
+            
+    
     def EvtComboBoxNuevaConexion(self,event):
         self.valComboBox5=True
         self.LlenarObservaciones()
@@ -2112,6 +2234,8 @@ class Aplicacion ( wx.Frame ):
     def EvtText1Dis(self,event):
         campo=self.m_textCtrl1Dis.GetValue()
         self.valTextCtrl1Dis=self.validacion_float(campo,self.valTextCtrl1Dis)
+        if self.valTextCtrl1Dis and float(campo)<=0:
+            self.valTextCtrl1Dis=False
         self.LlenarObservaciones()
         try:
             texto = str(self.m_comboBox3.GetValue())
@@ -2146,7 +2270,19 @@ class Aplicacion ( wx.Frame ):
     def EvtText2Dis(self,event):
         campo=self.m_textCtrl2Dis.GetValue()
         self.valTextCtrl2Dis=self.validacion_float(campo,self.valTextCtrl2Dis)
+        if self.valTextCtrl2Dis and float(campo)<=0:
+            self.valTextCtrl2Dis=False
         self.LlenarObservaciones()
+    
+    def on_NodoConCarga(self,event):
+        if self.m_checkBoxNodoConCarga.IsChecked():
+            self.m_textCtrlAlias.Enable(True)
+            self.m_textCtrlP.Enable(True)
+            self.m_textCtrlQ.Enable(True)
+        else:
+            self.m_textCtrlAlias.Enable(False)
+            self.m_textCtrlP.Enable(False)
+            self.m_textCtrlQ.Enable(False)
     
     def EvtTextAlias(self,event):
         campo=self.m_textCtrlAlias.GetValue()
@@ -2239,18 +2375,18 @@ class Aplicacion ( wx.Frame ):
                 self.m_button9.Enable(False)
             #Caso en que el valor de distancia no sea un float
             elif not self.valTextCtrl1Dis: 
-                self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Distancia, debe ser numerico o decimal')
+                self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Distancia, debe ser numerico o decimal mayor que 0.0')
                 self.m_button9.Enable(False)
             #Caso en que el valor de Alias no empiece por una letra
-            elif not self.valTextCtrlAlias: 
+            elif not self.valTextCtrlAlias and self.m_checkBoxNodoConCarga.IsChecked(): 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Alias, debe empezar con una letra')
                 self.m_button9.Enable(False)
             #Caso en que el valor de P no sea un float
-            elif not self.valTextCtrlP: 
+            elif not self.valTextCtrlP and self.m_checkBoxNodoConCarga.IsChecked(): 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de P, debe ser numerico o decimal')
                 self.m_button9.Enable(False)
             #Caso en que el valor de Q no sea un float
-            elif not self.valTextCtrlQ: 
+            elif not self.valTextCtrlQ and self.m_checkBoxNodoConCarga.IsChecked(): 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Q, debe ser numerico o decimal')
                 self.m_button9.Enable(False)
             #Caso en que no tenga ningun error en los datos y haya cambiado un dato
@@ -2294,7 +2430,7 @@ class Aplicacion ( wx.Frame ):
                 self.m_button9.Enable(False)
             #Caso en que el valor de distancia no sea un float
             elif not self.valTextCtrl2Dis: 
-                self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Distancia, debe ser numerico o decimal')
+                self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Distancia, debe ser numerico o decimal mayor que 0.0')
                 self.m_button9.Enable(False)
             #Caso en que el valor de Alias no empiece por una letra
             elif not self.valTextCtrlAlias: 
@@ -2313,6 +2449,7 @@ class Aplicacion ( wx.Frame ):
                 self.m_button9.Enable(True)
     
     def limpiarPaneles(self):
+        self.nuevaLocalizacion()
         self.m_comboBox2.Clear()
         
         m_comboBox2Choices = self.objetoBaseDatos.tablaNodos()
@@ -2361,10 +2498,16 @@ class Aplicacion ( wx.Frame ):
         self.m_textCtrl2Dis.SetValue('')
         self.valTextCtrl2Dis=False
         
+        
+        self.m_checkBoxNodoConCarga.Enable(True)
+        self.m_checkBoxNodoConCarga.SetValue(False)
+        self.m_textCtrlAlias.Enable(True) 
         self.m_textCtrlAlias.SetValue('')
         self.valTextCtrlAlias=False
+        self.m_textCtrlP.Enable(True)
         self.m_textCtrlP.SetValue('')
         self.valTextCtrlP=False
+        self.m_textCtrlQ.Enable(True)
         self.m_textCtrlQ.SetValue('')
         self.valTextCtrlQ=False
         self.blanquearTabla(self.reja)
@@ -2390,10 +2533,7 @@ class Aplicacion ( wx.Frame ):
             self.limpiarPaneles()
         dlg.Destroy()
         
-        #if
-        
-        #Toca actualizar el self.grafo, o volverlo a crear??
-        
+    
         
     
     def dibujarTablas(self,rejilla,registros):
@@ -2438,6 +2578,10 @@ class Aplicacion ( wx.Frame ):
                 self.valTextCtrl1X1=False
                 self.m_textCtrl1Dis.Enable(False)
                 self.valTextCtrl1Dis=False
+                self.m_checkBoxNodoConCarga.Enable(True)
+                self.m_textCtrlAlias.Enable(True) 
+                self.m_textCtrlP.Enable(True)
+                self.m_textCtrlQ.Enable(True)
                 self.limpiarPaneles()
             else:
                 texto.Enable(False)
@@ -2461,6 +2605,10 @@ class Aplicacion ( wx.Frame ):
                 self.m_textCtrl1X0.Enable(True)
                 self.m_textCtrl1X1.Enable(True)
                 self.m_textCtrl1Dis.Enable(True)
+                self.m_checkBoxNodoConCarga.Enable(True)
+                self.m_textCtrlAlias.Enable(True) 
+                self.m_textCtrlP.Enable(True)
+                self.m_textCtrlQ.Enable(True)
                 self.limpiarPaneles()
     
 
@@ -2556,6 +2704,70 @@ class Aplicacion ( wx.Frame ):
                         self.click2=True
                         self.xant=x
                         self.yant=y
+    
+    def nuevaLocalizacion(self):
+        #Parametros de las lineas:
+        R0 = 0.3864
+        R1 = 0.01273
+        L0 = 4.1264 * (10 ** -3)
+        L1 = 0.9337 * (10 ** -3)
+        
+        
+        #Mediciones subestación:
+        #Voltajes
+        Va = ( 1.1607e+04 - 3.6131e+02j)/np.sqrt(2)
+        Vb = ( -6.1165e+03 - 9.8714e+03j)/np.sqrt(2)
+        Vc = (-5.4907e+03 + 1.0233e+04j)/np.sqrt(2)
+        Vpre=[Va, Vb, Vc]
+        #Corrientes:
+        Ia = (2.7342 - 0.1282j)/np.sqrt(2)
+        Ib = (-1.4782 - 2.3038j)/np.sqrt(2)
+        Ic = (-1.2561 + 2.4320j)/np.sqrt(2)
+        Ipre=[Ia, Ib, Ic]
+        
+        #Mediciones post falla
+        VaPost = (1.7875e+03 - 1.0998e+03j)/np.sqrt(2)
+        VbPost = (-3.4673e+02 - 2.1806e+03j)/np.sqrt(2)
+        VcPost = (-5.4665e+03 + 1.0262e+04j)/np.sqrt(2)
+        VPost=[VaPost, VbPost, VcPost]
+        
+        IaPost= (18.5799 -71.6318j)/np.sqrt(2)
+        IbPost= (-64.0093 +32.2525j)/np.sqrt(2)
+        IcPost= (-1.3352 + 2.6700j)/np.sqrt(2)
+        IPost=[IaPost, IbPost, IcPost]
+        
+        #Tablas de configuración
+        TaNodos = [["ID", "Nombre", "Troncal"]]
+        TaNodos=self.objetoBaseDatos.consultaTablaNodos(TaNodos)
+        
+        '''TaNodos = [["ID", "Nombre", "Troncal"],
+               [1, "B1", 1],
+               [2, "B2", 1],
+               [3, "B3", 1],
+               [4, "B4", 1],
+               [5, "B5", 0],
+               [6, "B6", 0],
+               [7, "B7", 1]]'''
+        TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"]]
+        TaLineas=self.objetoBaseDatos.consultaTablaLineas(TaLineas)
+        
+        '''TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"],
+                  [1, "Linea1", 1, 2, R0, R1, L0, L1, 30],
+                  [2, "Linea2", 2, 3, R0, R1, L0, L1, 15],
+                  [3, "Linea3", 3, 4, R0, R1, L0, L1, 10],
+                  [4, "Linea4", 2, 5, R0, R1, L0, L1, 8],
+                  [5, "Linea5", 3, 6, R0, R1, L0, L1, 20],
+                  [6, "Linea6", 4, 7, R0, R1, L0, L1, 19]]'''
+        
+        TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"],
+                  [1, 2, "C2", 8*10**3, 100],
+                  [2, 3, "C3", 8*10**3, 100],
+                  [3, 4, "C4", 8*10**3, 100],
+                  [4, 5, "C5", 8*10**3, 100],
+                  [5, 6, "C6", 8*10**3, 100],
+                  [6, 7, "C7", 8*10**3, 100]]
+        D,tramo=clases_Circuito.Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, 2, 0)
+        print(D,tramo)
     
     def asignarFalla(self):
         a=(-1+np.multiply(math.sqrt(3),1j))/2;

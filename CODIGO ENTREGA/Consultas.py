@@ -20,27 +20,9 @@ class baseDatos(object):
         self.cursor.execute(sql)
         registros = self.cursor.fetchall()
         
-        
         Ext1=[]
-        ####Es necesaria la equivalencia de los nombres con el identificador del nodo???REVISAR
         for i in range(len(registros)):
             Ext1.append(str(registros[i][0]))
-        
-        
-        
-        #o=list(registros)
-        #algo = [[str(item) for item in results] for results in o]
-        #list(registros)
-        #print(registros)
-        #mysTuple=[str(x) for x in registros]
-        #mysTuple=[i.Split("'") for i in registros]
-        #print(mysTuple)
-        #print(len(registros[0]))
-        #print(algo)
-        
-        '''retorno=[]
-        for i in range(len(registros)):
-            retorno.append(str(registros[i]))'''
           
         return Ext1
     
@@ -108,13 +90,30 @@ class baseDatos(object):
         FROM Nodos a, Lineas b  
         WHERE a.Id_Nodo=b.Id_Nodo1''')
         self.cursor.execute("SELECT Nombre FROM aa WHERE Id_Nodo2=?;", (str(nombre),))
-        #self.cursor.execute("SELECT Nombre,R0,R1,X0,X1,DISTANCIA FROM aa")
         registros = self.cursor.fetchall()
         
         Ext1=[]
-        ####Es necesaria la equivalencia de los nombres con el identificador del nodo???REVISAR
         for i in range(len(registros)):
             Ext1.append(str(registros[i][0]))
-        
-        print(registros)
         return Ext1
+    
+    def consultaTablaNodos(self,tabla):
+        sql="SELECT * FROM Nodos"
+        self.cursor.execute(sql)
+        registros = self.cursor.fetchall()
+        for i in registros:
+            tabla.append([i[0],str(i[1]),i[2]])
+        #print (registros)
+        return tabla
+    
+    def consultaTablaLineas(self,tabla):
+        
+        TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"]]
+        sql="SELECT * FROM Lineas"
+        self.cursor.execute(sql)
+        registros = self.cursor.fetchall()
+        for i in registros:
+            tabla.append([i[0],'a',i[2],i[1],i[3],i[4],i[5],i[6],i[7]])
+            print([i[0],'',i[2],i[1],i[3],i[4],i[5],i[6],i[7]])
+        #print (registros)
+        return tabla

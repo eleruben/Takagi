@@ -29,6 +29,7 @@ class comtrade(object):
         for i in range(len(lista)):
             cadena = cadena + lista[i]
         return(cadena)
+    
 
     #Funcion que convierte ????
     def ConvBinUnsig2Dec(self, numero):
@@ -93,7 +94,62 @@ class comtrade(object):
             "timemult":""
             }
 
+    
+    
+    def generarOscilografiaExcel(self):
+        self.libro = xlrd.open_workbook(self.carpeta+"/"+self.nombre)
+        self.oscilografia=[[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0]]
+        self.arreglo=[]
+        x=0
+        if (self.libro != 0):    
+            temporal=[]
+            temporal1=[]
+            for r in range(int(self.libro.nsheets)):
+                if self.libro.sheet_by_index(r).name == "Hoja1":
+                    p = r
+                pest = self.libro.sheet_by_index(p)
+            for j in range(pest.nrows):
+                temporal=[]
+                temporal1=[]
+                for i in range(pest.ncols):
+                        if i==0 and not j==0:
+                            x=float(pest.cell_value(rowx=j, colx=i))/1000
+                            #print(x)
+                            temporal.append(x)
+                        if not j==0 and not i==0:
+                            temporal.append(float(pest.cell_value(rowx=j, colx=i)))
+                        if i==0:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))    
 
+                        if i==3:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==4:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==5:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==9:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==10:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==11:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                        if i==12:
+                            temporal1.append(pest.cell_value(rowx=j, colx=i))
+                #self.oscilografia.append(temporal)
+                if not j==0:
+                    self.oscilografia= np.vstack([self.oscilografia, temporal])
+                self.arreglo.append(temporal1)
+        #del self.oscilografia[0]
+        #self.oscilografia= np.delete(self.oscilografia, 0, 0)
+        self.oscilografia= np.delete(self.oscilografia, 0, 0)
+        #del self.arreglo[0]
+        
+        
+        #print(self.oscilografia)
+        #print('arreglo')
+        #print(self.arreglo)
+        
+    
 
     ####////////////////////////////////////////////////////////////////////////////
     ####////////////////////////////////////////////////////////////////////////////
@@ -486,8 +542,8 @@ class comtrade(object):
 
 
 #carpeta="/home/alcaucil/Descargas/oscilografias/ultimas/"
-carpeta="C:\Users\NECSOFT\Documents\GitHub\Prueba\Takagi\python\Comtrade\LeerComtrade\archivos"
-nombre="14082603"
+#carpeta="C:\Users\NECSOFT\Documents\GitHub\Prueba\Takagi\python\Comtrade\LeerComtrade\archivos"
+#nombre="14082603"
 #OBJETO DE LA CLASE COMTRADE
 #prueba=comtrade(carpeta, nombre)
 #prueba.config()

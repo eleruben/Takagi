@@ -132,8 +132,8 @@ class Modelo(object):
         (Id_carga INTEGER PRIMARY KEY AUTOINCREMENT,
         Id_Nodo INTEGER NOT NULL,
         ALIAS TEXT,
-        P TEXT,
-        Q TEXT);
+        P FLOAT,
+        Q FLOAT);
         
         CREATE TRIGGER relacion_nodo_linea AFTER INSERT ON Nodos
         BEGIN
@@ -193,25 +193,25 @@ class Modelo(object):
         UPDATE Lineas set Id_Nodo2 = 10, R0 =0.0, R1 =0.0, X0 =0.0,X1 =0.0, DISTANCIA = 10.31599  where Id_Nodo1=19;
         UPDATE Lineas set Id_Nodo2 = 11, R0 =0.0, R1 =0.0, X0 =0.0,X1 =0.0, DISTANCIA = 7.45101  where Id_Nodo1=20;
         
-        UPDATE Cargas set P='PB2', Q='FB2'  where Id_Nodo=2;
-        UPDATE Cargas set P='PB3', Q='FB3'  where Id_Nodo=3;
-        UPDATE Cargas set P='PB4', Q='FB4'  where Id_Nodo=4;
-        UPDATE Cargas set P='PB5', Q='FB5'  where Id_Nodo=5;
-        UPDATE Cargas set P='PB6', Q='FB6'  where Id_Nodo=6;
-        UPDATE Cargas set P='PB7', Q='FB7'  where Id_Nodo=7;
-        UPDATE Cargas set P='PB8', Q='FB8'  where Id_Nodo=8;
-        UPDATE Cargas set P='PB9', Q='FB9'  where Id_Nodo=9;
-        UPDATE Cargas set P='PB10', Q='FB10'  where Id_Nodo=10;
-        UPDATE Cargas set P='PB11', Q='FB11'  where Id_Nodo=11;
-        UPDATE Cargas set P='PRB2', Q='FRB2'  where Id_Nodo=12;
-        UPDATE Cargas set P='PRB3', Q='FRB3'  where Id_Nodo=13;
-        UPDATE Cargas set P='PRB4', Q='FRB4'  where Id_Nodo=14;
-        UPDATE Cargas set P='PRB5', Q='FRB5'  where Id_Nodo=15;
-        UPDATE Cargas set P='PRB6', Q='FRB6'  where Id_Nodo=16;
-        UPDATE Cargas set P='PRB7', Q='FRB7'  where Id_Nodo=17;
-        UPDATE Cargas set P='PRB8', Q='FRB8'  where Id_Nodo=18;
-        UPDATE Cargas set P='PRB9', Q='FRB9'  where Id_Nodo=19;
-        UPDATE Cargas set P='PRB10', Q='FRB10'  where Id_Nodo=20;    
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=2;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=3;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=4;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=5;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=6;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=7;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=8;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=9;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=10;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=11;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=12;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=13;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=14;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=15;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=16;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=17;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=18;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=19;
+        UPDATE Cargas set P=0.0, Q=0.0  where Id_Nodo=20;    
         
         '''
 
@@ -240,20 +240,20 @@ class Modelo(object):
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B6', 0);
         INSERT INTO Nodos (Nombre, Troncal) VALUES ('B7', 1);
         
-        UPDATE Lineas set Id_Nodo2 = 1, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 30  where Id_Nodo1=2;
-        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 15  where Id_Nodo1=3;
-        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 10  where Id_Nodo1=4;
-        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 8  where Id_Nodo1=5;
-        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 20  where Id_Nodo1=6;
-        UPDATE Lineas set Id_Nodo2 = 4, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.009337, DISTANCIA = 19  where Id_Nodo1=7;
+        UPDATE Lineas set Id_Nodo2 = 1, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 30  where Id_Nodo1=2;
+        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 15  where Id_Nodo1=3;
+        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 10  where Id_Nodo1=4;
+        UPDATE Lineas set Id_Nodo2 = 2, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 8  where Id_Nodo1=5;
+        UPDATE Lineas set Id_Nodo2 = 3, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 20  where Id_Nodo1=6;
+        UPDATE Lineas set Id_Nodo2 = 4, R0 =0.3864, R1 =0.01273, X0 =0.0041264,X1 =0.0009337, DISTANCIA = 19  where Id_Nodo1=7;
     
         
-        UPDATE Cargas set Alias='C2', P=0.008, Q=100  where Id_Nodo=2;
-        UPDATE Cargas set Alias='C3', P=0.008, Q=100  where Id_Nodo=3;
-        UPDATE Cargas set Alias='C4', P=0.008, Q=100  where Id_Nodo=4;
-        UPDATE Cargas set Alias='C5', P=0.008, Q=100  where Id_Nodo=5;
-        UPDATE Cargas set Alias='C6', P=0.008, Q=100  where Id_Nodo=6;
-        UPDATE Cargas set Alias='C7', P=0.008, Q=100  where Id_Nodo=7;
+        UPDATE Cargas set Alias='C2', P=8000, Q=100  where Id_Nodo=2;
+        UPDATE Cargas set Alias='C3', P=8000, Q=100  where Id_Nodo=3;
+        UPDATE Cargas set Alias='C4', P=8000, Q=100  where Id_Nodo=4;
+        UPDATE Cargas set Alias='C5', P=8000, Q=100  where Id_Nodo=5;
+        UPDATE Cargas set Alias='C6', P=8000, Q=100  where Id_Nodo=6;
+        UPDATE Cargas set Alias='C7', P=8000, Q=100  where Id_Nodo=7;
         
         '''
         self.ejecutar_script(sql)

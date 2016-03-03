@@ -374,6 +374,34 @@ class claseCircuito(object):
             print("LA DISTANCIA DE FALLA NO ESTA EN EL CIRCUITO")
         return Grafo      
     
+    def localizarPunto(self,Grafo,distancia,Nodo1,Nodo2):
+        color=nx.get_node_attributes(Grafo,'color')
+        acumulado=nx.get_node_attributes(Grafo,'acumulado')
+        pos=nx.get_node_attributes(Grafo,'pos')
+        
+        if pos[Nodo1][0]==pos[Nodo2][0]:
+            print('caso 1')
+            #Caso en que nodo 1 este arriba del nodo 2
+            if pos[Nodo1][1]-pos[Nodo2][1]>0:
+                Grafo.add_node('Falla',pos=(pos[Nodo1][0],pos[Nodo1][1]-distancia),acumulado=acumulado[Nodo1]+distancia,color=3.0)
+                print('caso 2')
+            #Caso en que nodo 1 este abajo del nodo 2
+            elif pos[Nodo1][1]-pos[Nodo2][1]<0:
+                Grafo.add_node('Falla',pos=(pos[Nodo1][0],pos[Nodo1][1]+distancia),acumulado=acumulado[Nodo1]+distancia,color=3.0)
+                print('caso 3')
+        elif pos[Nodo1][1]==pos[Nodo2][1]:
+            #Caso en que nodo 1 este a la derecha del nodo 2
+            print('caso 4')
+            if pos[Nodo1][0]-pos[Nodo2][0]>0:
+                Grafo.add_node('Falla',pos=(pos[Nodo1][0]-distancia,pos[Nodo1][1]),acumulado=acumulado[Nodo1]+distancia,color=3.0)
+                print('caso 5')
+            #Caso en que nodo 1 este a la izquierda del nodo 2
+            elif pos[Nodo1][0]-pos[Nodo2][0]<0:
+                Grafo.add_node('Falla',pos=(pos[Nodo1][0]+distancia,pos[Nodo1][1]),acumulado=acumulado[Nodo1]+distancia,color=3.0)
+                print('caso 6')
+            
+        return Grafo
+    
     
     def imprimir_grafo(self,Grafo):
         pos=nx.get_node_attributes(Grafo,'pos')

@@ -103,17 +103,24 @@ class baseDatos(object):
         registros = self.cursor.fetchall()
         for i in registros:
             tabla.append([i[0],str(i[1]),i[2]])
-        #print (registros)
         return tabla
     
     def consultaTablaLineas(self,tabla):
         
-        TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"]]
+        
         sql="SELECT * FROM Lineas"
         self.cursor.execute(sql)
         registros = self.cursor.fetchall()
         for i in registros:
-            tabla.append([i[0],'a',i[2],i[1],i[3],i[4],i[5],i[6],i[7]])
-            print([i[0],'',i[2],i[1],i[3],i[4],i[5],i[6],i[7]])
-        #print (registros)
+            tabla.append([i[0],'Linea'+str(i[0]),i[2],i[1],i[3],i[4],i[5],i[6],int(i[7])])
+        return tabla
+    
+    def consultaTablaCargas(self,tabla):
+        
+        TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"]]
+        sql="SELECT * FROM Cargas"
+        self.cursor.execute(sql)
+        registros = self.cursor.fetchall()
+        for i in registros:
+            tabla.append([i[0],i[1],str(i[2]),i[3],i[4]])
         return tabla

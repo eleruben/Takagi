@@ -88,7 +88,9 @@ class carga(object):
 
 def DistanciaMonofasica(Linea, Nodo, Fases):
     if Fases == 0:
+        
         print Nodo.ten[0,0]
+        
         x=Linea.IPost[0,0]*Linea.Z[0,0] + Linea.IPost[1,0]*Linea.Z[0,1] + Linea.IPost[2,0]*Linea.Z[0,2]
         If = Linea.IPost[0]-Linea.I[0]
         #Vector funciones fase neutro
@@ -517,14 +519,15 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
 
     #Igualo las corrientes de la linea inicial con las que se midieron en la subestación
     Lineas[LineaActual].IPost=np.matrix([[IaPost],[IbPost],[IcPost]])
-
     D=TipoDeFalla(Lineas[LineaActual], Nodos[principal], Tipo, Fase)
 
-    print D
+    print D 
+    
 
     #Activamos la casilla de verificación para decir que ya revisamos el nodo principal
     Nodos[principal].ver=1
     Lineas[LineaActual].ver=1
+    
 
     #Nodo actual se inicializa en el principal
     actual=principal
@@ -532,7 +535,7 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
     terminar = 0
     siguiente= 0
     falta=0
-
+    
     if D > Lineas[LineaActual].D:
         while terminar == 0:
             LineaActual=[]
@@ -574,6 +577,7 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
                         Nodos[actual].tenPost= Nodos[Nodos[actual].ant - 1].tenPost - (Lineas[LineaAnterior].D*Lineas[LineaAnterior].Z*Lineas[LineaAnterior].IPost)
                         D=TipoDeFalla(Lineas[LineaActual], Nodos[actual], Tipo, Fase)
                         print D
+                        
                         Lineas[LineaActual].ver=1
                         if D < Lineas[LineaActual].D and D > 0:
                             Nodos[actual].ver=1
@@ -612,7 +616,7 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
         if Lineas[i].falla==1:
             print 'La falla se encuentra en el tramo ' + str(i+1)
             print 'a una distancia de ' + str(Lineas[i].DFalla) +'Km del inicio del tramo'
-            return D,i+1
+            return D,Nodos[Lineas[i].nodo1-1].alias, Nodos[Lineas[i].nodo2-1].alias
 
 #Parametros de las lineas:
 R0 = 0.3864

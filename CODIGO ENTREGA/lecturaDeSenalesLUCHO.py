@@ -3,6 +3,7 @@ import claseComtrade as cm
 import LSQ_quintoLUCHO as lsq
 import math
 import cmath
+import matplotlib.pyplot as plt
 
 #Funcion Verificar, permite ver si una senhal corresponde con los criterios para
 #decir si esta tiene una falla. Los criterios son los siguientes:
@@ -15,6 +16,7 @@ import cmath
 
 
 def Verificar(tiempo, senal):
+    #print 'Inicio Senal'
     Magn=[];
     Difn=[];
     etapa=1;
@@ -23,19 +25,23 @@ def Verificar(tiempo, senal):
     iniFalla=0;
     #Calculo de las magnitudes de los fasores de la señal
     for j in range(len(senal)-31):
+        #print(tiempo[j:j+31])
+        #print(senal[j:j+31])
         [Fasor, Mag, Fase]=lsq.Lsq5(tiempo[j:j+31], senal[j:j+31]);
         Magn.append(Mag);
 
         #Inicio del proceso de verificación, cada vez que cumple con algún criterio
         #avanza de etapa.
-
+    diferencia=[]
     for j in range(len(Magn)-3):
         dif = math.fabs(Magn[j+3]-Magn[j]);
+        diferencia.append(dif)
         #Estabilidad en prefalla
         if etapa == 1:
-            if dif < 2:
+            #print 'etapa 1'
+            if dif < 4:
                 pre = pre + 1;
-
+                
                 if iniPre == 0:
                     iniPre = j + 10;
 
@@ -49,21 +55,23 @@ def Verificar(tiempo, senal):
 
         #Inestabilidad en el cambio de prefalla a posfalla
         elif etapa == 2:
+            #print 'etapa 2'
             if dif < 1:
                 pre=0;
 
             else:
                 pre = pre + 1;
-                if pre == 20:
+                if pre == 10:
                     etapa = 3;
                     pre = 0;
 
         #Estabilidad durante posfalla
         elif etapa == 3:
-            if dif < 2:
+            #print 'etapa 3'
+            if dif < 5:
                 pre = pre + 1;
                 if iniFalla == 0:
-                    iniFalla = j + 10;
+                    iniFalla = j + 48;
 
                 if pre == 20:
                     etapa = 4;
@@ -75,6 +83,7 @@ def Verificar(tiempo, senal):
 
         #Magnitud de posfalla mayor que prefalla
         elif etapa == 4:
+            #print 'etapa 4'
             if math.fabs(Magn[iniFalla]-Magn[iniPre]) > 40:
                 etapa = 5;
             else:
@@ -82,10 +91,11 @@ def Verificar(tiempo, senal):
 
 
     if etapa == 5:
+        #print 'etapa 5'
         sirve = 1;
     else:
         sirve = 0;
-    
+   
     return(sirve, iniPre, iniFalla, Difn)
 
 
@@ -96,17 +106,17 @@ def Verificar(tiempo, senal):
     #Canal 10: Corriente fase B
     #Canal 11: Corriente fase A
     #Canal 12: Correinte neutro
-'''carpeta="/home/alcaucil/Documentos/Labe/codigo/Takagi/python/Comtrade/LeerComtrade/archivos/"
-nombre="15061451"
+'''carpeta="C:\Users\NECSOFT\workspace\Prueba1\principal\CODIGO ENTREGA"
+nombre="15072114"
 
 prueba=cm.comtrade(carpeta, nombre)
 prueba.config()
-prueba.extraerDatos()'''
+prueba.extraerDatos()
 
 #La función regresa la variable sirve. Si sirve es igual a 0, la señal no sirve,
 #si es 1, si sirve, además retorna el punto para hallar el fasor de prefalla y posfalla.
 
-'''[sirve, iniPre, iniFalla, Difn]=Verificar(prueba.oscilografia[:,0],prueba.oscilografia[:,11])
+[sirve, iniPre, iniFalla, Difn]=Verificar(prueba.oscilografia[:,0],prueba.oscilografia[:,11])
 
 print (sirve, iniPre, iniFalla)'''
 

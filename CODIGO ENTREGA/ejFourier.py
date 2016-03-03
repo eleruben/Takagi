@@ -12,7 +12,6 @@ class LineBuilder:
         if event.inaxes!=self.line.axes: return
         self.xs.append(event.xdata)
         self.ys.append(event.ydata)
-        
         self.line.set_data(self.xs, self.ys)
         self.line.figure.canvas.draw()
 

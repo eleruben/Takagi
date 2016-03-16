@@ -1,5 +1,4 @@
 # -*- coding: cp1252 -*-
-import cmath as cm
 import wx
 import wx.grid as wxgrid
 import wx.xrc
@@ -32,8 +31,7 @@ import modeloDatos
 
 import re
 
-#import clases_Circuito
-import clases_Circuito_V3_Indicadores as clases_Circuito
+import clases_Circuito
 
 import LSQ_quintoLUCHO as lsq
 #import ejemplo2
@@ -60,6 +58,7 @@ class Aplicacion ( wx.Frame ):
         #Extrae el directorio actual en el que se ejecuta el archivo
         self.actual = str(os.getcwd())
         
+        #Lista vacia para incluir los ficheros
         self.m_comboBox1Choices = []
          
         #Lista con todos los ficheros del directorio:
@@ -74,7 +73,6 @@ class Aplicacion ( wx.Frame ):
                     #lstFiles.append(nombreFichero+extension)
                     #print (nombreFichero+extension)
                     self.m_comboBox1Choices.append(nombreFichero)
-        
         
         #Funcion para crear el panel
         self.crear_panel_main()
@@ -170,10 +168,10 @@ class Aplicacion ( wx.Frame ):
         #Panel de edicion de grafo
         self.m_panel6 = wx.Panel( self.m_TabPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         
-        #Panel de indicadores
+        #Panel de identificadores
         self.m_panel7 = wx.Panel( self.m_TabPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        
 
+             
              
         #######################################################
         ##       SUBPANEL CONSULTA DE CIRCUITO                #
@@ -206,10 +204,8 @@ class Aplicacion ( wx.Frame ):
         self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxCircuitos, self.m_comboBox1)
         bSizerCircuitos.Add( self.m_comboBox1, 0, wx.ALL, 5 )
         #Se ejecuta para crear la base de datos de yacopi, por si no esta creada
-        #SE CREA EL MODELO DE YACOPI SI NO ESTA CREADO
-        self.objetoModelo=modeloDatos.Modelo('YACOPI',1)
-        #SE CREA EL MODELO DE MATLAB POR SI NO ESTA CREADO Y SE DEJA EL CURSOR EN ESTE ARCHIVO
         texto = str(self.m_comboBox1.GetValue())
+        self.objetoModelo=modeloDatos.Modelo('YACOPI',1)
         self.objetoModelo=modeloDatos.Modelo(texto,2)
         
         
@@ -252,12 +248,13 @@ class Aplicacion ( wx.Frame ):
         
         bSizerTotal.Add( bSizerCircuitos, 0, wx.ALL, 5 )
         
+        '''if
         
         self.m_buttonEliminarCircuito = wx.Button( self.m_panel3, wx.ID_ANY, u"Eliminar circuito", wx.DefaultPosition, wx.DefaultSize, style=0 )
-        self.Bind(wx.EVT_BUTTON, self.EliminarCircuito, self.m_buttonEliminarCircuito)
-        #self.m_buttonEliminarCircuito.Enable(False)
+        self.Bind(wx.EVT_BUTTON, self.EliminarConexion, self.m_button12)
+        self.m_button12.Enable(False)
         
-        bSizerTotal.Add( self.m_buttonEliminarCircuito, 0, wx.ALL, 5 )
+        bSizerTotal.Add( self.m_buttonEliminarCircuito, 0, wx.ALL, 5 )'''
         
         self.m_staticText7 = wx.StaticText( self.m_panel5, wx.ID_ANY, u"NODO", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText7.Wrap( -1 )
@@ -610,8 +607,16 @@ class Aplicacion ( wx.Frame ):
         #Adicion de grid de lineas al sizer del panel de edicion
         panelEdicionSizer.Add( grid, 0, wx.ALL, 5 )
         
-        panelEdicionSizer.AddSpacer(15)
+        panelEdicionSizer.AddSpacer(30)
         
+        '''self.m_checkBoxNodoConCarga = wx.CheckBox( self.m_panel6, wx.ID_ANY, u"Nodo incluye carga", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.m_checkBoxNodoConCarga.SetValue(False)
+        self.Bind(wx.EVT_CHECKBOX, self.on_NodoConCarga, self.m_checkBoxNodoConCarga)
+        panelEdicionSizer.Add( self.m_checkBoxNodoConCarga, 0, wx.ALL, 5 )
+        
+        
+        
+        panelEdicionSizer.AddSpacer(15)'''
         
         self.m_staticText24 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Nombre de carga       ", wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_staticText24.Wrap( -1 )
@@ -694,11 +699,8 @@ class Aplicacion ( wx.Frame ):
         self.m_panel5.Layout()
         bSizer22.Fit( self.m_panel5 )
         
-        
-        
-        
          #######################################################
-        ##       SUBPANEL INDICADORES DE FALLA             #
+        ##       SUBPANEL IDENTIFICADORES DE FALLA             #
         ########################################################
         
         panelIndicadoresSizer = wx.BoxSizer( wx.VERTICAL )
@@ -781,8 +783,8 @@ class Aplicacion ( wx.Frame ):
         gridEliminar.Add(self.m_staticTextIndElimi, pos=(0,0))
         
         #CONSULTA DE LA TABA DE INDICADORES
-        
-        self.m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()
+        m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()        
+        self.m_comboBox8Choices = self.objetoBaseDatos.tablaNodos()
         self.m_comboBox8 = wx.ComboBox( self.m_panel7, wx.ID_ANY, u"----", wx.DefaultPosition, size=wx.Size(70,25), choices=self.m_comboBox8Choices, style=0 )
         self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxIndEliminar, self.m_comboBox8)
         gridEliminar.Add(self.m_comboBox8, pos=(1,0))
@@ -808,8 +810,8 @@ class Aplicacion ( wx.Frame ):
         gridSeleccionar.Add(self.m_staticTextIndSel, pos=(0,0))
         
         
-        #CONSULTA DE LA TABLA DE INDICADORES
-        self.m_comboBox9Choices = self.objetoBaseDatos.consultaIndicadores()
+        #CONSULTA DE LA TABA DE INDICADORES
+        self.m_comboBox9Choices = self.objetoBaseDatos.tablaNodos()
         self.m_comboBox9 = wx.ComboBox( self.m_panel7, wx.ID_ANY, u"----", wx.DefaultPosition, size=wx.Size(70,25), choices=self.m_comboBox9Choices, style=0 )
         self.Bind(wx.EVT_COMBOBOX, self.EvtComboBoxIndSeleccionar, self.m_comboBox9)
         gridSeleccionar.Add(self.m_comboBox9, pos=(1,0))
@@ -838,11 +840,10 @@ class Aplicacion ( wx.Frame ):
         self.m_panel7.Layout()
         panelIndicadoresSizer.Fit( self.m_panel7 )
         
-        
         self.m_TabPanel.AddPage(self.m_panel5, u"CONSULTA DE CIRCUITO", True )
         self.m_TabPanel.AddPage(self.m_panel6, u"EDICION DE CIRCUITO", False )
-        self.m_TabPanel.AddPage(self.m_panel7, u"INDICADORES", False )
-        #bSizer22.Add( self.m_TabPanel, 0, wx.ALL, 5 )
+        self.m_TabPanel.AddPage(self.m_panel7, u"IDENTIFICADORES", False )
+        
         
         
         bSizerTotal.Add( self.m_TabPanel, 0, wx.ALL, 5 )
@@ -909,7 +910,11 @@ class Aplicacion ( wx.Frame ):
         
         panelUbicacionSizer.Add(self.canvas_ubicacion, 0, wx.LEFT | wx.TOP | wx.GROW)        
         panelUbicacionSizer.Add( self.m_panelUbicacion, 0, wx.EXPAND |wx.ALL, 5)
-          
+        
+        
+
+        
+        
         
         panelUbicacionSizer.Add( bSizerTotal, 1, wx.EXPAND |wx.ALL, 5 )
         
@@ -918,9 +923,8 @@ class Aplicacion ( wx.Frame ):
         self.m_panel3.Layout()
         panelUbicacionSizer.Fit( self.m_panel3 )
         self.m_listbook1.AddPage( self.m_panel3, u"UBICACION DE LA FALLA", True )
-        self.pintarGrafo()
         
-
+    
         ###########################################################################
         ##                          PANEL DE GRAFICAS                             #
         ###########################################################################
@@ -972,7 +976,7 @@ class Aplicacion ( wx.Frame ):
         
         
         self.m_checkBox1 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE A", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl1= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, size=wx.Size(20,25), style=wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl1= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseAvoltaje, self.ColourPickerCtrl1)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseA_voltaje, self.m_checkBox1)
         self.m_checkBox1.Enable(False)
@@ -981,7 +985,7 @@ class Aplicacion ( wx.Frame ):
         panelTensionCheckBoxsSizer.Add( self.ColourPickerCtrl1, 0, wx.ALL, 5 )
         
         self.m_checkBox2 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE B", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl2= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl2= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseBvoltaje, self.ColourPickerCtrl2)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseB_voltaje, self.m_checkBox2)
         self.m_checkBox2.Enable(False)
@@ -990,7 +994,7 @@ class Aplicacion ( wx.Frame ):
         panelTensionCheckBoxsSizer.Add( self.ColourPickerCtrl2, 0, wx.ALL, 5 )
         
         self.m_checkBox3 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE C", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl3= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl3= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseCvoltaje, self.ColourPickerCtrl3)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseC_voltaje, self.m_checkBox3)
         self.m_checkBox3.Enable(False)
@@ -1018,7 +1022,7 @@ class Aplicacion ( wx.Frame ):
         panelCorrienteCheckBoxsSizer.Add( self.m_staticText5, 0, wx.ALL, 5 )
         
         self.m_checkBox4 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE A", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl4= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl4= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.GREEN, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseAcorriente, self.ColourPickerCtrl4)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseA_corriente, self.m_checkBox4)
         self.m_checkBox4.Enable(False)
@@ -1027,7 +1031,7 @@ class Aplicacion ( wx.Frame ):
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl4, 0, wx.ALL, 5 )
         
         self.m_checkBox5 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE B", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl5= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl5= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLUE, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseBcorriente, self.ColourPickerCtrl5)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseB_corriente, self.m_checkBox5)
         self.m_checkBox5.Enable(False)
@@ -1036,30 +1040,13 @@ class Aplicacion ( wx.Frame ):
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl5, 0, wx.ALL, 5 )
         
         self.m_checkBox6 = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE C", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl6= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
+        self.ColourPickerCtrl6= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.RED, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE | wx.CLRP_SHOW_LABEL)
         self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseCcorriente, self.ColourPickerCtrl6)
         self.Bind(wx.EVT_CHECKBOX, self.on_faseC_corriente, self.m_checkBox6)
         self.m_checkBox6.Enable(False)
         self.m_checkBox6.SetValue(False)
         panelCorrienteCheckBoxsSizer.Add( self.m_checkBox6, 0, wx.ALL, 5 )
         panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl6, 0, wx.ALL, 5 )
-        
-        self.m_checkBoxNeutro = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"FASE NEUTRO", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.ColourPickerCtrl7= wx.ColourPickerCtrl( self.m_panel2,wx.ID_ANY, wx.BLACK, wx.DefaultPosition, wx.DefaultSize, wx.CLRP_DEFAULT_STYLE )
-        self.Bind(wx.EVT_COLOURPICKER_CHANGED, self.on_colourFaseNeutroCorriente, self.ColourPickerCtrl7)
-        self.Bind(wx.EVT_CHECKBOX, self.on_faseNeutro_corriente, self.m_checkBoxNeutro)
-        self.m_checkBoxNeutro.Enable(False)
-        self.m_checkBoxNeutro.SetValue(False)
-        panelCorrienteCheckBoxsSizer.Add( self.m_checkBoxNeutro, 0, wx.ALL, 5 )
-        panelCorrienteCheckBoxsSizer.Add( self.ColourPickerCtrl7, 0, wx.ALL, 5 )
-        
-        
-        self.m_checkBoxSinPreFalla = wx.CheckBox( self.m_panel2, wx.ID_ANY, u"Caso sin prefalla", wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.Bind(wx.EVT_CHECKBOX, self.on_SinPrefalla, self.m_checkBoxSinPreFalla)
-        self.m_checkBoxSinPreFalla.Enable(False)
-        self.m_checkBoxSinPreFalla.SetValue(False)
-        panelCorrienteCheckBoxsSizer.Add( self.m_checkBoxSinPreFalla, 0, wx.ALL, 5 )
-        
         
         panelCorrienteSizer.Add( panelCorrienteCheckBoxsSizer, 0, wx.EXPAND, 5 )
         #Se agregar los BoxSizer de tension y corriente a el BoxSizer de graficasSizer
@@ -1191,13 +1178,7 @@ class Aplicacion ( wx.Frame ):
         self.faseA=False
         self.faseB=False
         self.faseC=False
-        #Variable para controlar el tratamiento de los datos necesarios para el caso contrade
-        self.excel=False
-        #Variable de tipo bool que se utiliza para verificar si se han cargado los datos o no usada para pintar las graficas de las señales
         self.carga=False
-        
-        #Variable de tipo string donde se almacena el indicador seleccionado
-        self.IndicadorSeleccionado=None
         
     def onPress(self,event):
         if event.inaxes != self.ax: return
@@ -1230,15 +1211,12 @@ class Aplicacion ( wx.Frame ):
         cur_ylim = self.ax.get_ylim()
         xdata = event.xdata # get event x location
         ydata = event.ydata # get event y location
-        try:
-            #DIVISION ENTRE 0 REVISAR
-            relx = (cur_xlim[1] - xdata)/(cur_xlim[1] - cur_xlim[0])
-            rely = (cur_ylim[1] - ydata)/(cur_ylim[1] - cur_ylim[0])
-            if self.zoomEntry: 
-                self.new_width = (cur_xlim[1] - cur_xlim[0]) * 1
-                self.zoomEntry=False
-        except TypeError:
-            pass
+        relx = (cur_xlim[1] - xdata)/(cur_xlim[1] - cur_xlim[0])
+        rely = (cur_ylim[1] - ydata)/(cur_ylim[1] - cur_ylim[0])
+        if self.zoomEntry: 
+            self.new_width = (cur_xlim[1] - cur_xlim[0]) * 1
+            self.zoomEntry=False
+        
         
         '''pos=nx.get_node_attributes(self.Grafo,'pos')
         etiquetas={}
@@ -1330,16 +1308,13 @@ class Aplicacion ( wx.Frame ):
         if self.manual and self.carga:
             #Caso en que ya se haya seleccionado la fase en falla
             if self.faseA or self.faseB or self.faseC:
-                self.axes_corriente.set_title('Seleccione el ciclo prefalla, si no tiene datos de prefalla habilite la opcion de caso sin prefalla')
+                self.axes_corriente.set_title('Seleccione el ciclo prefalla')
             else:
                 self.axes_corriente.set_title('Seleccione la fase en falla')
                 self.m_staticText5.SetLabel("Seleccione la fase en falla")
-            
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
             self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-            if not self.excel:
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,12],color= self.ColourPickerCtrl7.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='NEUTRO')
             self.axes_corriente.legend()
         if not self.manual and self.sale:
             self.m_staticText5.SetLabel("Seleccion de fase y color de corriente")
@@ -1353,17 +1328,13 @@ class Aplicacion ( wx.Frame ):
                 self.m_checkBox6.Enable(False)
                 
             if (self.m_checkBox4.IsChecked()):
-                #self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
-                #self.objetoComtrade.oscilografia[:,11][self.inicioFalla:self.finFalla]
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11][self.inicioFalla:self.finFalla],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
+                self.axes_corriente.plot(self.ia,color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
                 self.axes_corriente.legend()
             if (self.m_checkBox5.IsChecked()):
-                #self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10][self.inicioFalla:self.finFalla],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
+                self.axes_corriente.plot(self.ib,color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
                 self.axes_corriente.legend()
             if (self.m_checkBox6.IsChecked()):
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9][self.inicioFalla:self.finFalla],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-                #self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
+                self.axes_corriente.plot(self.ic,color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
                 self.axes_corriente.legend()
         
         self.canvas_corriente.draw()
@@ -1385,9 +1356,6 @@ class Aplicacion ( wx.Frame ):
 
     def on_colourFaseCcorriente(self, event):
         self.dibujar_corriente()
-    
-    def on_colourFaseNeutroCorriente(self, event):
-        self.dibujar_corriente()
 
     def on_faseA_voltaje(self, event):
         self.dibujar_voltaje()
@@ -1408,7 +1376,6 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A y B")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 #Caso en que la fase C esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
                 elif not self.m_checkBox5.IsChecked() and  self.m_checkBox6.IsChecked():
@@ -1416,48 +1383,40 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif not self.m_checkBox5.IsChecked() and  not self.m_checkBox6.IsChecked():
                     self.faseA=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fase A")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif  self.m_checkBox5.IsChecked() and  self.m_checkBox6.IsChecked():
                     self.faseA=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A, B y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                     
             elif self.m_checkBox5.IsChecked() and not self.m_checkBox6.IsChecked():
                 self.faseA=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase B")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif not self.m_checkBox5.IsChecked() and self.m_checkBox6.IsChecked():
                 self.faseA=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase C")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif self.m_checkBox5.IsChecked() and self.m_checkBox6.IsChecked():
                 self.faseA=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fases B y C")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             #Caso en que la fase A esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
             elif not self.m_checkBox5.IsChecked() and not self.m_checkBox6.IsChecked():
                 self.grafica_dentro_panel()
                 self.faseA=False
                 self.m_staticText5.SetLabel("Seleccione la fase en falla")
-                self.m_checkBoxSinPreFalla.Enable(False)
-                self.m_checkBoxSinPreFalla.SetValue(False)
                 self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
         #Caso en que se este haciendo la seleccion manual
         else:
@@ -1473,7 +1432,6 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A y B")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 #Caso en que la fase C esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
                 elif not self.m_checkBox4.IsChecked() and  self.m_checkBox6.IsChecked():
@@ -1481,47 +1439,39 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases B y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif not self.m_checkBox4.IsChecked() and  not self.m_checkBox6.IsChecked():
                     self.faseB=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fase B")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif  self.m_checkBox4.IsChecked() and  self.m_checkBox6.IsChecked():
                     self.faseB=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A, B y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
             elif self.m_checkBox4.IsChecked() and not self.m_checkBox6.IsChecked():
                 self.faseB=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase A")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif not self.m_checkBox4.IsChecked() and self.m_checkBox6.IsChecked():
                 self.faseB=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase C")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif self.m_checkBox4.IsChecked() and self.m_checkBox6.IsChecked():
                 self.faseB=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fases A y C")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             #Caso en que la fase A esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
             elif not self.m_checkBox4.IsChecked() and not self.m_checkBox6.IsChecked():
                 self.grafica_dentro_panel()
                 self.faseB=False
                 self.m_staticText5.SetLabel("Seleccione la fase en falla")
-                self.m_checkBoxSinPreFalla.Enable(False)
-                self.m_checkBoxSinPreFalla.SetValue(False)
                 self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
         #Caso en que se este haciendo la seleccion manual
         else:
@@ -1549,7 +1499,6 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 #Caso en que la fase C esta seleccionada y se deshabilita porque solo se trabajan fallas monofasicas
                 elif not self.m_checkBox4.IsChecked() and  self.m_checkBox5.IsChecked():
@@ -1557,47 +1506,39 @@ class Aplicacion ( wx.Frame ):
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases B y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif not self.m_checkBox4.IsChecked() and  not self.m_checkBox5.IsChecked():
                     self.faseC=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fase C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
                 elif  self.m_checkBox4.IsChecked() and  self.m_checkBox5.IsChecked():
                     self.faseC=True
                     #self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                     self.dibujar_corriente()
                     self.m_staticText5.SetLabel("Falla en fases A, B y C")
-                    self.m_checkBoxSinPreFalla.Enable(True)
                     self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0)) 
             elif self.m_checkBox4.IsChecked() and not self.m_checkBox5.IsChecked():
                 self.faseC=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase A")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif not self.m_checkBox4.IsChecked() and self.m_checkBox5.IsChecked():
                 self.faseC=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fase B")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             elif self.m_checkBox4.IsChecked() and self.m_checkBox5.IsChecked():
                 self.faseC=False
                 self.dibujar_corriente()
                 self.m_staticText5.SetLabel("Falla en fases A y B")
-                self.m_checkBoxSinPreFalla.Enable(True)
                 self.m_staticText5.SetForegroundColour(wx.Colour(0,0,0))
             #Caso en que la fase A esta se deshabilita y se pide nuevamente la seleccionde la fase en falla
             elif not self.m_checkBox4.IsChecked() and not self.m_checkBox6.IsChecked():
                 self.grafica_dentro_panel()
                 self.faseC=False
                 self.m_staticText5.SetLabel("Seleccione la fase en falla")
-                self.m_checkBoxSinPreFalla.Enable(False)
-                self.m_checkBoxSinPreFalla.SetValue(False)
                 self.m_staticText5.SetForegroundColour(wx.Colour(255,0,0))
         #Caso en que se este haciendo la seleccion manual
         else:
@@ -1615,29 +1556,6 @@ class Aplicacion ( wx.Frame ):
         else:
             self.dibujar_corriente()'''
     
-    def on_faseNeutro_corriente(self,event):
-        pass  
-    
-    def on_SinPrefalla(self,event):
-        if self.m_checkBoxSinPreFalla.IsChecked():
-            print('le hizo click al fin prefalla')
-            self.axes_corriente.clear()
-            self.click1=True
-            self.click2=True
-            self.inicioPreFalla=0
-            self.finPreFalla=self.inicioPreFalla+32
-            self.m_checkBoxSinPreFalla.Enable(True)
-            self.axes_corriente.set_title('Seleccione el ciclo en que ocurre la falla')
-            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
-            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
-            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-            if not self.excel:
-                self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,12],color= self.ColourPickerCtrl7.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='NEUTRO')
-            #Creamos la caja con la leyenda
-            self.axes_corriente.legend()
-            self.canvas_corriente.draw()
-    
-    
     def inicializar(self):
         
         #Se dibujan nuevamente los paneles de voltaje y de corriente
@@ -1646,8 +1564,6 @@ class Aplicacion ( wx.Frame ):
         self.axes_voltaje.clear()
         self.canvas_voltaje.draw()
         
-        #Se reinicializa el valor
-        self.excel=False
         #Se inicializa el valor de los text control
         self.m_textCtrl2.SetValue("")
         self.m_textCtrl3.SetValue("")
@@ -1722,9 +1638,6 @@ class Aplicacion ( wx.Frame ):
         self.m_checkBox4.SetValue(False)
         self.m_checkBox5.SetValue(False)
         self.m_checkBox6.SetValue(False)
-        
-        self.m_checkBoxSinPreFalla.Enable(False)
-        self.m_checkBoxSinPreFalla.SetValue(False)
 
         N=32
         self.T1=np.arange(0,(N-1)*2*math.pi/N+0.001,2*math.pi/N)
@@ -1757,19 +1670,13 @@ class Aplicacion ( wx.Frame ):
             self.objetoComtrade.extraerDatos()
             self.nombreEstacion=(self.objetoComtrade.cfg['id']['station_name'])
             self.objetoComtrade.extraerListas()
-            
-            #self.objetoComtrade.oscilografia[:,9]=self.objetoComtrade.oscilografia[:,9]*-1
-            #self.objetoComtrade.oscilografia[:,10]=self.objetoComtrade.oscilografia[:,10]*-1
-            #self.objetoComtrade.oscilografia[:,11]=self.objetoComtrade.oscilografia[:,11]*-1
             #print(self.objetoComtrade.oscilografia)
-            self.excel=False
             self.cargar_datos(self.objetoComtrade.arreglo)
             #print('arreglo')
             #print(self.objetoComtrade.arreglo)
             
             #Se habilita el modulo de exportacion de los datos en formato de excel
             self.m_menuItem2.Enable(True)
-            
         # Finalmente destruimos la ventana de dialogo    
         dlg.Destroy()   
     
@@ -1798,10 +1705,8 @@ class Aplicacion ( wx.Frame ):
             try:
                 try:
                     self.objetoComtrade.generarOscilografiaExcel()
-                    self.excel=True
                     self.cargar_datos(self.objetoComtrade.arreglo)
                     self.m_menuItem2.Enable(True)
-                    
                 except ValueError:
                     msg='Por favor revise los datos del archivo'
                     ERROR=True  
@@ -1841,51 +1746,9 @@ class Aplicacion ( wx.Frame ):
 
     #Funcion en donde se cargan los datos
     def cargar_datos(self,arreglo):
-        
-        '''if not self.excel:
-            
-            for i in range(len(arreglo[0])):
-            #For que se hace en el numero de filas, 832
-                for j in range(len(arreglo)):
-                    if i==6:
-                        self.Ia.append(arreglo[j][i]*-1)
-                    if i==5:
-                        self.Ib.append(arreglo[j][i]*-1)
-                    if i==4:
-                        self.Ic.append(arreglo[j][i]*-1)
-                    if i==7:
-                        self.In.append(arreglo[j][i]*-1)
-                    if i==3:
-                        self.Va.append(arreglo[j][i])
-                    if i==2:
-                        self.Vb.append(arreglo[j][i])
-                    if i==1:
-                        self.Vc.append(arreglo[j][i])
-                    if i==0:
-                        self.tiempo.append(arreglo[j][i])
         #Se extraen los datos del arreglo proveniente de la importacion
         #de los archivos en el formato comtrade
         #For que se hace en el numero de columnas, 6
-        else:
-            for i in range(len(arreglo[0])):
-                #For que se hace en el numero de filas, 832
-                for j in range(len(arreglo)):
-                    if i==6:
-                        self.Ia.append(arreglo[j][i])
-                    if i==5:
-                        self.Ib.append(arreglo[j][i])
-                    if i==4:
-                        self.Ic.append(arreglo[j][i])
-                    if i==7:
-                        self.In.append(arreglo[j][i])
-                    if i==3:
-                        self.Va.append(arreglo[j][i])
-                    if i==2:
-                        self.Vb.append(arreglo[j][i])
-                    if i==1:
-                        self.Vc.append(arreglo[j][i])
-                    if i==0:
-                        self.tiempo.append(arreglo[j][i])'''
         for i in range(len(arreglo[0])):
             #For que se hace en el numero de filas, 832
             for j in range(len(arreglo)):
@@ -1944,8 +1807,6 @@ class Aplicacion ( wx.Frame ):
             self.finPreFalla=self.inicioPreFalla+32
             self.manual=False
             self.faseA=True'''
-                    
-        
         sirveA=0
         sirveB=0
         sirveC=0
@@ -2031,7 +1892,6 @@ class Aplicacion ( wx.Frame ):
         else:
             seleccion=wx.MessageDialog(None, 'Se realizo automaticamente la seleccion de los ciclos', 'Seleccion automatica exitosa',  style=wx.OK)
             seleccion.ShowModal()
-            self.m_listbook1.ChangeSelection(2)
             self.m_checkBox1.Enable(True)
             self.m_checkBox2.Enable(True)
             self.m_checkBox3.Enable(True)
@@ -2143,8 +2003,6 @@ class Aplicacion ( wx.Frame ):
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,11],color= self.ColourPickerCtrl4.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='A')
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,10],color= self.ColourPickerCtrl5.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='B')
         self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,9],color= self.ColourPickerCtrl6.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='C')
-        if not self.excel:
-            self.axes_corriente.plot(self.objetoComtrade.oscilografia[:,12],color= self.ColourPickerCtrl7.GetColour().GetAsString(wx.C2S_HTML_SYNTAX),label='NEUTRO')
         self.axes_corriente.set_title('Seleccione la fase en falla')
         #self.axes_corriente.title(u'Seleccione el ciclo prefalla')  # Ponemos un titulo superior
         self.axes_corriente.legend()  # Creamos la caja con la leyenda
@@ -2184,7 +2042,7 @@ class Aplicacion ( wx.Frame ):
     def EvtComboBoxCircuitos(self,event):        
         texto = str(self.m_comboBox1.GetValue())
         
-        #self.objetoModelo=modeloDatos.Modelo(texto,False)
+        self.objetoModelo=modeloDatos.Modelo(texto,False)
         self.m_comboBox2.Clear()
         
         self.objetoBaseDatos=Consultas.baseDatos(texto)
@@ -2203,7 +2061,6 @@ class Aplicacion ( wx.Frame ):
         self.objetoCircuito=Circuito.claseCircuito(texto)
         
         self.ActualizarGrafo()
-        self.pintarGrafo()
         
         self.blanquearTabla(self.reja)
         self.blanquearTabla(self.reja1)
@@ -2248,30 +2105,6 @@ class Aplicacion ( wx.Frame ):
         nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
         nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
         nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
-        '''nodePos = nx.layout.spring_layout(self.Grafo)
-        
-        #The rest of the code here attempts to automate the whole process by
-        #first determining how many different node classes (according to
-        #attribute 's') exist in the node set and then repeatedly calling 
-        #draw_networkx_node for each. Perhaps this part can be optimised further.
-        
-        #Get all distinct node classes according to the node shape attribute
-        try:
-            nodeShapes = set((aShape[1]["s"] for aShape in self.Grafo.nodes(data = True)))
-        except KeyError:
-            pass
-        
-        #For each node class...
-        for aShape in nodeShapes:
-            #...filter and draw the subset of nodes with the same symbol in the positions that are now known through the use of the layout.
-            nx.draw_networkx_nodes(self.Grafo,nodePos,node_shape = aShape, nodelist = [sNode[0] for sNode in filter(lambda x: x[1]["s"]==aShape,self.Grafo.nodes(data = True))])'''
-        
-        
-        nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
-        nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
-        nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
-        
-        
         
         plt.axis('off')
         
@@ -2280,8 +2113,7 @@ class Aplicacion ( wx.Frame ):
     
     #Procedimiento que se realizar despues de ingresar el nodo de falla, ya que este nodo no queda en el circuito base solo es necesario volver a 
     #pintar el circuito, sin cargarlo nuevamente
-    def pintarGrafo(self):
-        self.Grafo=self.objetoCircuito.pintarIndicadores(self.Grafo)
+    def pintarFalla(self):
         self.ax.clear()
         
         color=nx.get_node_attributes(self.Grafo,'color')
@@ -2305,7 +2137,7 @@ class Aplicacion ( wx.Frame ):
         self.zoomEntry = True
         
         
-        self.ax.set_title('CIRCUITO - '+str(self.m_comboBox1.GetValue()))
+        self.ax.set_title('CIRCUITO CON FALLA - '+str(self.m_comboBox1.GetValue()))
         nx.draw_networkx_nodes(self.Grafo,pos,node_size=100,node_color=self.Values,alpha=1.0)
         nx.draw_networkx_edges(self.Grafo,pos,alpha=0.4,node_size=0,width=1,edge_color='k')
         nx.draw_networkx_labels(self.Grafo,etiquetas,fontsize=14)
@@ -2316,13 +2148,97 @@ class Aplicacion ( wx.Frame ):
         self.canvas_ubicacion.draw()
     
     
-        
     def EvtComboBoxEdNodos(self,event):
         
         self.valComboBox3=True
         self.valComboBox4=False
+        self.m_checkBox7.SetValue(False)
+        self.m_checkBox7.Enable(False)   
+        self.m_checkBox8.SetValue(False)
+        self.m_checkBox8.Enable(False) 
+        self.m_textCtrl1R0.SetValue('')
+        self.m_textCtrl1R1.SetValue('')
+        self.m_textCtrl1X0.SetValue('')
+        self.m_textCtrl1X1.SetValue('')
+        self.m_textCtrl1Dis.SetValue('')
+        self.m_textCtrlAlias.SetValue('')
+        self.m_textCtrlP.SetValue('')
+        self.m_textCtrlQ.SetValue('')
+        self.m_textCtrlAlias.Enable(True) 
+        self.m_textCtrlP.Enable(True)
+        self.m_textCtrlQ.Enable(True)
         
-        self.m_textCtrl4.Enable(False)
+        texto = str(self.m_comboBox3.GetValue())
+        self.m_textCtrl4.SetValue(texto)
+        
+        m_comboBox4Choices= self.Grafo.neighbors(texto)     
+        self.m_comboBox4.SetItems(m_comboBox4Choices)
+
+       
+        #Se carga el valor de troncal o ramal del nodo
+        troncal=nx.get_node_attributes(self.Grafo,'troncal')
+        if troncal[texto]==1:
+            self.m_checkBox7.SetValue(True)            
+        elif troncal[texto]==0:
+            self.m_checkBox8.SetValue(True)
+        
+        #Caso en que se puede cambiar de troncal a ramal, nodo es troncal, es diferente de B1 y nodo solo tiene un vecino
+        if len(m_comboBox4Choices)==1 and self.m_checkBox7.IsChecked() and texto != 'B1':
+            self.m_checkBox7.Enable(True)  
+            self.m_checkBox8.Enable(True)
+        #Caso en que se puede cambiar de ramal a troncal, tiene solo un vecino y este vecino es de tipo troncal
+        elif self.m_checkBox8.IsChecked() and len(m_comboBox4Choices)==1 and troncal[self.Grafo.neighbors(texto)[0]]==1  :
+            if len(self.Grafo.neighbors(m_comboBox4Choices[0]))==1:
+                #NO SE DA EL CASO, PORQUE SI ES UN RAMAL Y EL VECINO SOLO TIENE UN VECINO ESTARIAN SOLO CONECTADOS LOS DOS, SIN UNA LINEA BASE
+                pass 
+            elif len(self.Grafo.neighbors(m_comboBox4Choices[0]))==2:
+                #Si tiene dos vecinos se puede hacer el cambio, ya que uno es el vecino que esta cambiando y el otro es el vecino troncal de abajo
+                self.m_checkBox7.Enable(True)  
+                self.m_checkBox8.Enable(True)
+            elif len(self.Grafo.neighbors(m_comboBox4Choices[0]))==3:
+                #Casos en que tenga dos vecinos troncales
+                if troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[0]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[1]]==1:
+                    pass
+                elif troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[0]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[2]]==1:
+                    pass
+                elif troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[1]]==1 and troncal[self.Grafo.neighbors(m_comboBox4Choices[0])[2]]==1:
+                    pass
+                #Caso en que no tenga dos vecinos troncales, se puede habilita el paso de troncal a ramal
+                elif True:
+                    self.m_checkBox7.Enable(True)
+                    self.m_checkBox8.Enable(True)
+        
+        #self.m_checkBoxNodoConCarga.Enable(True)
+
+        registros = self.objetoBaseDatos.consultaCargas(str(texto))
+        #print(registros)
+        #Caso en que sea diferente de B1
+        if(len(registros))>0 and texto!='B1':
+            #self.m_checkBoxNodoConCarga.SetValue(True)
+            try:
+                self.m_textCtrlAlias.SetValue(registros[0][0]) 
+                self.m_textCtrlP.SetValue(str(registros[0][1]))
+                self.m_textCtrlQ.SetValue(str(registros[0][2]))
+            except TypeError:
+                #self.m_checkBoxNodoConCarga.SetValue(False)
+                print('hay un error en los tipos')
+                self.m_textCtrlAlias.Enable(False) 
+                self.m_textCtrlP.Enable(False)
+                self.m_textCtrlQ.Enable(False)
+        #Caso en que el nodo seleccionado sea B1
+        else:
+            if (texto=='B1'):
+                #self.m_checkBoxNodoConCarga.Enable(False)
+            #self.m_checkBoxNodoConCarga.SetValue(False)
+                self.m_textCtrlAlias.Enable(False) 
+                self.m_textCtrlP.Enable(False)
+                self.m_textCtrlQ.Enable(False)
+        self.LlenarObservaciones()
+       
+    '''def EvtComboBoxEdNodos(self,event):
+        
+        self.valComboBox3=True
+        self.valComboBox4=False
         self.m_checkBox7.SetValue(False)
         self.m_checkBox7.Enable(False)   
         self.m_checkBox8.SetValue(False)
@@ -2333,13 +2249,16 @@ class Aplicacion ( wx.Frame ):
         self.m_textCtrl1X1.SetValue('')
         self.m_textCtrl1Dis.SetValue('')
         self.m_textCtrlAlias.Enable(True)
+        #self.m_textCtrlAlias.SetValue('') 
         self.m_textCtrlP.Enable(True)
+        #self.m_textCtrlP.SetValue('')
         self.m_textCtrlQ.Enable(True)
+        #self.m_textCtrlQ.SetValue('')
+        
         
         texto = str(self.m_comboBox3.GetValue())
         self.m_textCtrl4.SetValue(texto)
-        if texto!='B1':
-            self.m_textCtrl4.Enable(True)
+        
         m_comboBox4Choices= self.Grafo.neighbors(texto)     
         self.m_comboBox4.SetItems(m_comboBox4Choices)
 
@@ -2379,21 +2298,28 @@ class Aplicacion ( wx.Frame ):
         
 
         registros = self.objetoBaseDatos.consultaCargas(str(texto))
+        #print(registros)
         #Caso en que sea diferente de B1
         if(len(registros))>0 and texto!='B1':
-            self.m_textCtrlAlias.SetValue(registros[0][0])
-            self.m_textCtrlP.SetValue(str(registros[0][1]))
-            self.m_textCtrlQ.SetValue(str(registros[0][2]))
-        elif texto=='B1':
-            self.valTextCtrlAlias=True
-            self.valTextCtrlP=True
-            self.valTextCtrlQ=True
-            self.m_textCtrlAlias.Enable(False)
-            self.m_textCtrlP.Enable(False)
-            self.m_textCtrlQ.Enable(False)
-        
+            #self.m_checkBoxNodoConCarga.SetValue(True)
+            try:
+                self.m_textCtrlAlias.SetValue(registros[0][0])
+                self.m_textCtrlP.SetValue(str(registros[0][1]))
+                self.m_textCtrlQ.SetValue(str(registros[0][2]))
+            except TypeError:
+                #self.m_checkBoxNodoConCarga.SetValue(False)
+                self.m_textCtrlAlias.Enable(False) 
+                self.m_textCtrlP.Enable(False)
+                self.m_textCtrlQ.Enable(False)
         #Caso en que el nodo seleccionado sea B1
-        self.LlenarObservaciones()
+        else:
+            if (texto=='B1'):
+                #self.m_checkBoxNodoConCarga.Enable(False)
+                #self.m_checkBoxNodoConCarga.SetValue(False)
+                self.m_textCtrlAlias.Enable(False) 
+                self.m_textCtrlP.Enable(False)
+                self.m_textCtrlQ.Enable(False)
+        self.LlenarObservaciones()'''
         
     
     #
@@ -2559,13 +2485,12 @@ class Aplicacion ( wx.Frame ):
         #Se llama al metodo de llenado de observaciones
         self.LlenarObservaciones()
             
-    
-    def GuardarCircuito(self,event):
+    '''def GuardarCircuito(self,event):
         #Caso en que se actualiza un nuevo nodo
         if(self.m_radioBtn1.GetValue()):
             nombre=str(self.m_comboBox3.GetValue())
-            nombreNodo=str(self.m_textCtrl4.GetValue())
             vecino=str(self.m_comboBox4.GetValue())
+            
             
             if self.m_checkBox7.IsChecked():
                 troncal=1
@@ -2583,29 +2508,119 @@ class Aplicacion ( wx.Frame ):
             id=self.objetoBaseDatos.consultaId(str(nombre))
             #Id del vecino > 1
             linea=self.objetoBaseDatos.consultaId(str(vecino))
+            if self.m_checkBoxNodoConCarga.IsChecked():
+                
+                #Caso en que el identificador del nodo sea mayor que el del vecino
+                if(id>linea):
+                    datos1 = (nombre, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q,id)
+                #Caso en que el identificador del nodo sea menor que el del vecino, es necesario extraer los datos del vecino,
+                #ya que la tabla esta conformada de esa forma
+                elif(id<linea): 
+                    troncal=nx.get_node_attributes(self.Grafo,'troncal')
+                    troncal=troncal[vecino]
+                    t=id
+                    id=linea
+                    linea=t
+                
+                    registros = self.objetoBaseDatos.consultaCargas(str(vecino))
+                    if(len(registros))>0:
+                        self.m_textCtrlAlias.SetValue(registros[0][0]) 
+                        self.m_textCtrlP.SetValue(registros[0][1])
+                        self.m_textCtrlQ.SetValue(registros[0][2])
+                        
+                        datos1 = (vecino, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q,id)
+            else:
+                if(id>linea):
+                    datos1 = (nombre, troncal, linea,r0,r1,x0,x1,distancia,None,None,None,id)
+                elif(id<linea): 
+                    datos1 = (vecino, troncal, linea,r0,r1,x0,x1,distancia,None,None,None,id)
+            registros = self.objetoBaseDatos.consultaCargas(str(vecino))
+            self.objetoModelo.actualizar(datos1)
+            self.ActualizarGrafo()
+            
+            msg='Se actualizo la conexion entre los nodos '+str(nombre)+'-'+str(vecino)
+            dlg = wx.MessageDialog(self, msg, "Actualizacion exitosa", wx.OK |wx.ICON_EXCLAMATION)
+            dlg.ShowModal()
+            dlg.Destroy()
+            self.limpiarPaneles()
+        
+        
+        
+        #Caso en que se inserta un nuevo nodo
+        if(self.m_radioBtn2.GetValue()):
+            #nombre=str(self.m_comboBox3.GetValue())
+            nombre=str(self.m_textCtrl4.GetValue())
+            #REVISAR DEPENDIENDO DE LA POSIBILIDAD DE INSERCION TRONCAL O RAMAL m_comboBox5
+            vecino=str(self.m_comboBox5.GetValue())
+            if self.m_checkBox7.IsChecked():
+                troncal=1
+            if self.m_checkBox8.IsChecked():
+                troncal=0
+            r0=str(self.m_textCtrl2R0.GetValue())
+            r1=str(self.m_textCtrl2R1.GetValue())
+            x0=str(self.m_textCtrl2X0.GetValue())
+            x1=str(self.m_textCtrl2X1.GetValue())
+            distancia=str(self.m_textCtrl2Dis.GetValue())
+            alias=str(self.m_textCtrlAlias.GetValue())
+            p=str(self.m_textCtrlP.GetValue())
+            q=str(self.m_textCtrlQ.GetValue())
+            linea=self.objetoBaseDatos.consultaId(str(vecino))
+            if self.m_checkBoxNodoConCarga.IsChecked():
+                datos1 = (nombre, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q)
+            else:
+                datos1 = (nombre, troncal, linea,r0,r1,x0,x1,distancia,None,None,None)
+            self.objetoModelo.insertar(datos1)
+            self.ActualizarGrafo()
+            
+            msg='Se inserto una nueva conexion entre los nodos '+str(nombre)+' - '+str(vecino)
+            dlg = wx.MessageDialog(self, msg, "Insercion de nodo exitosa", wx.OK |wx.ICON_EXCLAMATION)
+            dlg.ShowModal()
+            dlg.Destroy()
+            self.limpiarPaneles()'''
+    
+    def GuardarCircuito(self,event):
+        #Caso en que se actualiza un nuevo nodo
+        if(self.m_radioBtn1.GetValue()):
+            nombre=str(self.m_comboBox3.GetValue())
+            vecino=str(self.m_comboBox4.GetValue())
+            
+            
+            if self.m_checkBox7.IsChecked():
+                troncal=1
+            if self.m_checkBox8.IsChecked():
+                troncal=0
+            r0=str(self.m_textCtrl1R0.GetValue())
+            r1=str(self.m_textCtrl1R1.GetValue())
+            x0=str(self.m_textCtrl1X0.GetValue())
+            x1=str(self.m_textCtrl1X1.GetValue())
+            distancia=str(self.m_textCtrl1Dis.GetValue())
+            alias=str(self.m_textCtrlAlias.GetValue())
+            p=str(self.m_textCtrlP.GetValue())
+            q=str(self.m_textCtrlQ.GetValue())
+            #Id del nodo 
+            id=self.objetoBaseDatos.consultaId(str(nombre))
+            #Id del vecino 
+            linea=self.objetoBaseDatos.consultaId(str(vecino))
             #if self.m_checkBoxNodoConCarga.IsChecked():
                 
             #Caso en que el identificador del nodo sea mayor que el del vecino
             if(id>linea):
-                datos1 = (nombreNodo, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q,id)
-                Mayor=True
+                datos1 = (nombre, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q,id)
             #Caso en que el identificador del nodo sea menor que el del vecino, es necesario extraer los datos del vecino,
             #ya que la tabla esta conformada de esa forma
             elif(id<linea): 
-                Mayor=False
                 troncal=nx.get_node_attributes(self.Grafo,'troncal')
                 troncal=troncal[vecino]
                 t=id
                 id=linea
                 linea=t
-                if str(self.m_comboBox3.GetValue())=='B1':
-                    alias=None
             
                 registros = self.objetoBaseDatos.consultaCargas(str(vecino))
                 if(len(registros))>0:
                     self.m_textCtrlAlias.SetValue(registros[0][0]) 
                     self.m_textCtrlP.SetValue(str(registros[0][1]))
                     self.m_textCtrlQ.SetValue(str(registros[0][2]))
+                    
                     
                     datos1 = (vecino, troncal, linea,r0,r1,x0,x1,distancia,alias,p,q,id)
             '''else:
@@ -2614,9 +2629,8 @@ class Aplicacion ( wx.Frame ):
                 elif(id<linea): 
                     datos1 = (vecino, troncal, linea,r0,r1,x0,x1,distancia,None,None,None,id)'''
             registros = self.objetoBaseDatos.consultaCargas(str(vecino))
-            self.objetoModelo.actualizar(datos1,Mayor)
+            self.objetoModelo.actualizar(datos1)
             self.ActualizarGrafo()
-            self.pintarGrafo()
             
             msg='Se actualizo la conexion entre los nodos '+str(nombre)+'-'+str(vecino)
             dlg = wx.MessageDialog(self, msg, "Actualizacion exitosa", wx.OK |wx.ICON_EXCLAMATION)
@@ -2664,43 +2678,6 @@ class Aplicacion ( wx.Frame ):
         else:
             self.m_textCtrlNuevoCircuito.Enable(False)
             self.m_textCtrlNuevoCircuito.SetValue('')
-    
-    def EliminarCircuito(self,event):
-        texto = str(self.m_comboBox1.GetValue())
-        #Lista con todos los ficheros del directorio:
-        lstDir = os.walk(self.actual)   #os.walk()Lista directorios y ficheros
-        if len(self.m_comboBox1Choices)>1:
-            if texto in self.m_comboBox1Choices:
-                self.m_comboBox1.SetValue(self.m_comboBox1Choices[0])
-                #self.objetoModelo.conexion.cursor.close()
-                self.objetoBaseDatos.cursor.close()
-                self.objetoCircuito.cursor.close()
-                os.remove(texto+'.s3db')
-                
-                
-        '''
-        #Crea una lista de los ficheros s3db que existen en el directorio y los incluye a la lista.
-         
-        for root, dirs, files in lstDir:
-            for fichero in files:
-                (nombreFichero, extension) = os.path.splitext(fichero)
-                if(extension == ".s3db"):
-                    #lstFiles.append(nombreFichero+extension)
-                    #print (nombreFichero+extension)
-                    self.m_comboBox1Choices.append(nombreFichero)
-        
-        
-        msg="""
-            Se creo el nuevo circuito con valores por defecto, 
-            por favor ingrese al modulo de edicion y cambie 
-            los valores de acuerdo al modelo del circuito
-            """
-            dlg = wx.MessageDialog(self, msg, "Nuevo circuito agregado", wx.OK|wx.ICON_INFORMATION)
-            self.m_textCtrlNuevoCircuito.SetValue('')
-            self.m_checkBoxNuevoCircuito.SetValue(False)
-            dlg.ShowModal()
-            dlg.Destroy()
-        '''
           
     def EvtTextCtrlNuevoCircuito(self,event):
         campo=self.m_textCtrlNuevoCircuito.GetValue()
@@ -2723,7 +2700,7 @@ class Aplicacion ( wx.Frame ):
                 dlg.Destroy()
                 repetido=True
         if not repetido:
-            self.objetoModelo=modeloDatos.Modelo(NombreNuevo,0)
+            self.objetoModelo=modeloDatos.Modelo(NombreNuevo,False)
             msg="""
             Se creo el nuevo circuito con valores por defecto, 
             por favor ingrese al modulo de edicion y cambie 
@@ -2747,8 +2724,6 @@ class Aplicacion ( wx.Frame ):
                         self.m_comboBox1Choices.append(nombreFichero)
             self.m_comboBox1Choices.sort()
             self.m_comboBox1.SetItems(self.m_comboBox1Choices)
-            self.m_comboBox1.SetValue(NombreNuevo)
-            self.EvtComboBoxCircuitos(event)
             self.limpiarPaneles()
             
     
@@ -2765,9 +2740,7 @@ class Aplicacion ( wx.Frame ):
             self.valTextCtrl4=True
         else:
             self.valTextCtrl4=False
-        if campo!= str(self.m_comboBox3.GetValue()): 
-                self.valCambios=True
-                self.LlenarObservaciones()
+        
         for i in self.Grafo:
             if campo==i:
                 self.valTextCtrl4Repetido=True
@@ -2882,6 +2855,19 @@ class Aplicacion ( wx.Frame ):
             self.valTextCtrl2Dis=False
         self.LlenarObservaciones()
     
+    '''def on_NodoConCarga(self,event):
+        if self.m_checkBoxNodoConCarga.IsChecked():
+            self.m_textCtrlAlias.Enable(True)
+            self.m_textCtrlP.Enable(True)
+            self.m_textCtrlQ.Enable(True)
+        else:
+            
+            self.valTextCtrlAlias=True
+            self.m_textCtrlAlias.Enable(False)
+            self.valTextCtrlP=True
+            self.m_textCtrlP.Enable(False)
+            self.valTextCtrlQ=True
+            self.m_textCtrlQ.Enable(False)'''
     
     def EvtTextAlias(self,event):
         self.valTextCtrlAlias=False
@@ -2947,9 +2933,6 @@ class Aplicacion ( wx.Frame ):
             if not self.valComboBox3: 
                 self.m_textCtrlObs.AppendText('\tPor favor seleccione un nodo del circuito para la edicion')
                 self.m_button9.Enable(False)
-            elif not self.valTextCtrl4:
-                self.m_textCtrlObs.AppendText('\tEl nombre del nodo debe empezar por un caracter letra')
-                self.m_button9.Enable(False)
             #Caso en que no se haya elegido el tipo del nodo, troncal/ramal
             elif not self.m_checkBox7.IsChecked() and not self.m_checkBox8.IsChecked() : 
                 self.m_textCtrlObs.AppendText('\tPor favor elija el tipo de nodo, troncal/ramal')
@@ -2987,11 +2970,11 @@ class Aplicacion ( wx.Frame ):
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Alias, debe empezar con una letra')
                 self.m_button9.Enable(False)
             #Caso en que el valor de P no sea un float
-            elif not self.valTextCtrlP: 
+            elif not self.valTextCtrlP : 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de P, debe ser numerico o decimal')
                 self.m_button9.Enable(False)
             #Caso en que el valor de Q no sea un float
-            elif not self.valTextCtrlQ: 
+            elif not self.valTextCtrlQ : 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Q, debe ser numerico o decimal')
                 self.m_button9.Enable(False)
             #Caso en que no tenga ningun error en los datos y haya cambiado un dato
@@ -3037,7 +3020,6 @@ class Aplicacion ( wx.Frame ):
             elif not self.valTextCtrl2Dis: 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Distancia, debe ser numerico o decimal mayor que 0.0')
                 self.m_button9.Enable(False)
-            
             #Caso en que el valor de Alias no empiece por una letra
             elif not self.valTextCtrlAlias: 
                 self.m_textCtrlObs.AppendText('\tPor favor revise el valor de Alias, debe empezar con una letra')
@@ -3104,6 +3086,8 @@ class Aplicacion ( wx.Frame ):
         self.m_textCtrl2Dis.SetValue('')
         self.valTextCtrl2Dis=False
         
+        
+        
         self.m_textCtrlAlias.Enable(True) 
         self.m_textCtrlAlias.SetValue('')
         self.valTextCtrlAlias=False
@@ -3119,50 +3103,19 @@ class Aplicacion ( wx.Frame ):
         #self.m_textCtrlObs.SetValue()
         self.m_button12.Enable(False)
         self.LlenarObservaciones()
-        
-        #ACTUALIZACION DEL PANEL DE INDICADORES 
-        self.m_comboBox6Choices = self.objetoBaseDatos.consultaNodos1Indicadores()
-        self.m_comboBox6.SetItems(self.m_comboBox6Choices)
-        
-        self.m_comboBox7Choices=[]
-        self.m_comboBox7.SetItems(self.m_comboBox7Choices)
-        self.m_textCtrlNuevoIndicador.SetValue('')
-        self.m_textCtrlNuevoIndicador.Enable(False)
-        self.m_textCtrlDistanciaIndicador.SetValue('')
-        self.m_textCtrlDistanciaIndicador.Enable(False)
-        m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()
-        self.m_comboBox8.SetItems(m_comboBox8Choices)
-        m_comboBox9Choices = self.objetoBaseDatos.consultaIndicadores()
-        self.m_comboBox9.SetItems(m_comboBox9Choices)
-        
-        
-        self.pintarGrafo()
-        
-        
-        
     
     def EliminarConexion(self,event):
         if self.EliminacionNormal:
-            #Varible necesaria para eliminar el indicador de la conexion en caso que exista
-            nodo1=str(self.m_comboBox3.GetValue())
-            #Nodo que se elimina
             vecino=str(self.m_comboBox4.GetValue())
         else:
-            #Varible necesaria para eliminar el indicador de la conexion en caso que exista
-            nodo1=str(self.m_comboBox4.GetValue())
-            #Nodo que se elimina
             vecino=str(self.m_comboBox3.GetValue())
         msg='¿Esta seguro que desea eliminar el nodo '+str(vecino)+' del circuito?'
         dlg = wx.MessageDialog(self, msg, "Eliminar conexion", wx.YES_NO |wx.ICON_EXCLAMATION)
         if dlg.ShowModal() == wx.ID_YES:
             idVecino=self.objetoBaseDatos.consultaId(str(vecino))
-            idNodo1=self.objetoBaseDatos.consultaId(str(nodo1))
             self.objetoModelo.eliminar(idVecino)
-            self.objetoModelo.eliminarNodoConIndicador(idNodo1,idVecino)
             #Metodo para actualizar el grafo
             self.ActualizarGrafo()
-            self.pintarGrafo()
-            
             #Volver a inicalizar los checkbox y los campos
             self.limpiarPaneles()
         dlg.Destroy()
@@ -3212,7 +3165,6 @@ class Aplicacion ( wx.Frame ):
                 self.valTextCtrl1X1=False
                 self.m_textCtrl1Dis.Enable(False)
                 self.valTextCtrl1Dis=False
-                
                 self.m_textCtrlAlias.Enable(True) 
                 self.m_textCtrlP.Enable(True)
                 self.m_textCtrlQ.Enable(True)
@@ -3239,6 +3191,7 @@ class Aplicacion ( wx.Frame ):
                 self.m_textCtrl1X0.Enable(True)
                 self.m_textCtrl1X1.Enable(True)
                 self.m_textCtrl1Dis.Enable(True)
+                #self.m_checkBoxNodoConCarga.Enable(True)
                 self.m_textCtrlAlias.Enable(True) 
                 self.m_textCtrlP.Enable(True)
                 self.m_textCtrlQ.Enable(True)
@@ -3254,15 +3207,7 @@ class Aplicacion ( wx.Frame ):
         self.m_comboBox7.Enable(True)
         self.m_textCtrlNuevoIndicador.Enable(False)
         
-        '''#lista=self.objetoBaseDatos.consultaNodos1Indicadores()
-        #self.Grafo=self.objetoCircuito.localizarPunto(self.Grafo, 10,'B1','B2')
-
-        self.Grafo=self.objetoCircuito.pintarIndicadores(self.Grafo)
-        self.pintarGrafo()
-        print(self.Grafo.nodes())
-        #self.ActualizarGrafo()'''
-        
-        
+    
     def EvtComboBoxIndNodo2(self,event):
         self.m_textCtrlNuevoIndicador.Enable(True)
         
@@ -3300,6 +3245,7 @@ class Aplicacion ( wx.Frame ):
         Nodo2=int(self.objetoBaseDatos.consultaId(str(NombreNodo2)))
         NuevoIndicador=str(self.m_textCtrlNuevoIndicador.GetValue())
         DistanciaIngresada=float(self.m_textCtrlDistanciaIndicador.GetValue())
+        print('se inserta el indicador '+str(NuevoIndicador))
         distancia=self.Grafo[NombreNodo1][NombreNodo2]['length']
         
         #CASO EN QUE LA DISTANCIA INGRESADA SUPERE LA DISTANCIA DEL TRAMO
@@ -3310,29 +3256,54 @@ class Aplicacion ( wx.Frame ):
             self.m_buttonInsertar.Enable(False)
             dlg.ShowModal()
             dlg.Destroy()
-        elif NuevoIndicador in self.m_comboBox8Choices:
-            msg='El nombre del indicador ya se encuentra en la lista de indicadores, por favor ingrese otro nombre'
-            dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
-            self.m_textCtrlNuevoIndicador.SetValue('')
-            self.m_buttonInsertar.Enable(False)
-            dlg.ShowModal()
-            dlg.Destroy()
-            
         else:
             datos1 = (Nodo1, Nodo2, NuevoIndicador,DistanciaIngresada)
+            print(datos1)
             self.objetoModelo.insertarIndicador(datos1)
-            #Se actualiza el combo box de eliminar indicador
-            self.m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()
-            self.m_comboBox8.SetItems(self.m_comboBox8Choices)
-            #Se actualiza el combo box de seleccionar indicador
-            self.m_comboBox9Choices = self.objetoBaseDatos.consultaIndicadores()
-            self.m_comboBox9.SetItems(self.m_comboBox9Choices)
-            msg='Se inserto un nuevo indicador entre los nodos '+str(NombreNodo1)+' - '+str(NombreNodo2)
-            dlg = wx.MessageDialog(self, msg, "Insercion de indicador exitosa", wx.OK |wx.ICON_EXCLAMATION)
+            m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()
+            self.m_comboBox8.SetItems(m_comboBox8Choices)
+            
+            
+        print(DistanciaIngresada)
+        print(distancia)
+        '''NuevoIndicador=self.m_textCtrlNuevoIndicador.GetValue()
+        repetido=False
+        #Lista vacia para incluir los ficheros
+        for i in self.m_comboBox9Choices:
+            if NuevoIndicador==i:
+                msg='El nombre ingresado del nuevo indicador ya existe, no se puede crear un indicador con el mismo nombre'
+                dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
+                self.m_textCtrlNuevoIndicador.SetValue('')
+                dlg.ShowModal()
+                dlg.Destroy()
+                repetido=True
+        if not repetido:
+            self.objetoModelo=modeloDatos.Modelo(NombreNuevo,0)
+            msg="""
+            Se creo el nuevo circuito con valores por defecto, 
+            por favor ingrese al modulo de edicion y cambie 
+            los valores de acuerdo al modelo del circuito
+            """
+            dlg = wx.MessageDialog(self, msg, "Nuevo circuito agregado", wx.OK|wx.ICON_INFORMATION)
+            self.m_textCtrlNuevoCircuito.SetValue('')
+            self.m_checkBoxNuevoCircuito.SetValue(False)
             dlg.ShowModal()
             dlg.Destroy()
-            self.limpiarPaneles()
             
+            self.m_comboBox1Choices = []         
+            #Lista con todos los ficheros del directorio:
+            lstDir = os.walk(self.actual)   #os.walk()Lista directorios y ficheros
+            
+            #Crea una lista de los ficheros s3db que existen en el directorio y los incluye a la lista.
+            for root, dirs, files in lstDir:
+                for fichero in files:
+                    (nombreFichero, extension) = os.path.splitext(fichero)
+                    if(extension == ".s3db"):
+                        self.m_comboBox1Choices.append(nombreFichero)
+            self.m_comboBox1Choices.sort()
+            self.m_comboBox1.SetItems(self.m_comboBox1Choices)
+            self.m_comboBox1.SetValue(NombreNuevo)
+            self.limpiarPaneles()'''
     
     def EvtComboBoxIndEliminar(self,event):
         self.m_buttonEliminar.Enable(True)
@@ -3341,24 +3312,14 @@ class Aplicacion ( wx.Frame ):
         
         EliminaIndicador=self.m_comboBox8.GetValue()
         print('se elimina el indicador '+str(EliminaIndicador))
-        indicador=str(self.m_comboBox8.GetValue())
-        self.objetoModelo.eliminarIndicador(indicador)
-        self.m_comboBox8Choices = self.objetoBaseDatos.consultaIndicadores()
-        self.m_comboBox8.SetItems(self.m_comboBox8Choices)
-        
-        
-        self.m_comboBox9Choices = self.objetoBaseDatos.consultaIndicadores()
-        self.m_comboBox9.SetItems(self.m_comboBox9Choices)
-        self.limpiarPaneles()
     
     
     def EvtComboBoxIndSeleccionar(self,event):
         self.m_buttonSeleccionar.Enable(True)
         
     def SeleccionarIndicador(self,event):
-        self.IndicadorSeleccionado=str(self.m_comboBox9.GetValue())
-        self.nuevaLocalizacion()
-        #print('se selecciona el indicador '+str(SeleccionaIndicador))
+        SeleccionaIndicador=self.m_comboBox9.GetValue()
+        print('se selecciona el indicador '+str(SeleccionaIndicador))
     
     
     def OnGroup2Select( self, event ):
@@ -3386,6 +3347,7 @@ class Aplicacion ( wx.Frame ):
                 self.m_buttonSeleccionar.Enable(False)
 
 
+
     def on_move(self,event):
         # get the x and y pixel coords
         x, y = event.x, event.y
@@ -3399,13 +3361,13 @@ class Aplicacion ( wx.Frame ):
                 #plt.ion()
                 #plt.clf()
                 #print ('inicio on move esta en '+str(self.inicioPreFalla))
-
+                
                 #if (self.inicioPreFalla==0):
                 
                 ##############REVISAR PORQUE EN EL MODO AUTOMATICO LA SEGUNDA VEZ NO ENTRA AL SEGUNDO CLICK ######################
                 if not self.click1:
                     #Titulo para el caso de asignar el ciclo prefalla
-                    self.axes_corriente.set_title('Seleccione el ciclo prefalla, si no tiene datos de prefalla habilite la opcion de caso sin prefalla')
+                    self.axes_corriente.set_title('Seleccione el ciclo prefalla')
                 if self.click2:
                     #Titulo para el caso de asignar el ciclo de falla
                     self.axes_corriente.set_title('Seleccione el ciclo en que ocurre la falla')
@@ -3435,7 +3397,6 @@ class Aplicacion ( wx.Frame ):
                         if not self.click1:
                             self.inicioPreFalla=int(event.xdata)
                             self.finPreFalla=self.inicioPreFalla+32
-                            self.m_checkBoxSinPreFalla.Enable(False)
                             #self.click=True
                             
                         #Se selecciona el ciclo de falla en el segundo click                        
@@ -3522,34 +3483,25 @@ class Aplicacion ( wx.Frame ):
         
         #Mediciones subestación:
         #Voltajes
-        #Parametros de las lineas:
-        R0 = 0.3864
-        R1 = 0.01273
-        L0 = 4.1264 * (10 ** -3)*2*np.pi*60
-        L1 = 0.9337 * (10 ** -3)*2*np.pi*60
-        
-        
-        #Mediciones subestación:
-        #Voltajes
-        Va = ( 1.1578e+04 - 4.7880e+02j)/np.sqrt(2)
-        Vb = ( -6.2035e+03 - 9.7872e+03j)/np.sqrt(2)
-        Vc = (-5.3742e+03 + 1.0266e+04j)/np.sqrt(2)
+        Va = ( 1.1607e+04 - 3.6131e+02j)/np.sqrt(2)
+        Vb = ( -6.1165e+03 - 9.8714e+03j)/np.sqrt(2)
+        Vc = (-5.4907e+03 + 1.0233e+04j)/np.sqrt(2)
         Vpre=[Va, Vb, Vc]
         #Corrientes:
-        Ia = (3.6308 - 0.2224j)/np.sqrt(2)
-        Ib = (-2.0080 - 3.0332j)/np.sqrt(2)
-        Ic = (-1.6228 + 3.2556j)/np.sqrt(2)
+        Ia = (2.7342 - 0.1282j)/np.sqrt(2)
+        Ib = (-1.4782 - 2.3038j)/np.sqrt(2)
+        Ic = (-1.2561 + 2.4320j)/np.sqrt(2)
         Ipre=[Ia, Ib, Ic]
         
         #Mediciones post falla
-        VaPost = (3.5184e+03 - 2.2067e+02j)/np.sqrt(2)
-        VbPost = (-6.2138e+03 - 9.7490e+03j)/np.sqrt(2)
-        VcPost = (-5.3818e+03 + 1.0303e+04j)/np.sqrt(2)
+        VaPost = (1.7875e+03 - 1.0998e+03j)/np.sqrt(2)
+        VbPost = (-3.4673e+02 - 2.1806e+03j)/np.sqrt(2)
+        VcPost = (-5.4665e+03 + 1.0262e+04j)/np.sqrt(2)
         VPost=[VaPost, VbPost, VcPost]
         
-        IaPost= ( 10.1433 -59.7008j)/np.sqrt(2)
-        IbPost= (-2.2671 - 2.9620j)/np.sqrt(2)
-        IcPost= (-1.8801 + 3.3466j)/np.sqrt(2)
+        IaPost= (18.5799 -71.6318j)/np.sqrt(2)
+        IbPost= (-64.0093 +32.2525j)/np.sqrt(2)
+        IcPost= (-1.3352 + 2.6700j)/np.sqrt(2)
         IPost=[IaPost, IbPost, IcPost]
         
         #Tablas de configuración
@@ -3568,22 +3520,15 @@ class Aplicacion ( wx.Frame ):
         TaLineas=self.objetoBaseDatos.consultaTablaLineas(TaLineas)
         
         '''TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"],
-          [1, "Linea1", 1, 2, R0, R1, L0, L1, 30],
-          [2, "Linea2", 2, 3, 2*R0, R1, 2*L0, L1, 15],
-          [3, "Linea3", 3, 4, 2*R0, 2*R1, 2*L0, 2*L1, 10],
-          [4, "Linea4", 2, 5, R0, 2*R1, L0, 2*L1, 40],
-          [5, "Linea5", 3, 6, 2*R0, R1, L0, 2*L1, 20],
-          [6, "Linea6", 4, 7, R0, 2*R1, 2*L0, L1, 19]]'''
+                  [1, "Linea1", 1, 2, R0, R1, L0, L1, 30],
+                  [2, "Linea2", 2, 3, R0, R1, L0, L1, 15],
+                  [3, "Linea3", 3, 4, R0, R1, L0, L1, 10],
+                  [4, "Linea4", 2, 5, R0, R1, L0, L1, 8],
+                  [5, "Linea5", 3, 6, R0, R1, L0, L1, 20],
+                  [6, "Linea6", 4, 7, R0, R1, L0, L1, 19]]'''
         
         TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"]]
         TaCargas=self.objetoBaseDatos.consultaTablaCargas(TaCargas)
-        for i in range(len(TaCargas)):
-            if TaCargas[i][3]==None:
-                TaCargas[i][3]=0
-            
-            
-            if TaCargas[i][4]==None:
-                TaCargas[i][4]=0
         '''TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"],
                   [1, 2, "C2", 8*10**3, 100],
                   [2, 3, "C3", 8*10**3, 100],
@@ -3591,58 +3536,8 @@ class Aplicacion ( wx.Frame ):
                   [4, 5, "C5", 8*10**3, 100],
                   [5, 6, "C6", 8*10**3, 100],
                   [6, 7, "C7", 8*10**3, 100]]'''
-        TaIndicadores = [["ID", "Nombre", "Nodo1", "Nodo2", "Distancia"]]
-        TaIndicadores=self.objetoBaseDatos.consultaTablaIndicadores(TaIndicadores)
         
-        '''
-        TaIndicadores=[["ID", "Nombre", "Nodo1", "Nodo2", "Distancia"],
-                [1, 'I1', 2, 3, 1],
-                [2, 'I2', 2, 5, 2],
-                [3, 'I3', 3, 6, 3],
-                [4, 'I4', 4, 7, 2]]'''
-        
-        '''print(np.abs(self.Vpre), np.abs(self.Ipre),np.abs(self.VPost), np.abs(self.IPost))
-        print(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-        D,nodo1,nodo2=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-        print(D,nodo1,nodo2)
-        #print(D,tramo)
-        ##D,tramo=Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, 2, 0)
-        self.m_textCtrl3.SetValue(str(D))
-        self.m_textCtrlTramo.SetValue(str(nodo1)+'-'+str(nodo2))
-        
-        self.Grafo=self.objetoCircuito.localizarPunto(self.Grafo, D,nodo1,nodo2)
-        self.pintarGrafo()'''
-        #Se invoca el metodo localizacion de la clase circuito
-        #fallas = clases_Circuito.Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, 0, 0)
-        #print(fallas)
-        #Se invoca el metodo indicadores de falla de la clase circuito
-        #Como parametros de la clase entran la tabla de nodos, la tabla de lineas, la tabla de cargas, la tabla de indicadores, y el identificador de la fase en falla
-        
-        #D,nodo1,nodo2=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-        
-        #SE DEBE USAR consultaIdIndicadores con el retorno de combobox9 para seleccionar el ultimo nodo activado
-        #id=self.objetoBaseDatos.consultaIdIndicadores(self.IndicadorSeleccionado)
-        if self.carga:
-            print(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-            #D=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-            #REVISAR
-            #D=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
-            #print('resultado')
-            #print(D)
-            
-            
-            #id=self.objetoBaseDatos.consultaIdIndicadores(self.IndicadorSeleccionado)
-            #print(id)
-            #if len(id)>0:
-                #TramosFallaIndicadores = clases_Circuito.IndicadoresDeFalla(TaNodos, TaLineas, TaCargas, TaIndicadores, id)
-                #TramosFallaIndicadores = clases_Circuito.IndicadoresDeFalla(TaNodos, TaLineas, TaCargas, TaIndicadores, int(id))
-                #print(TramosFallaIndicadores)
-        ##Se invoca el metodo comparacion de indicadores de falla de la clase circuito
-        #ResultadoFinal = clases_Circuito.ComparacionIndicadoresAlgoritmo(fallas, TramosFallaIndicadores)
-        #print(ResultadoFinal)
-        
-        
-        '''try:
+        try:
             #D,tramo=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, 2, 0)
             D,nodo1,nodo2=clases_Circuito.Localizacion(self.Vpre, self.Ipre,self.VPost, self.IPost, TaNodos, TaLineas, TaCargas, self.Tipo,self.Fase)
             
@@ -3652,7 +3547,7 @@ class Aplicacion ( wx.Frame ):
             self.m_textCtrlTramo.SetValue(str(nodo1)+'-'+str(nodo2))
             
             self.Grafo=self.objetoCircuito.localizarPunto(self.Grafo, D,nodo1,nodo2)
-            self.pintarGrafo()
+            self.pintarFalla()
             
             #distancia=40
             #self.Grafo=self.objetoCircuito.punto_falla(retorno,distancia)
@@ -3660,13 +3555,13 @@ class Aplicacion ( wx.Frame ):
             #ARREDAS
         except TypeError:
             msg='''
-            #Se ha presentado un error con el modelo actual 
-            #del circuito, por favor seleccione el modelo adecuado
-            #o cambie los valores necesarios dentro del ciruito y 
-            #vuelva a importar los datos'''
-        '''dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
+            Se ha presentado un error con el modelo actual 
+            del circuito, por favor seleccione el modelo adecuado
+            o cambie los valores necesarios dentro del ciruito y 
+            vuelva a importar los datos'''
+            dlg = wx.MessageDialog(self, msg, "Error", wx.OK|wx.ICON_ERROR)
             dlg.ShowModal()
-            dlg.Destroy()'''
+            dlg.Destroy()
         
     
     def asignarFalla(self):
@@ -3729,59 +3624,46 @@ class Aplicacion ( wx.Frame ):
         self.I2=Iseck[2]#IC'''
 
     def asignarPreFalla(self):
-        if not self.m_checkBoxSinPreFalla.IsChecked():
 
-            #for x in range(self.inicioPreFalla,self.finPreFalla):
-            for x in range(self.inicioPreFalla,self.finPreFalla):
-                self.IApre.append(self.Ia[x])
-                self.IBpre.append(self.Ib[x])
-                self.ICpre.append(self.Ic[x])
-                self.VApre.append(self.Va[x])
-                self.VBpre.append(self.Vb[x])
-                self.VCpre.append(self.Vc[x])
-            '''Ia = (2.7342 - 0.1282j)/np.sqrt(2)
-            Ib = (-1.4782 - 2.3038j)/np.sqrt(2)
-            Ic = (-1.2561 + 2.4320j)/np.sqrt(2)
-            Ipre=[Ia, Ib, Ic]'''
-            
-            #print('iprea '+str(len(self.IApre)))
-            #print('ipre '+str(len(self.Ipre)))
-            #print('inicio prefalla '+str(self.inicioPreFalla))
-            #print('fin prefalla '+str(self.finPreFalla))
-            [self.ICpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,9][self.inicioPreFalla:self.finPreFalla]);
-            [self.IBpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,10][self.inicioPreFalla:self.finPreFalla]);
-            [self.IApre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,11][self.inicioPreFalla:self.finPreFalla]);
-            
-            
-            self.IApre=self.IApre/np.sqrt(2)
-            self.IBpre=self.IBpre/np.sqrt(2)
-            self.ICpre=self.ICpre/np.sqrt(2)
-            self.Ipre=[self.IApre, self.IBpre, self.ICpre]
-            
-            '''Va = ( 1.1607e+04 - 3.6131e+02j)/np.sqrt(2)
-            Vb = ( -6.1165e+03 - 9.8714e+03j)/np.sqrt(2)
-            Vc = (-5.4907e+03 + 1.0233e+04j)/np.sqrt(2)
-            Vpre=[Va, Vb, Vc]'''
-            [self.VApre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,5][self.inicioPreFalla:self.finPreFalla]);
-            [self.VBpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,4][self.inicioPreFalla:self.finPreFalla]);
-            [self.VCpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,3][self.inicioPreFalla:self.finPreFalla]);
-            
-            self.VApre=self.VApre/np.sqrt(2)
-            self.VBpre=self.VBpre/np.sqrt(2)
-            self.VCpre=self.VCpre/np.sqrt(2)
-            self.Vpre=[self.VApre, self.VBpre, self.VCpre]
+        #for x in range(self.inicioPreFalla,self.finPreFalla):
+        for x in range(self.inicioPreFalla,self.finPreFalla):
+            self.IApre.append(self.Ia[x])
+            self.IBpre.append(self.Ib[x])
+            self.ICpre.append(self.Ic[x])
+            self.VApre.append(self.Va[x])
+            self.VBpre.append(self.Vb[x])
+            self.VCpre.append(self.Vc[x])
+        '''Ia = (2.7342 - 0.1282j)/np.sqrt(2)
+        Ib = (-1.4782 - 2.3038j)/np.sqrt(2)
+        Ic = (-1.2561 + 2.4320j)/np.sqrt(2)
+        Ipre=[Ia, Ib, Ic]'''
         
-        else:
-            #REVISAR EL CASO QUE NO SE HAYA SELECCIONADO PREFALLA
-            self.IApre=5*cm.exp(cm.sqrt(-1)*np.deg2rad(0))
-            self.IBpre=5*cm.exp(cm.sqrt(-1)*np.deg2rad(-120))
-            self.ICpre=5*cm.exp(cm.sqrt(-1)*np.deg2rad(120))
-            self.Ipre=[self.IApre, self.IBpre, self.ICpre]
-            
-            self.VApre=13800*cm.exp(cm.sqrt(-1)*np.deg2rad(0))
-            self.VBpre=13800*cm.exp(cm.sqrt(-1)*np.deg2rad(-120))
-            self.VCpre=13800*cm.exp(cm.sqrt(-1)*np.deg2rad(120))
-            self.Vpre=[self.VApre, self.VBpre, self.VCpre]
+        #print('iprea '+str(len(self.IApre)))
+        #print('ipre '+str(len(self.Ipre)))
+        #print('inicio prefalla '+str(self.inicioPreFalla))
+        #print('fin prefalla '+str(self.finPreFalla))
+        [self.ICpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,9][self.inicioPreFalla:self.finPreFalla]);
+        [self.IBpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,10][self.inicioPreFalla:self.finPreFalla]);
+        [self.IApre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,11][self.inicioPreFalla:self.finPreFalla]);
+        
+        
+        self.IApre=self.IApre/np.sqrt(2)
+        self.IBpre=self.IBpre/np.sqrt(2)
+        self.ICpre=self.ICpre/np.sqrt(2)
+        self.Ipre=[self.IApre, self.IBpre, self.ICpre]
+        
+        '''Va = ( 1.1607e+04 - 3.6131e+02j)/np.sqrt(2)
+        Vb = ( -6.1165e+03 - 9.8714e+03j)/np.sqrt(2)
+        Vc = (-5.4907e+03 + 1.0233e+04j)/np.sqrt(2)
+        Vpre=[Va, Vb, Vc]'''
+        [self.VApre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,5][self.inicioPreFalla:self.finPreFalla]);
+        [self.VBpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,4][self.inicioPreFalla:self.finPreFalla]);
+        [self.VCpre, Mag, Fase]=lsq.Lsq5(self.objetoComtrade.oscilografia[:,0][self.inicioPreFalla:self.finPreFalla], self.objetoComtrade.oscilografia[:,3][self.inicioPreFalla:self.finPreFalla]);
+        
+        self.VApre=self.VApre/np.sqrt(2)
+        self.VBpre=self.VBpre/np.sqrt(2)
+        self.VCpre=self.VCpre/np.sqrt(2)
+        self.Vpre=[self.VApre, self.VBpre, self.VCpre]
 
     def takagi(self):
         Z= complex(0.72721,0.0016198)
@@ -3872,7 +3754,6 @@ class Aplicacion ( wx.Frame ):
         dlg.Destroy()
         if wx.ID_YES == salir :
             self.Destroy()
-            #sys.exit()
 
 		
 ###########################################################################

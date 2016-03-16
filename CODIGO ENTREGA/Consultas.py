@@ -112,7 +112,7 @@ class baseDatos(object):
         self.cursor.execute(sql)
         registros = self.cursor.fetchall()
         for i in registros:
-            tabla.append([i[0],'Linea'+str(i[0]),i[2],i[1],i[3],i[4],i[5],i[6],int(i[7])])
+            tabla.append([i[0],'Linea'+str(i[0]),i[2],i[1],i[3],i[4],i[5],i[6],i[7]])
         return tabla
     
     def consultaTablaCargas(self,tabla):
@@ -124,3 +124,68 @@ class baseDatos(object):
         for i in registros:
             tabla.append([i[0],i[1],str(i[2]),i[3],i[4]])
         return tabla
+    
+    def consultaTablaIndicadores(self,tabla):
+        
+        TaIndicadores = [["ID", "Nombre", "Nodo1", "Nodo2", "Distancia"]]
+        sql="SELECT * FROM Indicadores"
+        self.cursor.execute(sql)
+        registros = self.cursor.fetchall()
+        for i in registros:
+            tabla.append([i[0],str(i[3]),i[1],i[2],i[4]])
+        return tabla
+    
+    def consultaIdIndicadores(self,nombre):
+        self.cursor.execute('''SELECT Id_indicador FROM Indicadores WHERE Nombre=?;''', (str(nombre),))
+        registros = str(self.cursor.fetchone())
+        registros=registros.lstrip('(')
+        registros=registros.rstrip(')')
+        registros=registros.rstrip(',')
+        return registros
+    
+    
+    def consultaIndicadores(self):
+        sql="SELECT NOMBRE FROM Indicadores"
+        self.cursor.execute(sql)
+        registros = self.cursor.fetchall()
+        
+        Ext1=[]
+        for i in range(len(registros)):
+            Ext1.append(str(registros[i][0]))
+        return Ext1
+    
+    def consultaNodos1Indicadores(self):
+        
+        self.cursor.execute('''DROP VIEW IF EXISTS ind;''')
+        self.cursor.execute('''
+        CREATE VIEW ind AS SELECT Id_Nodo2,Nombre  
+        FROM Nodos a, Lineas b  
+        WHERE a.Id_Nodo=b.Id_Nodo2''')
+        self.cursor.execute("SELECT Nombre FROM ind;")
+        registros = self.cursor.fetchall()
+        
+        Ext1=[]
+        for i in range(len(registros)):
+            if str(registros[i][0]) not in Ext1:
+                Ext1.append(str(registros[i][0]))
+        return Ext1
+    
+    
+    def consultaNodos2Indicadores(self,nodo):
+        
+        self.cursor.execute('''DROP VIEW IF EXISTS vecino;''')
+        self.cursor.execute('''
+        CREATE VIEW vecino AS SELECT Id_Nodo1,Id_Nodo2,Nombre  
+        FROM Nodos a, Lineas b  
+        WHERE a.Id_Nodo=b.Id_Nodo1''')
+        self.cursor.execute("SELECT Nombre FROM vecino WHERE Id_Nodo2=?;", (str(nodo),))
+        registros = self.cursor.fetchall()
+        
+        Ext1=[]
+        for i in range(len(registros)):
+            if str(registros[i][0]) not in Ext1:
+                Ext1.append(str(registros[i][0]))
+        return Ext1
+        
+    
+    

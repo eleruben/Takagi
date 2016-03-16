@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import math as mt
+import cmath as cm
+import sys
 
 class Nodo(object):
     #constructor
@@ -21,15 +23,15 @@ class Nodo(object):
 
 class Olinea(object):
     #constructor
-    def __init__(self, ID, ALIAS, NODO1, NODO2, R0, R1, X0, X1, D):
+    def __init__(self, ID, ALIAS, NODO1, NODO2, R0, R1, L0, L1, D):
         self.id=ID;
         self.alias=ALIAS;
         self.nodo1=NODO1;
         self.nodo2=NODO2;
         self.R0=R0;
         self.R1=R1;
-        self.X0=X0;
-        self.X1=X1;
+        self.L0=L0;
+        self.L1=L1;
         self.D=D;
         self.I=np.matrix([[0], [0], [0]]);
         self.IPost=np.matrix([[0], [0], [0]]);
@@ -38,14 +40,20 @@ class Olinea(object):
         self.falla=0;
         self.DFalla=0;
         self.ver=0;
+        self.Indicador=0;
+        self.IdIndicador='NaN';
+        self.AliasIndicador='NaN';
+        self.EstadoIndicador=0;
+        self.DisIndicador=0;
+        self.PosibleFalla=0;
 
     def impedancia(self):
         Rs=(2*self.R1+self.R0)/3;
         Rm=(self.R0-self.R1)/3;
-        Xs=(2*self.X1+self.X0)/3;
-        Xm=(self.X0-self.X1)/3;
-        #Xs=2*np.pi*60*Ls;
-        #Xm=2*np.pi*60*Lm;
+        Ls=(2*self.L1+self.L0)/3;
+        Lm=(self.L0-self.L1)/3;
+        Xs=Ls;
+        Xm=Lm;
         ZAA=complex(Rs,Xs);
         ZAB=complex(Rm,Xm);
         self.Z=np.matrix([[ZAA,ZAB,ZAB],[ZAB, ZAA, ZAB],[ZAB,ZAB,ZAA]]);
@@ -82,15 +90,30 @@ class carga(object):
 #                                                                                #
 ##################################################################################
 
+#Verificar si encontró linea
+
+def VerificarLinea(Linea, Nodo):
+    if Linea == 'NaN':
+        print('Error: Nodo ' +str(Nodo) + ' desconectado')
+        error = 1
+    else:
+        error = 0
+    return error;
+'''
+def VerificarCarga(Carga):
+    if Carga == 'NaN':
+        print('Error: Carga ' +str(Carga) + ' desconectada')
+        error = 1
+    else:
+        error =
+    return error;
+    '''
+
+
 #Localización monofásica
-
-
 
 def DistanciaMonofasica(Linea, Nodo, Fases):
     if Fases == 0:
-        
-        #print Nodo.ten[0,0]
-        
         x=Linea.IPost[0,0]*Linea.Z[0,0] + Linea.IPost[1,0]*Linea.Z[0,1] + Linea.IPost[2,0]*Linea.Z[0,2]
         If = Linea.IPost[0]-Linea.I[0]
         #Vector funciones fase neutro
@@ -103,17 +126,17 @@ def DistanciaMonofasica(Linea, Nodo, Fases):
         return D
     elif Fases == 1:
         x=Linea.IPost[0,0]*Linea.Z[1,0] + Linea.IPost[1,0]*Linea.Z[1,1] + Linea.IPost[2,0]*Linea.Z[1,2]
-        '''print 'corriente de prefalla'
+        print 'corriente de prefalla'
         print np.abs(Linea.I[1])
         print 'corriente de postfalla'
-        print np.abs(Linea.IPost[1])'''
+        print np.abs(Linea.IPost[1])
         If = Linea.IPost[1]-(Linea.I[1])
-        #print np.abs(If)
+        print np.abs(If)
         #Vector funciones fase neutro
         V=np.matrix([[np.real(Nodo.tenPost[1,0])],[np.imag(Nodo.tenPost[1,0])]])
-        '''print 'voltajes'
+        print 'voltajes'
         print np.abs(Nodo.tenPost)
-        print np.angle(Nodo.tenPost)'''
+        print np.angle(Nodo.tenPost)
         #Matriz de coeficientes
         F=np.matrix([[np.real(x), np.real(If)], [np.imag(x), np.imag(If)]])
         #Calculo de distancia
@@ -134,8 +157,7 @@ def DistanciaMonofasica(Linea, Nodo, Fases):
 
 def DistanciaBifasicaAislada(Linea, Nodo, Fases):
     if Fases == 0:
-        If=np.abs(Linea.IPost[0])-np.abs(Linea.I[0])
-        #print(np.abs(If))
+        If=Linea.IPost[0]-Linea.I[0]
         Z1=Linea.Z[0,1]-Linea.Z[0,1]
         Z2=Linea.Z[0,0]-Linea.Z[0,1]
         Z3=Linea.Z[0,1]-Linea.Z[0,0]
@@ -145,7 +167,6 @@ def DistanciaBifasicaAislada(Linea, Nodo, Fases):
         Vab=np.matrix([[np.real(Nodo.tenPost[0,0]-Nodo.tenPost[1,0])], [np.imag(Nodo.tenPost[0,0]-Nodo.tenPost[1,0])]])
         res=np.linalg.inv(Fab)*Vab
         D=res[0,0]
-        #print('resistencia de falla es ' + str(res[1,0]))
         return D
     if Fases == 1:
         If=Linea.IPost[1]-Linea.I[1]
@@ -158,7 +179,6 @@ def DistanciaBifasicaAislada(Linea, Nodo, Fases):
         Vab=np.matrix([[np.real(Nodo.tenPost[1,0]-Nodo.tenPost[2,0])], [np.imag(Nodo.tenPost[1,0]-Nodo.tenPost[2,0])]])
         res=np.linalg.inv(Fab)*Vab
         D=res[0,0]
-        
         return D
     if Fases == 2:
         If=Linea.IPost[0]-Linea.I[0]
@@ -201,7 +221,7 @@ def DistanciaBifasicaTierra(Linea, Nodo, Fases):
         Vbc=np.matrix([[np.real(Nodo.tenPost[1,0])], [np.imag(Nodo.tenPost[1,0])], [np.real(Nodo.tenPost[2,0])], [np.imag(Nodo.tenPost[2,0])]])
 
         #Matriz inversa
-        Fab=np.linalg.inv(np.matrix([[np.real(x0), np.real(Ifb), 0, np.real(Ifb+Ifc)], [np.imag(x0), np.imag(Ifb), 0, np.imag(Ifb+Ifc)], [np.real(x1), 0, np.real(Ifc), np.real(Ifb+Ifc)], [np.imag(x1), 0, np.imag(Ifc), np.imag(Ifb+Ifc)]]))
+        Fbc=np.linalg.inv(np.matrix([[np.real(x0), np.real(Ifb), 0, np.real(Ifb+Ifc)], [np.imag(x0), np.imag(Ifb), 0, np.imag(Ifb+Ifc)], [np.real(x1), 0, np.real(Ifc), np.real(Ifb+Ifc)], [np.imag(x1), 0, np.imag(Ifc), np.imag(Ifb+Ifc)]]))
         #Calculo de Distancia D
         Res= Fbc * Vbc
         D=Res[0,0]
@@ -245,15 +265,11 @@ def TipoDeFalla(Linea, Nodo, TipoDeFalla, Fases):
         #Falla C-A, Fases = 2
         D=DistanciaBifasicaTierra(Linea, Nodo, Fases)
     elif TipoDeFalla == 3:
-        D=0
-        pass
         #Falla trifasica aislada
-        #D=DistanciaTrifasicaAislada(Linea, Nodo, Fases)
+        D=DistanciaTrifasicaAislada(Linea, Nodo, Fases)
     elif TipoDeFalla == 4:
-        D=0
-        pass
         #Falla trifasica aislada
-        #D=DistanciaTrifasicaTierra(Linea, Nodo, Fases)
+        D=DistanciaTrifasicaTierra(Linea, Nodo, Fases)
     return D
 
 
@@ -294,7 +310,7 @@ def VerificarNodos(nodoActual, Nodos):
     return Nodos
 
 #tipo 0 monofasico fase 0 A FASE 1 B FASE 2 C
-#tipo 1 bifasico aislado fase 0 AB FASE 1 BC FASE 2 AC 
+#tipo 1 bifasico aislado fase 0 AB FASE 1 BC FASE 2 AC
 #tipo 2 bifasico tierra (todavia no) fase 0 AB FASE 1 BC FASE 2 AC
 #tipo 3 trifasico aislado (todavia no)
 #tipo 4 trifasico tierra (todavia no)
@@ -345,7 +361,6 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
     for i in range(len(TaCargas) - 1):
         Cargas.append(carga(TaCargas[i+1][0], TaCargas[i+1][1], TaCargas[i+1][2], TaCargas[i+1][3], TaCargas[i+1][4]))
 
-
     ##################################################################################
     #                                                                                #
     #                         FLUJO DE CARGA PREFALLA                                #
@@ -379,68 +394,143 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
             Cargas[i].I=V*S
             Cargas[i].I=Cargas[i].I.conjugate()
 
-        #La lineas que solo tienen una carga conectada al final, se le asigna la corriente de dcha carga
-        for i in range(len(Nodos)):
-            #Primero se detectan los nodos finales
-            if len(Nodos[i].sig) == 0:
-                #Ahora buscamos las lineas que se relacionan con estos nodos
-                for m in range(len(Lineas)):
-                    if Lineas[m].nodo2 == Nodos[i].id:
-                        #Se busca la carga conectada al nodo
-                        for l in range(len(Cargas)):
-                            if Cargas[l].nodo == Nodos[i].id :
-                                #Se le asigna la corriente de la carga de ese nodo a la linea
-                                Lineas[m].I=Cargas[l].I
+        #######################################################################
+        #                   Calculo de corrientes                             #
+        #######################################################################
 
-        #Se calcula la corriente de las lineas que no está conectadas directamente a una carga
         fin = 0
-        LIz = []
-        SumI= np.matrix([[0],[0],[0]])
-        linea=0
-
+        actual=principal
+        siguiente=Nodos[principal].sig[0]-1
+        final=Nodos[siguiente].sig[0]-1
+        Linea1= 'NaN'
+        Linea2='NaN'
+        carga1='NaN'
         while fin == 0:
-            for i in range(len(Nodos)):
-                #Se busca la linea a la izquierda del nodo y Verifico si esa linea tiene corriente 0
-                for l in range(len(Lineas)):
-                    if Lineas[l].nodo2 == Nodos[i].id and not Lineas[l].I.any():
-                        LIz=l
-                        linea=1
+            #Buscar la linea entre el nodo actual y el siguiente
+            for i in range(len(Lineas)):
+                if Lineas[i].nodo2 == siguiente+1:
+                    Linea1=i
+                    break
+            error=VerificarLinea(Linea1, siguiente + 1)
+            if error:
+                return;
+            #Buscar la linea entre el nodo siguiente y el nodo final
+            for i in range(len(Lineas)):
+                if Lineas[i].nodo2 == final+1:
+                    Linea2=i
+                    break
+            error=VerificarLinea(Linea2, final + 1)
+            if error:
+                return;
+            #Se verifica que la linea 2 no se haya verificado y que le nodo final tenga mas nodos
+            #conectados
+            if Lineas[Linea2].ver == 0 and len(Nodos[final].sig) != 0 and Nodos[final].ver == 0 and Nodos[siguiente].ver == 0:
+                actual = siguiente
+                siguiente = final
+                for i in Nodos[siguiente].sig:
+                    if Nodos[i-1].ver == 0:
+                        final=i - 1
                         break
+            #Se verifica que la linea 2 no se haya verificado y que le nodo final no tenga mas nodos
+            #conectados (linea conectada a un nodo final)
+            elif Lineas[Linea2].ver == 0 and len(Nodos[final].sig) == 0 and  Nodos[final].ver == 0 and Nodos[siguiente].ver == 0:
+                #Verifico si el nodo final tiene carga conectada
+                I=np.matrix([[0],[0],[0]])
+                carga1='NaN'
+                for i in range(len(Cargas)):
+                    if Cargas[i].nodo == final +1:
+                        carga1=i
+                        break
+                if carga1 != 'NaN':
+                    Lineas[Linea2].I=Cargas[carga1].I
+                else:
+                    Lineas[Linea2].I=I
+                Lineas[Linea2].ver=1
+                Nodos[final].ver=1
+                final1 = final
+                final = 'NaN'
+                for i in Nodos[siguiente].sig:
+                    if Nodos[i-1].ver == 0:
+                        final=i-1
+                        break
+                if final == 'NaN':
+                    if Nodos[actual].ant != 0:
+                        actual = Nodos[actual].ant-1
+                        siguiente = Nodos[siguiente].ant-1
+                        final=Nodos[final1].ant-1
+                        Nodos[final].ver=1
                     else:
-                        linea=0
-
-                #Verifico si las lineas de la derecha tienen corriente 0
-                rev=0
-                for l in Nodos[i].sig:
-                    for m in range(len(Lineas)):
-                        if Lineas[m].nodo2 == l:
-                            if not Lineas[m].I.all():
-                                Ider=0
-                            else:
-                                #Si no, sumo las corrientes de las lineas de la derecha
-                                #print 'entra'
-                                SumI=SumI+Lineas[m].I
-                                rev=1
-
-
-                #Si ninguna linea de la derecha tuvo corriente cero, sumo todas las corrientes a
-                #la linea de la izquierda, más la corriente de la carga
-                if Ider == 0:
-                    SumI=np.matrix([[0],[0],[0]])
-                    Ider = 1
-                elif linea == 1:
-                    for m in range(len(Cargas)):
-                        if Cargas[m].nodo == Nodos[i].id:
-                            SumI=SumI+Cargas[m].I
-                    Lineas[LIz].I=SumI
-            #Verifico que se hayan sumado todas la corrientes de todas las lineasc
-            for n in range(len(Lineas)):
-                if not Lineas[n].I.any():
-                    fin = 0
+                        Nodos[siguiente].ver=1
+                        final = Nodos[siguiente].sig[0]-1
+            elif Lineas[Linea2].ver == 0 and len(Nodos[final].sig) != 0 and  Nodos[final].ver == 1 and Nodos[siguiente].ver == 0:
+                #Calculo  las corrientes que entran al nodo final
+                #Primero verifico si el nodo final tiene conectada una carga
+                I=np.matrix([[0],[0],[0]])
+                carga1='NaN'
+                for i in range(len(Cargas)):
+                    if Cargas[i].nodo == final +1:
+                        carga1=i
+                        break
+                if carga1 != 'NaN':
+                    I=I+Cargas[carga1].I
+                for i in Nodos[final].sig:
+                    for l in range(len(Lineas)):
+                        if Lineas[l].nodo2 == i:
+                            I=I+Lineas[l].I
+                Lineas[Linea2].I=I
+                Lineas[Linea2].ver=1
+                final1=final
+                final = 'NaN'
+                for i in Nodos[siguiente].sig:
+                    if Nodos[i-1].ver == 0:
+                        final=i-1
+                        break
+                if final == 'NaN':
+                    if Nodos[actual].ant != 0:
+                        actual = Nodos[actual].ant-1
+                        siguiente = Nodos[siguiente].ant-1
+                        final=Nodos[final1].ant-1
+                        Nodos[final1].ver=1
+                    else:
+                        Nodos[siguiente].ver=1
+                        final = Nodos[siguiente].sig[0]-1
+            elif Lineas[Linea2].ver == 1 and len(Nodos[final].sig) != 0 and  Nodos[final].ver == 1 and Nodos[siguiente].ver == 1:
+                I=np.matrix([[0],[0],[0]])
+                carga1='NaN'
+                for i in range(len(Cargas)):
+                    if Cargas[i].nodo == final +1:
+                        carga1=i
+                        break
+                if carga1 != 'NaN':
+                    I=I+Cargas[carga1].I
+                for i in Nodos[siguiente].sig:
+                    for l in range(len(Lineas)):
+                        if Lineas[l].nodo2 == i:
+                            I=I+Lineas[l].I
+                Lineas[Linea1].I=I
+                Lineas[Linea1].ver=1
+            terminar = 0
+            for i in range(len(Lineas)):
+                if Lineas[i].ver == 0:
+                    terminar = 0
                     break
                 else:
-                    fin = 1
+                    terminar = 1
+            if terminar == 1 and Lineas[Linea1].ver == 1:
+                fin = 1
+            elif terminar == 0 and Lineas[Linea1].ver == 1:
+                print('error mientras calculaba corriente, prefalla, revise configuracion del circuito')
+                return
+            elif terminar == 0 and Lineas[Linea1].ver == 0:
+                fin = 0
+            else:
+                print ('error desconocido')
+                fin = 1
 
+        for i in range(len(Nodos)):
+            Nodos[i].ver=0
+        for i in range(len(Lineas)):
+            Lineas[i].ver=0
         #Calculo de tensiones
         #Nodos[principal].ten=np.matrix([[1], [1], [1]])
         Nodos[principal].ten=np.matrix([[Va/Vbase], [Vb/Vbase], [Vc/Vbase]])
@@ -448,7 +538,6 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
 
         fin = 0
         actual=Nodos[principal].sig[0]
-        anterior=Nodos[actual].ant
         n=0;
         #Lineas[0].I=np.matrix([[Ia/Ibase], [Ib/Ibase], [Ic/Ibase]])
         while fin == 0:
@@ -510,7 +599,6 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
         Circuito.append([Nodos[i].id, LineaTemp])
         LineaTemp=[]
 
-
     #Nodo principal tendrá la misma tensión de la medición de la subestación durante falla
     Nodos[principal].tenPost[0]=VaPost
     Nodos[principal].tenPost[1]=VbPost
@@ -528,21 +616,19 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
     Lineas[LineaActual].IPost=np.matrix([[IaPost],[IbPost],[IcPost]])
     D=TipoDeFalla(Lineas[LineaActual], Nodos[principal], Tipo, Fase)
 
-    #print D 
-    
+
 
     #Activamos la casilla de verificación para decir que ya revisamos el nodo principal
     Nodos[principal].ver=1
     Lineas[LineaActual].ver=1
-    
+
 
     #Nodo actual se inicializa en el principal
     actual=principal
 
     terminar = 0
     siguiente= 0
-    falta=0
-    
+
     if D > Lineas[LineaActual].D:
         while terminar == 0:
             LineaActual=[]
@@ -566,7 +652,6 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
                         ###################################
                         #Calculo de corriente de postfalla#
                         ###################################
-
                         #Busco las otras lineas que estan conectadas al mismo nodo
                         for n in Circuito[i][1]:
                             if n != LineaActual+1:
@@ -583,18 +668,15 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
                         ##########################################
                         Nodos[actual].tenPost= Nodos[Nodos[actual].ant - 1].tenPost - (Lineas[LineaAnterior].D*Lineas[LineaAnterior].Z*Lineas[LineaAnterior].IPost)
                         D=TipoDeFalla(Lineas[LineaActual], Nodos[actual], Tipo, Fase)
-                        '''print D
-                        print('Tension nodo ' + str(actual))
-                        print(np.abs(Nodos[actual].tenPost))
-                        print ('Corriente linea '+str(LineaActual))
-                        print(np.abs(Lineas[LineaActual].IPost))'''
                         Lineas[LineaActual].ver=1
                         if D < Lineas[LineaActual].D and D > 0:
-                            Nodos[actual].ver=1
+                            Nodos[Lineas[LineaActual].nodo2-1].ver=1
+                            siguiente=Lineas[LineaActual].nodo2-1
                             Lineas[LineaActual].falla=1
                             Lineas[LineaActual].DFalla=D
-                            Nodos=VerificarNodos(actual, Nodos)
-                            actual=principal
+                            if len(Nodos[siguiente].sig) != 0:
+                                Nodos=VerificarNodos(siguiente, Nodos)
+                            #actual=principal
                         elif D < 0:
                             Nodos[actual].ver=1
                     else:
@@ -609,7 +691,6 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
                 for i in Nodos[actual].sig:
                     if Nodos[i-1].ver == 0 and len(Nodos[i-1].sig) != 0:
                         actual = Nodos[i-1].id-1
-                        falta=0
                         break
                     elif len(Nodos[i-1].sig) == 0:
                         Nodos[i-1].ver=1
@@ -621,12 +702,145 @@ def Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, Tipo, Fas
                 else:
                     terminar=1
 
-
+    fallas=[]
+    fallaN=[]
     for i in range(len(Lineas)):
         if Lineas[i].falla==1:
+            fallaN.append(Lineas[i].DFalla)
+            fallaN.append(Lineas[i].nodo1)
+            fallaN.append(Lineas[i].nodo2)
+            fallas.append(fallaN)
+            fallaN=[]
             #print 'La falla se encuentra en el tramo ' + str(i+1)
             #print 'a una distancia de ' + str(Lineas[i].DFalla) +'Km del inicio del tramo'
-            return D,Nodos[Lineas[i].nodo1-1].alias, Nodos[Lineas[i].nodo2-1].alias
+    return fallas
+
+def IndicadoresDeFalla(TaNodos, TaLineas, TaCargas, TaIndicadores, IndicadorActivo):
+    #Conección del circuito
+    #Creacion de nodos
+    Nodos = []
+    for i in range(len(TaNodos) - 1):
+        Nodos.append(Nodo(TaNodos[i + 1][0], TaNodos[i + 1][1], TaNodos[i + 1][2]))
+
+    #Creacion de lineas
+    Lineas=[]
+    for i in range(len(TaLineas) - 1):
+        Lineas.append(Olinea(TaLineas[i+1][0], TaLineas[i+1][1], TaLineas[i+1][2], TaLineas[i+1][3], TaLineas[i+1][4], TaLineas[i+1][5], TaLineas[i+1][6], TaLineas[i+1][7], TaLineas[i+1][8]))
+
+    #Coneccion de nodos
+    for i in range(len(Lineas)):
+        Nodos[Lineas[i].nodo2-1].ant = Lineas[i].nodo1
+        Nodos[Lineas[i].nodo1-1].sig.append(Lineas[i].nodo2)
+
+    #Creacion de cargas
+    Cargas=[]
+    for i in range(len(TaCargas) - 1):
+        Cargas.append(carga(TaCargas[i+1][0], TaCargas[i+1][1], TaCargas[i+1][2], TaCargas[i+1][3], TaCargas[i+1][4]))
+
+    #Creación de los indicadores
+    for i in range(len(TaIndicadores)):
+        for l in range(len(Lineas)):
+            if Lineas[l].nodo1 == TaIndicadores[i][2] and Lineas[l].nodo2 == TaIndicadores[i][3]:
+                Lineas[l].Indicador = 1
+                Lineas[l].IdIndicador = TaIndicadores[i][0]
+                Lineas[l].DisIndicador = TaIndicadores[i][4]
+                Lineas[l].AliasIndicador = TaIndicadores[i][1]
+    #Tramos posibles
+    #Busco la linea que tiene los indicadores activos
+    LineaActiva='NaN'
+    for i in range(len(Lineas)):
+        if Lineas[i].IdIndicador == IndicadorActivo:
+            LineaActiva = i
+    if LineaActiva == 'NaN':
+        print('Error = No existe indicador ' + str(IndicadorActivo))
+        return
+    NodoInicial=Lineas[LineaActiva].nodo1-1
+    NodoFinal=Lineas[LineaActiva].nodo2-1
+    Nodos[NodoInicial].ver=1
+    Lineas[LineaActiva].PosibleFalla=1
+    #Busco las lineas que siguen despues de la línea activa para encontrar un indicador desactivo
+    fin=0
+    NodoTempIni="NaN"
+    NodoTempFin="NaN"
+    NodoTempIni=NodoFinal
+    LineaTemp = "NaN"
+    while fin == 0:
+        if len(Nodos[NodoTempIni].sig) != 0:
+            for i in Nodos[NodoTempIni].sig:
+                if Nodos[i-1].ver == 0:
+                    NodoTempFin = i-1
+                for i in range(len(Lineas)):
+                    if Lineas[i].nodo1 == NodoTempIni+1 and Lineas[i].nodo2 == NodoTempFin+1:
+                        LineaTemp = i
+                if Lineas[LineaTemp].Indicador == 1:
+                    Lineas[LineaTemp].PosibleFalla = 1
+                    Nodos[NodoTempFin].ver=1
+                    Lineas[LineaTemp].ver=1
+                elif Lineas[LineaTemp].Indicador == 0 and Lineas[LineaTemp].ver == 0:
+                    Lineas[LineaTemp].ver=1
+                    Lineas[LineaTemp].PosibleFalla = 1
+                    NodoTempIni = NodoTempFin
+                    break
+                elif Lineas[LineaTemp].Indicador == 0 and Lineas[LineaTemp].ver == 1:
+                    Nodos[NodoTempFin].ver=1
+            termina = "NaN"
+            for i in Nodos[NodoTempIni].sig:
+                if  Nodos[i-1].ver == 0:
+                    termina = "NaN"
+                    break
+                else:
+                    termina = 1
+            if termina == 1:
+                NodoTempIni = Nodos[NodoTempIni].ant -1
+            if NodoTempIni == NodoInicial:
+                fin = 1
+        else:
+            fin = 1
+    TramosFallaIndicadores=[]
+    temp=[]
+    for i in range(len(Lineas)):
+        if Lineas[i].PosibleFalla == 1 and Lineas[i].Indicador == 1:
+            if Lineas[i].nodo1 == NodoInicial+1 and Lineas[i].nodo2 == NodoFinal+1:
+                temp.append(Lineas[i].nodo1)
+                temp.append(Lineas[i].nodo2)
+                temp.append(Lineas[i].DisIndicador)
+                temp.append(Lineas[i].D)
+                TramosFallaIndicadores.append(temp)
+                temp=[]
+            else:
+                temp.append(Lineas[i].nodo1)
+                temp.append(Lineas[i].nodo2)
+                temp.append(0)
+                temp.append(Lineas[i].DisIndicador)
+                TramosFallaIndicadores.append(temp)
+                temp=[]
+
+        elif Lineas[i].PosibleFalla == 1 and Lineas[i].Indicador == 0 :
+            temp.append(Lineas[i].nodo1)
+            temp.append(Lineas[i].nodo2)
+            temp.append(0)
+            temp.append(Lineas[i].D)
+            TramosFallaIndicadores.append(temp)
+            temp=[]
+    return TramosFallaIndicadores
+
+#Función para filtrar la información de los indicadores y el algoritmo
+def ComparacionIndicadoresAlgoritmo(fallas, TramosFallaIndicadores):
+
+    for i in range(len(fallas)):
+        ResultadoFinal = []
+        for m in range(len(TramosFallaIndicadores)):
+            if fallas[i][1] == TramosFallaIndicadores[m][0] and fallas[i][2] == TramosFallaIndicadores[m][1]:
+                if fallas[i][0] >= TramosFallaIndicadores[m][2] and fallas[i][0] <= TramosFallaIndicadores[m][3]:
+                    ResultadoFinal.append(fallas[i])
+        if len(ResultadoFinal) == 0:
+            print('Error: La información de los indicadores no coincide con el algoritmo')
+            return
+        else:
+            return ResultadoFinal
+
+
+
 
 #Parametros de las lineas:
 R0 = 0.3864
@@ -634,34 +848,82 @@ R1 = 0.01273
 L0 = 4.1264 * (10 ** -3)*2*np.pi*60
 L1 = 0.9337 * (10 ** -3)*2*np.pi*60
 
-#print 'inicio'
-
 
 #Mediciones subestación:
 #Voltajes
-Va = ( 1.1607e+04 - 3.6131e+02j)/np.sqrt(2)
-Vb = ( -6.1165e+03 - 9.8714e+03j)/np.sqrt(2)
-Vc = (-5.4907e+03 + 1.0233e+04j)/np.sqrt(2)
+Va = ( 1.1578e+04 - 4.7880e+02j)/np.sqrt(2)
+Vb = ( -6.2035e+03 - 9.7872e+03j)/np.sqrt(2)
+Vc = (-5.3742e+03 + 1.0266e+04j)/np.sqrt(2)
 Vpre=[Va, Vb, Vc]
 #Corrientes:
-Ia = (2.7342 - 0.1282j)/np.sqrt(2)
-Ib = (-1.4782 - 2.3038j)/np.sqrt(2)
-Ic = (-1.2561 + 2.4320j)/np.sqrt(2)
+Ia = (3.6308 - 0.2224j)/np.sqrt(2)
+Ib = (-2.0080 - 3.0332j)/np.sqrt(2)
+Ic = (-1.6228 + 3.2556j)/np.sqrt(2)
 Ipre=[Ia, Ib, Ic]
-    
+
 #Mediciones post falla
-VaPost = (1.7875e+03 - 1.0998e+03j)/np.sqrt(2)
-VbPost = (-3.4673e+02 - 2.1806e+03j)/np.sqrt(2)
-VcPost = (-5.4665e+03 + 1.0262e+04j)/np.sqrt(2)
+VaPost = (3.5184e+03 - 2.2067e+02j)/np.sqrt(2)
+VbPost = (-6.2138e+03 - 9.7490e+03j)/np.sqrt(2)
+VcPost = (-5.3818e+03 + 1.0303e+04j)/np.sqrt(2)
 VPost=[VaPost, VbPost, VcPost]
 
-IaPost= (18.5799 -71.6318j)/np.sqrt(2)
-IbPost= (-64.0093 +32.2525j)/np.sqrt(2)
-IcPost= (-1.3352 + 2.6700j)/np.sqrt(2)
+IaPost= ( 10.1433 -59.7008j)/np.sqrt(2)
+IbPost= (-2.2671 - 2.9620j)/np.sqrt(2)
+IcPost= (-1.8801 + 3.3466j)/np.sqrt(2)
 IPost=[IaPost, IbPost, IcPost]
 
 #Tablas de configuración
 
+TaNodos = [["ID", "Nombre", "Troncal"],
+       [1, "B1", 1],
+       [2, "B2", 1],
+       [3, "B3", 1],
+       [4, "B4", 1],
+       [5, "B5", 0],
+       [6, "B6", 0],
+       [7, "B7", 1]]
+#print len(TaNodos)
+
+TaLineas = [["ID", "Nombre", "Nodo1", "Nodo2", "R0", "R1", "L0", "L1", "Distancia"],
+          [1, "Linea1", 1, 2, R0, R1, L0, L1, 30],
+          [2, "Linea2", 2, 3, 2*R0, R1, 2*L0, L1, 15],
+          [3, "Linea3", 3, 4, 2*R0, 2*R1, 2*L0, 2*L1, 10],
+          [4, "Linea4", 2, 5, R0, 2*R1, L0, 2*L1, 40],
+          [5, "Linea5", 3, 6, 2*R0, R1, L0, 2*L1, 20],
+          [6, "Linea6", 4, 7, R0, 2*R1, 2*L0, L1, 19]]
+
+TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"],
+          [1, 2, "C2", 8*10**3, 100],
+          [2, 3, "C3", 1.5*8*10**3, 2*100],
+          [3, 4, "C4", 8*10**3, 2*100],
+          [4, 5, "C5", 8*10**3, 1.5*100],
+          [5, 6, "C6", 1.5*8*10**3, 100],
+          [6, 7, "C7", 2*8*10**3, 2*100]]
+
+TaIndicadores=[["ID", "Nombre", "Nodo1", "Nodo2", "Distancia"],
+                [1, 'I1', 2, 3, 1],
+                [2, 'I2', 2, 5, 2],
+                [3, 'I3', 3, 6, 3],
+                [4, 'I4', 4, 7, 2]]
+
+
+fallas = Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, 0, 0)
+print(fallas)
+TramosFallaIndicadores = IndicadoresDeFalla(TaNodos, TaLineas, TaCargas, TaIndicadores, 2)
+print(TramosFallaIndicadores)
+ResultadoFinal = ComparacionIndicadoresAlgoritmo(fallas, TramosFallaIndicadores)
+print(ResultadoFinal)
+
+
+
+
+
+
+
+##########################################################################
+# ejemplo 2
+##########################################################################
+'''
 TaNodos = [["ID", "Nombre", "Troncal"],
        [1, "B1", 1],
        [2, "B2", 1],
@@ -688,5 +950,13 @@ TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"],
           [5, 6, "C6", 8*10**3, 100],
           [6, 7, "C7", 8*10**3, 100]]
 
-#D,tramo=Localizacion(Vpre, Ipre,VPost, IPost, TaNodos, TaLineas, TaCargas, 2, 0)
-#print(D,tramo)
+
+TaCargas=[]
+
+
+TaCargas = [["ID", "Nodo", "Nombre", "P", "Q"],
+          [1, 2, "C2", 8*10**3, 100],
+          [2, 3, "C3", 8*10**3, 100],
+          [3, 4, "C4", 8*10**3, 100]]
+
+'''
